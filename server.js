@@ -1,3 +1,4 @@
+import path from 'path';
 /**
  * ============================================================
  * SORI · 소리 — server.js · Node.js Backend  v6.2 (Bulletproof)
@@ -345,6 +346,13 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+// 1. 현재 폴더에 있는 모든 파일(index.html, css, js 등)을 브라우저가 읽을 수 있게 허용합니다.
+app.use(express.static(path.resolve()));
+
+// 2. 사용자가 주소(/)로 접속하면 index.html 파일을 화면에 띄워줍니다.
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve('index.html'));
+});
 
 function requireAuth(req, res, next) {
   const uid = req.cookies[PIN_COOKIE];
