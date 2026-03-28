@@ -86,7 +86,7 @@ const MIN_AUDIO_BYTES = 8_000;
 
 /** Partial transcription interval for the WebSocket pipeline. */
 const PARTIAL_INTERVAL_MS = 4_000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sori';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://peachyoon1083_db_user:yoonjaesoriwebsite_dbdb@cluster0.4ari9f6.mongodb.net/?appName=Cluster0';
 const BCRYPT_SALT_ROUNDS = 12;
 const PIN_COOKIE = 'sori_uid';    // HTTP-only cookie name
 

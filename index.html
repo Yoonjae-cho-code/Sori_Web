@@ -707,6 +707,30 @@
     }
 
     /* 문구용 지연 시간 */
+    /* 지연 시간 정의 추가 */
+    .delay-1 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.5s;
+    }
+
+    .delay-3 {
+      animation-delay: 0.9s;
+    }
+
+    /* 이 줄이 꼭 있어야 늦게 나타납니다 */
+
+    /* 모든 텍스트 색상을 진보라색으로 통일 */
+    .type-h1,
+    .type-h2,
+    .type-body,
+    .type-caption,
+    #gateway-headline,
+    #expression-heading {
+      color: #311F5D !important;
+    }
 
     /* 4. 'Choose what feels...' 문구 크기 및 스타일 강화 */
     .type-caption.fade-in-up.delay-3 {
@@ -791,40 +815,38 @@
 
         <!-- Title -->
         <h2 class="sori-modal__title" id="modal-title">
-          An Intimate Assembly Room <br> to Keep to Yourself.
-        </h2>
-        <span class="sori-modal__title-ko" lang="ko">
-          오롯이 나만 간직할 수 있는 <br> 내밀한 공간
-        </span>
+          Listen to Your Voice,<br> Not the Mirror
 
-        <!-- Hairline rule -->
-        <hr class="sori-modal__rule" aria-hidden="true" />
 
-        <!-- Body copy -->
-        <p class="sori-modal__body" id="modal-body-1">
-          Sori — <span lang="ko">소리</span>, an interactive mental wellness companion in Korean Sori, or sori, translates
-          to sound. It is not a productivity app. No streaks, no scores, no measures.
-        </p>
+          <!-- Hairline rule -->
+          <hr class="sori-modal__rule" aria-hidden="true" />
 
-        <p class="sori-modal__body">
-          Just somewhere to be, and be heard, and speak.
-          There is one question per session: How are you right now?
-          You select feeling, talk little or much as necessary,
-          and Sori in some way echoes it back upon itself, a kind
-          of faint reflection of whatever you came there with.
-        </p>
+          <!-- Body copy -->
+          <p class="sori-modal__body" id="modal-body-1">
+            Sori — <span lang="ko">소리</span>, an interactive mental wellness companion in Korean Sori, or sori,
+            translates
+            to sound. It is not a productivity app. No streaks, no scores, no measures.
+          </p>
 
-        <p class="sori-modal__body">
-          Made to suit the no-name cachetiers.
-          Constructed with regard to the space between feeling and language.
-          <span lang="ko"> <br> 언어로 감정을 마주하는 공간.</span>
-        </p>
+          <p class="sori-modal__body">
+            Just somewhere to be, and be heard, and speak.
+            There is one question per session: How are you right now?
+            You select feeling, talk little or much as necessary,
+            and Sori in some way echoes it back upon itself, a kind
+            of faint reflection of whatever you came there with.
+          </p>
 
-        <!-- Footer -->
-        <footer class="sori-modal__footer">
-          <span>Sori &nbsp;·&nbsp; <span lang="ko">소리</span></span>
-          <span>Cho Yoonjae &nbsp;·&nbsp; LASALLE College of the Arts &nbsp;·&nbsp; 2026</span>
-        </footer>
+          <p class="sori-modal__body">
+            Made to suit the no-name cachetiers.
+            Constructed with regard to the space between feeling and language.
+            <span lang="ko"> <br> 언어로 감정을 마주하는 공간.</span>
+          </p>
+
+          <!-- Footer -->
+          <footer class="sori-modal__footer">
+            <span>Sori &nbsp;·&nbsp; <span lang="ko">소리</span></span>
+            <span>Cho Yoonjae &nbsp;·&nbsp; LASALLE College of the Arts &nbsp;·&nbsp; 2026</span>
+          </footer>
 
       </div><!-- /.sori-modal__scroll -->
 
@@ -846,7 +868,7 @@
 
         <!-- Territory 01 · Resonance Field Canvas -->
         <canvas class="resonance-canvas" id="resonance-field" aria-hidden="true"
-          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;"></canvas>
+          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
 
         <!-- Territory 02 · Fluid Thread -->
         <svg class="fluid-thread" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
@@ -896,10 +918,10 @@
           <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="expression-heading">Express</h1>
           <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">표현하기</p>
 
-          <p class="type-caption mt-x2 text-ghost fade-in-up delay-3"
-            style="font-size: 15px !important; color: var(--color-deep-purple) !important;">
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-2"
+            style="font-size: 14px !important; color: var(--color-deep-purple) !important;">
             Choose what feels closest right now &nbsp;·&nbsp;
-            <span lang="ko">지금 느껴지는 감정과 가장 가까운 감정을 골라요</span>
+            <span lang="ko">지금 느껴지는 감정과 가장 비슷한 걸 골라보세요</span>
           </p>
           <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
 
