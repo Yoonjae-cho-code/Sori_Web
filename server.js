@@ -339,9 +339,11 @@ const ALLOWED_ORIGINS = [
 ];
 app.use(cors({
   origin: (origin, callback) => {
+    // 이제 ALLOWED_ORIGINS에 렌더 주소가 포함되었으므로 이 조건문이 통과됩니다.
     if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
+  credentials: true,
   credentials: true,
 }));
 app.use(express.json());
