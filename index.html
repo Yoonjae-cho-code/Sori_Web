@@ -123,14 +123,13 @@
     /* ── SPA root ──────────────────────────────────────────────────────── */
     #sori-app {
       overflow: clip;
-      /* ← v7: blocks scrollbar but does NOT create a new
-                                stacking context that would clip canvas WebGL */
+      background-color: transparent !important;
     }
 
     #step-gateway.sori-step--active {
       height: 100svh;
       background-color: transparent !important;
-      /* 배경을 투명하게 하여 뒤의 3D가 보이게 함 */
+      /* 불투명한 크림색 가림막 제거 */
     }
 
     /* ── Gateway layout ────────────────────────────────────────────────── */
@@ -803,7 +802,7 @@
 
         <!-- Territory 01 · Resonance Field Canvas -->
         <canvas class="resonance-canvas" id="resonance-field" aria-hidden="true"
-          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
+          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;"></canvas>
 
         <!-- Territory 02 · Fluid Thread -->
         <svg class="fluid-thread" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
@@ -853,15 +852,14 @@
           <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="expression-heading">Express</h1>
           <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">표현하기</p>
 
-          <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
-            Choose what feels closest right now
-            &nbsp;·&nbsp; <span lang="ko">지금 느껴지는 감정과 가장 가까운 감정을 골라요</span>
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-2" style="font-size: 15px;">
+            Choose what feels closest right now &nbsp;·&nbsp;
+            <span lang="ko">지금 느껴지는 감정과 가장 가까운 감정을 골라요</span>
           </p>
-
           <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
 
           <!-- ── Emotion Cards (8 × tactile cards, 4×2 grid) ──────────────── -->
-          <div class="emotion-card-container fade-in-up delay-2" style="margin-top: 60px;" role="listbox"
+          <div class="emotion-card-container fade-in-up delay-3" style="margin-top: 60px;" role="listbox"
             aria-label="Emotion selection — 감정 선택" aria-required="true">
 
             <!-- 1 · Drained — 번아웃온 -->
