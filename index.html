@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-locked">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- ─── SEO ─────────────────────────────────────────────────────────── -->
+  <title>Sori · 소리 — A Space to Hear Yourself</title>
+  <link rel="icon" href="data:,">
+  <meta name="description"
+    content="Sori is a bilingual mental wellness companion — a quiet space to express, reflect, and breathe. No metrics, no streaks, only presence." />
+  <meta name="theme-color" content="#F6F4F0" />
+
+  <!-- ─── Google Fonts — Lora (high-legibility editorial serif) ──────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+
+  <!-- ─── Design System ───────────────────────────────────────────────── -->
+  <link rel="stylesheet" href="sori-global.css" />
+  <link rel="stylesheet" href="sori-css-patch.css" />
+  <link rel="stylesheet" href="sori-modal.css" />
+  <!-- ─── UI Fix Patch (must load after sori-css-patch.css) ───────────── -->
+  <link rel="stylesheet" href="sori-fix.css" />
+
+  <!-- ─── Three.js via importmap ──────────────────────────────────────── -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three":         "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/",
+      "simplex-noise": "https://cdn.jsdelivr.net/npm/simplex-noise@4.0.3/dist/esm/simplex-noise.js"
+    }
+  }
+  </script>
+
+  <style>
+    /* ════════════════════════════════════════════════════════════════════
+       PAGE-LEVEL LAYOUT & STEP OVERRIDES
+       All spacing = multiples of --sori-x (12px base).
+       No pure #000/#fff. No font-weight ≥ 700.
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* ── Brand canvas lock — Silky Cream everywhere ────────────────────
+       This is the single source of truth for the page background.
+       All gradients in sori-css-patch.css that deviate from this
+       value are overridden below / in the patch file.
+       ─────────────────────────────────────────────────────────────── */
+    html,
+    body {
+      background-color: #F6F4F0 !important;
+      /* Silky Cream — brand canvas */
+      /* Scroll lock is managed via .scroll-locked class (see sori-css-patch.css §G)
+         and toggled by sori-flow.js _setScrollLock(). Do NOT set overflow here. */
+    }
+
+    /* ── Site header ───────────────────────────────────────────────────── */
+    .sori-header {
+      justify-content: space-between;
+    }
+
+    /* ── Task 1: wordmark as a home-reset button ───────────────────────── */
+    .sori-wordmark__btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      /* Inherit the h2 display look from .type-h2 already on the child span */
+      display: inline-flex;
+      align-items: center;
+      transition: opacity var(--transition-base);
+    }
+
+    .sori-wordmark__btn:hover {
+      opacity: 0.62;
+    }
+
+    .sori-wordmark__btn:focus-visible {
+      outline: 1.5px solid var(--color-dawn-sage);
+      outline-offset: 4px;
+      border-radius: 6px;
+    }
+
+    .sori-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--sori-x-4);
+    }
+
+    /* Nav button — inherits .sori-nav__link appearance from a → button */
+    .sori-nav__btn {
+      font-family: var(--font-sans);
+      font-size: var(--type-caption-size);
+      font-weight: 400;
+      letter-spacing: var(--type-caption-tracking);
+      color: var(--color-mid-sepia);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: color var(--transition-base);
+    }
+
+    .sori-nav__btn:hover {
+      color: var(--color-deep-sepia);
+    }
+
+    .sori-nav__btn:focus-visible {
+      outline: 1.5px solid var(--color-dawn-sage);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── SPA root ──────────────────────────────────────────────────────── */
+    #sori-app {
+      overflow: clip;
+      /* ← v7: blocks scrollbar but does NOT create a new
+                                stacking context that would clip canvas WebGL */
+    }
+
+    #step-gateway.sori-step--active {
+      height: 100svh;
+    }
+
+    /* ── Gateway layout ────────────────────────────────────────────────── */
+    #gateway.t04-layout {
+      flex-direction: row;
+      align-items: center;
+      /* ← vertically centres the wordmark */
+      justify-content: flex-start;
+      padding: 0 var(--sori-x-12);
+      /* horizontal padding only; vertical centering via flex */
+      overflow: visible;
+      /* ← v7: never clip the 3-D morph sphere  */
+      min-height: 100vh;
+      /* ← v7: full viewport height guarantee    */
+    }
+
+    #gateway .fluid-thread {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .gateway__display {
+      /*
+       * FIX: position:absolute anchors to the top-left corner of the gateway
+       * section regardless of flex layout. The previous position:relative made
+       * this a flex child that tracked the container's vertical centre,
+       * causing the title to drift down as viewport height increased.
+       */
+      position: absolute;
+      top: var(--sori-x-4);
+      /* 48px — just below the header zone         */
+      left: var(--sori-x-4);
+      /* 48px — consistent with header left margin  */
+      z-index: var(--z-content);
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--sori-x) * 0.5);
+    }
+
+    /* ── Korean wordmark override — modern sans ────────────────────────
+       Noto Serif KR (used by .type-d2:lang(ko) globally) reads as
+       traditional Gungsuh-adjacent. Override to Noto Sans KR here
+       for a cleaner, contemporary counterpart to Playfair Display.
+       ──────────────────────────────────────────────────────────────── */
+    .gateway__display .type-d2[lang="ko"] {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-style: normal;
+      font-weight: 300;
+      /* Light — airier, keeps visual hierarchy */
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: 0.06em;
+      /* subtle spacing suits the vertical strokes */
+      color: var(--color-mid-sepia);
+      /* one tone lighter than the English title */
+    }
+
+    /* ── Center Begin CTA ──────────────────────────────────────────────── */
+    .gateway__begin-cta {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      z-index: var(--z-content);
+      background-color: var(--color-silky-cream);
+      border: 1.5px solid var(--color-dawn-sage);
+      border-radius: 28px;
+      padding: var(--sori-x-3) var(--sori-x-6);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: clamp(12px, 1.3vw, 15px);
+      font-weight: 400;
+      letter-spacing: var(--type-caption-tracking);
+      color: var(--color-deep-sepia);
+      text-align: center;
+      white-space: nowrap;
+      animation: sori-begin-pulse var(--transition-breath) ease-in-out infinite;
+      transition: background-color var(--transition-base), border-color var(--transition-base);
+    }
+
+    .gateway__begin-cta:hover {
+      background-color: var(--color-oatmeal-beige);
+      animation-play-state: paused;
+    }
+
+    .gateway__ambient {
+      position: absolute;
+      bottom: var(--sori-x-4);
+      right: var(--sori-x-4);
+      z-index: var(--z-content);
+      letter-spacing: var(--type-micro-tracking);
+    }
+
+    #resonance-field.resonance-canvas {
+      opacity: 1;
+    }
+
+    @keyframes sori-begin-pulse {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(0.97);
+        box-shadow: 0 0 0 0px rgba(169, 180, 170, 0);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.03);
+        box-shadow: 0 0 0 18px rgba(169, 180, 170, 0.14);
+      }
+    }
+
+    @keyframes sori-begin-pulse-mobile {
+
+      0%,
+      100% {
+        transform: translateX(-50%) scale(0.97);
+        box-shadow: 0 0 0 0px rgba(169, 180, 170, 0);
+      }
+
+      50% {
+        transform: translateX(-50%) scale(1.03);
+        box-shadow: 0 0 0 14px rgba(169, 180, 170, 0.12);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .gateway__begin-cta {
+        top: auto;
+        bottom: calc(var(--sori-x-8) + var(--sori-x-4));
+        left: 50%;
+        animation-name: sori-begin-pulse-mobile;
+      }
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════
+       §03 EXPRESSION — Emotion cards only (voice UI removed)
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* Subtle hover lift on emotion cards */
+    .emotion-card {
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .emotion-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(100, 80, 60, 0.08);
+    }
+
+    /* Selection pulse on --active cards */
+    .emotion-card--active {
+      animation: emotion-select-pulse 0.4s ease-out forwards;
+    }
+
+    @keyframes emotion-select-pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.04);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Prompt that appears below the grid after card selection */
+    #expression-voice-prompt {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 500ms ease-in-out;
+      margin-top: var(--sori-x-6);
+      padding-bottom: var(--sori-x-4);
+    }
+
+    #expression-voice-prompt.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════
+       §VOICE-RECORD — Minimal dedicated listening screen
+       ════════════════════════════════════════════════════════════════════ */
+
+    #step-voice-record .sori-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100svh;
+      text-align: center;
+    }
+
+    #step-voice-record .sori-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sori-x-4);
+      max-width: 520px;
+    }
+
+    /* Pulsing ring behind the record button */
+    .voice-orb-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: var(--sori-x-4) 0;
+    }
+
+    .voice-orb-ring {
+      position: absolute;
+      inset: -20px;
+      border: 1px solid var(--color-dawn-sage);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 300ms ease;
+      pointer-events: none;
+    }
+
+    .voice-orb-ring--active {
+      animation: voice-orb-breathe 2.4s ease-in-out infinite;
+      opacity: 1;
+    }
+
+    @keyframes voice-orb-breathe {
+
+      0%,
+      100% {
+        transform: scale(0.94);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.7;
+      }
+    }
+
+    /* Silence countdown visualiser — thin bar that drains during silence */
+    .silence-bar-track {
+      width: 120px;
+      height: 2px;
+      background: var(--color-oatmeal-beige);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+
+    .silence-bar-track.is-counting {
+      opacity: 1;
+    }
+
+    .silence-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--color-dawn-sage);
+      transform-origin: left;
+      transform: scaleX(1);
+      transition: transform 100ms linear;
+    }
+
+    /* Waveform visualiser bars */
+    .waveform-visualiser {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 28px;
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+
+    .waveform-visualiser.is-active {
+      opacity: 1;
+    }
+
+    .waveform-bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--color-dawn-sage);
+      height: 4px;
+      transition: height 80ms ease;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════
+       §ANALYSIS — AI loading + result screen
+       ════════════════════════════════════════════════════════════════════ */
+
+    #step-analysis .sori-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100svh;
+      text-align: center;
+    }
+
+    #step-analysis .sori-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sori-x-4);
+      max-width: 520px;
+    }
+
+    /* Breathing dot cluster used during loading */
+    .analysis-loader {
+      display: flex;
+      gap: var(--sori-x-2);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .analysis-loader__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-dawn-sage);
+      animation: loader-breathe 1.6s ease-in-out infinite;
+    }
+
+    .analysis-loader__dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .analysis-loader__dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes loader-breathe {
+
+      0%,
+      100% {
+        transform: scale(0.6);
+        opacity: 0.35;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    /* Result block — fades in after response arrives */
+    #analysis-result {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 600ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sori-x-3);
+    }
+
+    #analysis-result.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Emotion chip — displays the detected category */
+    .analysis-emotion-chip {
+      display: inline-block;
+      background: var(--color-oatmeal-beige);
+      border: 1px solid var(--color-dawn-sage);
+      border-radius: 24px;
+      padding: var(--sori-x) var(--sori-x-3);
+      font-family: var(--font-sans);
+      font-size: clamp(11px, 1.1vw, 13px);
+      font-weight: 400;
+      letter-spacing: var(--type-caption-tracking);
+      color: var(--color-deep-sepia);
+    }
+
+    /* Loading/result toggle helpers */
+    #analysis-loading {
+      transition: opacity 400ms ease;
+    }
+
+    #analysis-loading.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════════════
+       §JOURNAL — Dynamic journal card
+       ════════════════════════════════════════════════════════════════════ */
+
+    #step-journal .sori-section {
+      background: var(--color-silky-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100svh;
+      padding-block: var(--sori-x-8);
+    }
+
+    #step-journal .sori-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* The central journal card */
+    .journal-card {
+      background: var(--color-oatmeal-beige);
+      border-radius: 32px;
+      max-width: 600px;
+      width: 100%;
+      padding: var(--sori-x-6) var(--sori-x-6) var(--sori-x-8);
+      position: relative;
+      box-shadow: 0 8px 40px rgba(100, 80, 60, 0.07), 0 2px 8px rgba(100, 80, 60, 0.04);
+    }
+
+    /* Top row: date left, section numeral right */
+    .journal-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--sori-x-5);
+    }
+
+    .journal-card__date {
+      font-family: var(--font-sans);
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 400;
+      letter-spacing: var(--type-micro-tracking);
+      color: var(--color-ghost-sepia);
+      line-height: 1.4;
+    }
+
+    .journal-card__numeral {
+      font-family: var(--font-sans);
+      font-size: clamp(10px, 1vw, 12px);
+      color: var(--color-ghost-sepia);
+      letter-spacing: var(--type-micro-tracking);
+    }
+
+    /* Divider */
+    .journal-card__rule {
+      width: 32px;
+      height: 1px;
+      background: var(--color-ghost-sepia);
+      opacity: 0.35;
+      margin: 0 auto var(--sori-x-5);
+      border: none;
+    }
+
+    /* Emotion keyword — centre, Playfair Display */
+    .journal-card__emotion {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 400;
+      color: var(--color-deep-sepia);
+      text-align: center;
+      margin-bottom: var(--sori-x);
+      letter-spacing: -0.01em;
+    }
+
+    .journal-card__emotion-ko {
+      font-family: var(--font-serif);
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 400;
+      color: var(--color-mid-sepia);
+      text-align: center;
+      margin-bottom: var(--sori-x-5);
+    }
+
+    /* Journal narrative */
+    .journal-card__body {
+      font-family: var(--font-sans);
+      font-size: clamp(14px, 1.4vw, 16px);
+      font-weight: 300;
+      color: var(--color-mid-sepia);
+      line-height: 1.75;
+      text-align: left;
+      margin-bottom: var(--sori-x-4);
+    }
+
+    /* Transcript — collapsed quote */
+    .journal-card__transcript {
+      font-family: var(--font-sans);
+      font-size: clamp(11px, 1vw, 12px);
+      font-weight: 300;
+      color: var(--color-ghost-sepia);
+      font-style: italic;
+      line-height: 1.6;
+      border-left: 1.5px solid var(--color-dawn-sage);
+      padding-left: var(--sori-x-2);
+      margin-bottom: var(--sori-x-5);
+    }
+
+    .journal-card__transcript-label {
+      display: block;
+      font-style: normal;
+      letter-spacing: var(--type-micro-tracking);
+      margin-bottom: 4px;
+    }
+
+    /* Bottom caption */
+    .journal-card__footer {
+      text-align: center;
+      margin-top: var(--sori-x-4);
+    }
+
+    /* Archive CTA below the card */
+    .journal-archive-cta {
+      margin-top: var(--sori-x-6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sori-x-2);
+    }
+
+    /* Existing reflection/archive CTA wrappers */
+    #reflection-archive-cta-wrapper {
+      margin-top: var(--sori-x-6);
+      padding-bottom: var(--sori-x-4);
+    }
+
+    #reflection-archive-cta-wrapper .type-caption {
+      margin-top: var(--sori-x-2);
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 640px) {
+      .journal-card {
+        border-radius: 24px;
+        padding: var(--sori-x-4);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================================================================
+       SITE HEADER — always visible, outside #sori-app
+       ================================================================ -->
+  <header class="sori-header" role="banner">
+    <div class="sori-wordmark" aria-label="Sori wordmark">
+      <!-- Task 1: Logo is now a home-reset button.
+           sori-flow.js wires #nav-logo-home → resetToGateway() -->
+      <button id="nav-logo-home" class="sori-wordmark__btn" type="button" aria-label="Return to home — 홈으로 돌아가기"
+        title="Return to home"><span class="type-h2 text-deep" aria-hidden="true">Sori</span></button>
+    </div>
+    <nav class="sori-nav" aria-label="Primary navigation">
+      <button class="sori-nav__btn" id="nav-what-is-sori" type="button" aria-haspopup="dialog"
+        aria-controls="modal-what-is-sori">What is Sori</button>
+    </nav>
+  </header>
+
+
+  <!-- ================================================================
+       #sori-app — SPA root container.
+       Exactly one .sori-step is visible at any time.
+       All transitions managed by sori-flow.js.
+
+       Step order (do not rename without updating sori-flow.js):
+         #step-gateway     — Active on load
+         #step-expression  — §03 Emotion card selection (voice UI removed)
+         #step-voice-record — NEW: dedicated listening screen
+         #step-analysis    — NEW: AI loading + result
+         #step-journal     — NEW: dynamic journal card
+         #step-reflection  — §04 AI Mirror (legacy; kept for backward compat)
+         #step-archive     — §05 Calendar (terminal step)
+       ================================================================ -->
+  <!-- ================================================================
+       MODAL: "What is Sori?" (#modal-what-is-sori)
+       Journaling / Stationery aesthetic.
+       Opened by #nav-what-is-sori button; closed by #modal-close
+       or clicking the backdrop.
+       Transition managed by sori-modal.css (.is-open class toggle).
+       ================================================================ -->
+  <!--
+    ================================================================
+    MODAL: "What is Sori?" — v3 structure
+    ────────────────────────────────────────────────────────────────
+    Architecture (fixes scrolling-frame bug):
+      .sori-modal-backdrop   — fixed full-screen scrim
+        .sori-modal          — outer static card frame
+                               overflow: hidden · border-radius: 44px
+                               does NOT scroll — EVER
+          .sori-modal__close — absolute close button, outside scroll
+          .sori-modal__scroll — inner scrollable body
+                                overflow-y: auto · max-height set in CSS
+            (all content lives here)
+    ================================================================
+  -->
+  <div class="sori-modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+    aria-describedby="modal-body-1" tabindex="-1">
+    <div class="sori-modal" role="document">
+
+      <!-- Close button — sits OUTSIDE the scroll area so it never moves -->
+      <button class="sori-modal__close" id="modal-close" type="button" aria-label="Close — 닫기">✕</button>
+
+      <!-- ── Inner scroll body — ONLY this scrolls ────────────── -->
+      <div class="sori-modal__scroll" id="modal-scroll-body">
+
+        <!-- Eyebrow -->
+        <span class="sori-modal__eyebrow" aria-hidden="true">
+          About · 소리에 대해
+        </span>
+
+        <!-- Title -->
+        <h2 class="sori-modal__title" id="modal-title">
+          An Intimate Assembly Room <br> to Keep to Yourself.
+        </h2>
+        <span class="sori-modal__title-ko" lang="ko">
+          오롯이 나만 간직할 수 있는 <br> 내밀한 공간
+        </span>
+
+        <!-- Hairline rule -->
+        <hr class="sori-modal__rule" aria-hidden="true" />
+
+        <!-- Body copy -->
+        <p class="sori-modal__body" id="modal-body-1">
+          Sori — <span lang="ko">소리</span>, an interactive mental wellness companion in Korean Sori, or sori, translates
+          to sound. It is not a productivity app. No streaks, no scores, no measures.
+        </p>
+
+        <p class="sori-modal__body">
+          Just somewhere to be, and be heard, and speak.
+          There is one question per session: How are you right now?
+          You select feeling, talk little or much as necessary,
+          and Sori in some way echoes it back upon itself, a kind
+          of faint reflection of whatever you came there with.
+        </p>
+
+        <p class="sori-modal__body">
+          Made to suit the no-name cachetiers.
+          Constructed with regard to the space between feeling and language.
+          <span lang="ko"> <br> 언어로 감정을 마주하는 공간.</span>
+        </p>
+
+        <!-- Footer -->
+        <footer class="sori-modal__footer">
+          <span>Sori &nbsp;·&nbsp; <span lang="ko">소리</span></span>
+          <span>Cho Yoonjae &nbsp;·&nbsp; LASALLE College of the Arts &nbsp;·&nbsp; 2026</span>
+        </footer>
+
+      </div><!-- /.sori-modal__scroll -->
+
+    </div><!-- /.sori-modal -->
+  </div><!-- /#modal-backdrop -->
+
+
+  <main id="sori-app">
+
+
+    <!-- ================================================================
+         STEP: GATEWAY (#step-gateway)
+         Exit: Center "Begin" CTA → #step-expression
+         ================================================================ -->
+    <div id="step-gateway" class="sori-step sori-step--active">
+
+      <section class="sori-section sori-section--void t04-layout" id="gateway"
+        aria-label="Bilingual Gateway — Sori entrance">
+
+        <!-- Territory 01 · Resonance Field Canvas -->
+        <canvas class="resonance-canvas" id="resonance-field" aria-hidden="true"
+          style="opacity:1;background:#F6F4F0;"></canvas>
+
+        <!-- Territory 02 · Fluid Thread -->
+        <svg class="fluid-thread" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+          focusable="false" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+          <path d="M 1300 80 C 1100 200, 900 120, 760 300 C 620 480, 580 640, 320 750
+                   C 180 820, 80 860, -40 900" stroke="#C4B8B0" stroke-width="0.5" fill="none" opacity="0.5" />
+        </svg>
+
+        <!-- Bilingual wordmark — top-left anchor -->
+        <div class="gateway__display" aria-label="Bilingual wordmark: Sori / 소리">
+          <h1 class="type-d1" id="gateway-headline">Sori</h1>
+          <p class="type-d2" lang="ko">소리</p>
+        </div>
+
+        <!-- Center Begin CTA — BUCK Signal
+             id="nav-enter-cta" preserved for sori-resonance.js compatibility -->
+        <button class="gateway__begin-cta" id="nav-enter-cta" type="button" aria-label="Begin — enter Sori">
+          Begin &nbsp;·&nbsp; <span lang="ko">시작하기</span>
+        </button>
+
+
+        </span>
+
+      </section>
+    </div><!-- /#step-gateway -->
+
+
+    <!-- ================================================================
+         STEP: EXPRESSION (#step-expression)
+         §03 Emotion card selection ONLY — voice UI removed.
+
+         Interaction change (v2):
+           Clicking an emotion card immediately cross-fades to
+           #step-voice-record. The old Continue CTA is gone.
+           sori-flow.js handles the card→step wiring.
+         ================================================================ -->
+    <div id="step-expression" class="sori-step">
+
+      <section class="sori-section" id="expression" aria-labelledby="expression-heading">
+        <div class="sori-container">
+
+          <button class="pin-back-btn fade-in-up delay-1" id="btn-back-expr" type="button"
+            style="align-self: flex-start; width: 100%; text-align: left; margin-bottom: var(--sori-x-2);">
+            ← Back &nbsp;·&nbsp; <span lang="ko">뒤로 가기</span>
+          </button>
+
+          <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="expression-heading">Express</h1>
+          <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">표현하기</p>
+
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
+            Choose what feels closest right now
+            &nbsp;·&nbsp; <span lang="ko">지금 느껴지는 감정과 가장 가까운 감정을 골라요</span>
+          </p>
+
+          <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
+
+          <!-- ── Emotion Cards (8 × tactile cards, 4×2 grid) ──────────────── -->
+          <div class="emotion-card-container fade-in-up delay-2" style="margin-top: 60px;" role="listbox"
+            aria-label="Emotion selection — 감정 선택" aria-required="true">
+
+            <!-- 1 · Drained — 번아웃온 -->
+            <button class="emotion-card" data-emotion="Drained" type="button" role="option" aria-selected="false"
+              aria-label="Drained — 번아웃온">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,22 C7,22 9,20 13,21 C17,22 19,23 23,22 C27,21 29,23 33,24" />
+                  <path d="M33,24 L35,27" stroke-width="1" stroke-opacity="0.4" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Drained &nbsp;|&nbsp; <span lang="ko">#번아웃온</span></span>
+              <p class="emotion-card__desc" lang="ko"> I’m completely spent. I don't have the energy for anything.</p>
+            </button>
+
+            <!-- 2 · Restles — 초조한 -->
+            <button class="emotion-card" data-emotion="Restless" type="button" role="option" aria-selected="false"
+              aria-label="Restless — 초조한">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,18 L8,9 L13,23 L18,7 L23,23 L28,11 L33,18" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Restless &nbsp;|&nbsp; <span lang="ko">#초조한</span></span>
+              <p class="emotion-card__desc" lang="ko">I feel uneasy and on edge.</p>
+            </button>
+
+            <!-- 3 · Numb — 무감각한 -->
+            <button class="emotion-card" data-emotion="numb" type="button" role="option" aria-selected="false"
+              aria-label="Numb — 무감각한">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <line x1="3" y1="18" x2="33" y2="18" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#numb &nbsp;|&nbsp; <span lang="ko">#무감각한</span></span>
+              <p class="emotion-card__desc" lang="ko">I don’t feel anything at all right now.</p>
+            </button>
+
+            <!-- 4 · Meh — 그저그런 -->
+            <button class="emotion-card" data-emotion="meh" type="button" role="option" aria-selected="false"
+              aria-label="Meh — 그저그런">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="24" cy="14" r="1.5" fill="currentColor" stroke="none" />
+                  <line x1="11" y1="22" x2="25" y2="22" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#meh &nbsp;|&nbsp; <span lang="ko">#그저그런</span></span>
+              <p class="emotion-card__desc" lang="ko">I’m just okay. Nothing special, for better or worse.</p>
+            </button>
+
+            <!-- 5 · Lonely — 외로운 -->
+            <button class="emotion-card" data-emotion="lonely" type="button" role="option" aria-selected="false"
+              aria-label="Lonely — 외로운">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <circle cx="18" cy="20" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="18" cy="20" r="5.5" stroke-opacity="0.45" />
+                  <circle cx="18" cy="20" r="10" stroke-opacity="0.18" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#lonely &nbsp;|&nbsp; <span lang="ko">#외로운</span></span>
+              <p class="emotion-card__desc" lang="ko">I feel like I’m all alone in this world. It’s lonely.</p>
+            </button>
+
+            <!-- 6 · Alright — 괜찮은 -->
+            <button class="emotion-card" data-emotion="Alright" type="button" role="option" aria-selected="false"
+              aria-label="Alright — 괜찮은">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,18 C7,12 11,24 18,18 C25,12 29,24 33,18" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Alright &nbsp;|&nbsp; <span lang="ko">#괜찮은</span></span>
+              <p class="emotion-card__desc" lang="ko">I’m not exactly great, but I’m doing okay.</p>
+            </button>
+
+            <!-- 7 · Lighter -->
+            <button class="emotion-card" data-emotion="lighter" type="button" role="option" aria-selected="false"
+              aria-label="Lighter — 홀가분한">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,24 C7,20 10,24 14,19 C18,14 22,13 28,9" />
+                  <circle cx="30" cy="7" r="1.2" fill="currentColor" stroke="none" />
+                  <circle cx="33" cy="5" r="0.8" fill="currentColor" stroke="none" opacity="0.5" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#lighter &nbsp;|&nbsp; <span lang="ko">#홀가분한</span></span>
+              <p class="emotion-card__desc" lang="ko">My mind feels a bit more at ease. I think I can finally rest.</p>
+            </button>
+
+            <!-- 8 · Proud -->
+            <button class="emotion-card" data-emotion="proud" type="button" role="option" aria-selected="false"
+              aria-label="Proud — 자랑스러운">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M10,26 A8,8 0 0 1 26,26" />
+                  <path d="M5,26 A13,13 0 0 1 31,26" stroke-opacity="0.6" />
+                  <path d="M1,26 A17,17 0 0 1 35,26" stroke-opacity="0.3" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#proud &nbsp;|&nbsp; <span lang="ko">#뿌듯한</span></span>
+              <p class="emotion-card__desc" lang="ko">I feel accomplished. I’m really proud of myself.</p>
+            </button>
+
+          </div><!-- /.emotion-card-container -->
+
+          <!-- Quiet prompt that appears after a card is selected.
+               sori-flow.js adds .is-visible when selection fires.
+               This is informational only — the transition to #step-voice-record
+               is automatic on card click and does not require this CTA.       -->
+          <div id="expression-voice-prompt" aria-live="polite">
+            <p class="type-body text-mid">
+              Sori is ready to listen.
+              &nbsp;·&nbsp; <span lang="ko">소리 들을 준비가 됐어요.</span>
+            </p>
+          </div>
+
+        </div>
+      </section>
+    </div><!-- /#step-expression -->
+
+
+    <!-- ================================================================
+         STEP: VOICE RECORD (#step-voice-record)  ← NEW
+         A minimal, centred screen — just the speak button and a calm prompt.
+         Entry:  Emotion card click in #step-expression (auto-transition)
+         Exit:   After recording + fetch → #step-analysis (auto)
+         ================================================================ -->
+    <div id="step-voice-record" class="sori-step">
+
+      <section class="sori-section" id="voice-record" aria-labelledby="voice-record-heading">
+        <div class="sori-container">
+
+          <button class="pin-back-btn fade-in-up delay-1" id="btn-back-voice" type="button"
+            style="align-self: flex-start; width: 100%; text-align: left; margin-bottom: var(--sori-x-2);">
+            ← Back &nbsp;·&nbsp; <span lang="ko">뒤로 가기</span>
+          </button>
+
+          <h2 class="type-h2 fade-in-up" id="voice-record-heading">
+            Speak freely.
+          </h2>
+          <p class="type-h2 mt-x1 fade-in-up delay-1" lang="ko">
+            자유롭게 말해요.
+          </p>
+
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
+            Sori holds your silence, too.
+            &nbsp;·&nbsp; <span lang="ko">침묵해도 괜찮아요</span>
+          </p>
+
+          <!-- Waveform visualiser — animated during recording -->
+          <div class="waveform-visualiser fade-in-up delay-2" id="waveform-visualiser" aria-hidden="true">
+            <!-- 9 bars — heights animated by sori-voice.js -->
+            <div class="waveform-bar" id="wbar-1"></div>
+            <div class="waveform-bar" id="wbar-2"></div>
+            <div class="waveform-bar" id="wbar-3"></div>
+            <div class="waveform-bar" id="wbar-4"></div>
+            <div class="waveform-bar" id="wbar-5"></div>
+            <div class="waveform-bar" id="wbar-6"></div>
+            <div class="waveform-bar" id="wbar-7"></div>
+            <div class="waveform-bar" id="wbar-8"></div>
+            <div class="waveform-bar" id="wbar-9"></div>
+          </div>
+
+          <!-- Record button with pulsing ring -->
+          <div class="voice-orb-wrapper fade-in-up delay-2">
+            <div class="voice-orb-ring" id="voice-orb-ring" aria-hidden="true"></div>
+            <button class="voice-record-btn" type="button" id="voice-record-trigger"
+              aria-label="Start voice recording — 녹음 시작" aria-pressed="false">
+              ○ &nbsp; Speak &nbsp;·&nbsp; <span lang="ko">말하기</span>
+            </button>
+          </div>
+
+          <!-- Silence countdown bar -->
+          <div class="silence-bar-track" id="silence-bar-track" aria-hidden="true">
+            <div class="silence-bar-fill" id="silence-bar-fill"></div>
+          </div>
+
+          <!-- Status — written by sori-voice.js -->
+          <p id="voice-status" class="type-micro mt-x2 text-ghost fade-in-up delay-3" aria-live="polite"
+            aria-atomic="true"></p>
+
+
+        </div>
+      </section>
+    </div><!-- /#step-voice-record -->
+
+
+    <!-- ================================================================
+         STEP: ANALYSIS (#step-analysis)  ← NEW
+         Shows loading state while fetch is pending, then result.
+         Entry:  Recording stops in #step-voice-record (auto-transition)
+         Exit:   "View Journal" button → #step-journal
+         ================================================================ -->
+    <div id="step-analysis" class="sori-step">
+
+      <section class="sori-section" id="analysis" aria-labelledby="analysis-heading">
+        <div class="sori-container">
+
+          <!-- Loading state — visible while fetch is in flight -->
+          <div id="analysis-loading" aria-live="polite">
+            <div class="analysis-loader fade-in-up" aria-hidden="true">
+              <div class="analysis-loader__dot"></div>
+              <div class="analysis-loader__dot"></div>
+              <div class="analysis-loader__dot"></div>
+            </div>
+            <p class="type-h2 mt-x4 fade-in-up delay-1" id="analysis-heading">
+              Sori is listening and reflecting…
+            </p>
+            <p class="type-h2 mt-x1 fade-in-up delay-1" lang="ko">
+              소리가 듣고 반영 중이에요…
+            </p>
+            <p class="type-caption mt-x3 text-ghost fade-in-up delay-2">
+              This takes a moment
+              &nbsp;·&nbsp; <span lang="ko">잠시만 기다려주세요</span>
+            </p>
+          </div>
+
+          <!-- Result state — fades in after fetch resolves -->
+          <div id="analysis-result" aria-live="polite" aria-atomic="false">
+            <p class="type-caption text-ghost">Sori hears that you are feeling</p>
+
+            <!-- Detected emotion chip — populated by sori-voice.js -->
+            <div class="analysis-emotion-chip" id="analysis-emotion-chip" aria-label="Detected emotion">
+              …
+            </div>
+
+            <p class="type-body text-mid mt-x2" id="analysis-narrative">
+              <!-- Filled by sori-voice.js with journal_text excerpt -->
+            </p>
+
+            <!-- CTA → #step-journal -->
+            <div class="mt-x5">
+              <button class="voice-record-btn" type="button" id="view-journal-btn"
+                aria-label="View your journal — 방금 기록된 저널 확인하기">
+                → &nbsp; View Journal
+                &nbsp;·&nbsp; <span lang="ko">방금 기록된 저널 확인하기</span>
+              </button>
+              <p class="type-caption mt-x2 text-ghost">
+                A quiet record of this moment
+                &nbsp;·&nbsp; <span lang="ko">이 순간의 기록</span>
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div><!-- /#step-analysis -->
+
+
+    <!-- ================================================================
+         STEP: JOURNAL (#step-journal)  ← NEW
+         Dynamic journal card populated from backend JSON response.
+         Entry:  "View Journal" button in #step-analysis
+         Exit:   "See your archive" → #step-archive (terminal)
+         ================================================================ -->
+    <div id="step-journal" class="sori-step">
+
+      <section class="sori-section" id="journal" aria-labelledby="journal-card-emotion">
+        <div class="sori-container">
+
+          <!-- Vertical rounded journal card — populated by sori-voice.js -->
+          <div class="journal-card fade-in-up" role="article" aria-label="Your journal entry for today">
+
+            <!-- Header: date (top-left) + entry numeral (top-right) -->
+            <div class="journal-card__header">
+              <div class="journal-card__date" id="journal-date" aria-label="Today's date">
+                <!-- e.g. "Tuesday\n21 March 2026" — written by JS -->
+              </div>
+              <span class="journal-card__numeral" aria-hidden="true">01</span>
+            </div>
+
+            <hr class="journal-card__rule" aria-hidden="true" />
+
+            <!-- Predicted emotion keyword — Playfair Display -->
+            <h2 class="journal-card__emotion" id="journal-card-emotion">
+              <!-- e.g. "burned-out" — written by sori-voice.js -->
+            </h2>
+            <p class="journal-card__emotion-ko" id="journal-card-emotion-ko" lang="ko">
+              <!-- Korean counterpart — written by sori-voice.js -->
+            </p>
+
+            <!-- AI 3rd-person journal narrative -->
+            <p class="journal-card__body" id="journal-card-body">
+              <!-- journal_text from /api/analyze — written by sori-voice.js -->
+            </p>
+
+            <!-- Collapsed transcript quote -->
+            <blockquote class="journal-card__transcript" id="journal-transcript">
+              <span class="journal-card__transcript-label type-micro text-ghost">
+                Your words &nbsp;·&nbsp; <span lang="ko">당신의 말</span>
+              </span>
+              <!-- transcript text — written by sori-voice.js -->
+            </blockquote>
+            <!-- ── Psychological Insight Section ────────────────────────
+     Populated by sori-flow.js populateInsight() after the
+     /api/analyze response arrives.
+
+     IDs used by JS (DO NOT RENAME):
+       #insight-section       — wrapper, hidden until populated
+       #insight-quote-en      — English quote text
+       #insight-quote-ko      — Korean translation
+       #insight-quote-source  — author + work attribution
+       #insight-recs-list     — <ol> receiving <li> items
+──────────────────────────────────────────────────────────── -->
+            <section class="insight-section" id="insight-section" aria-label="Psychological insight" aria-live="polite"
+              hidden>
+
+              <!-- ── Part 1: Quote ─────────────────────────────────── -->
+              <div class="insight-quote" role="figure" aria-label="Resonant quote">
+
+                <span class="insight-label" aria-hidden="true">
+                  A thought for you &nbsp;·&nbsp; <span lang="ko">당신을 위한 말</span>
+                </span>
+
+                <blockquote class="insight-quote__body">
+                  <p class="insight-quote__text" id="insight-quote-en" lang="en">
+                    <!-- English quote — written by populateInsight() -->
+                  </p>
+                  <p class="insight-quote__text insight-quote__text--ko" id="insight-quote-ko" lang="ko">
+                    <!-- Korean translation — written by populateInsight() -->
+                  </p>
+                  <footer class="insight-quote__attribution">
+                    <cite id="insight-quote-source">
+                      <!-- e.g. "Viktor Frankl, Man's Search for Meaning" -->
+                    </cite>
+                  </footer>
+                </blockquote>
+
+              </div><!-- /.insight-quote -->
+
+
+              <!-- ── Part 2: Recommendations ───────────────────────── -->
+              <div class="insight-recs" aria-labelledby="insight-recs-heading">
+
+                <span class="insight-label" id="insight-recs-heading" aria-hidden="true">
+                  Gentle steps &nbsp;·&nbsp; <span lang="ko">작은 돌봄</span>
+                </span>
+
+                <ol class="insight-recs__list" id="insight-recs-list" aria-label="Self-care recommendations">
+                  <!-- Items injected as <li> by populateInsight() in sori-flow.js -->
+                </ol>
+
+              </div><!-- /.insight-recs -->
+
+            </section><!-- /#insight-section -->
+            <!-- Footer caption -->
+            <div class="journal-card__footer">
+              <p class="type-caption text-ghost">
+                Generated by Sori — not a diagnosis
+                &nbsp;·&nbsp; <span lang="ko">소리가 생성한 건 — 진단이 아니에요</span>
+              </p>
+            </div>
+
+          </div><!-- /.journal-card -->
+
+          <!-- ── Journal action CTAs ─────────────────────────────────── -->
+          <!--
+            PRIMARY path: _injectArchiveButtonInCard() (sori-flow.js v9)
+            inserts the Archive Record button INSIDE the dynamic
+            .sori-journal-card, immediately above "New Entry".
+            This outer wrapper is the STATIC FALLBACK — shown only when
+            sori-voice.js hasn't built the dynamic card yet.
+            JS hides it (display:none) the moment injection fires.
+          -->
+          <div class="journal-archive-cta fade-in-up delay-2" id="journal-outer-cta-wrapper">
+
+            <!-- Static fallback — Archive Record -->
+            <button class="voice-record-btn journal-save-record-btn" type="button" id="journal-save-record-cta"
+              aria-label="Archive this record — 기록 보관하기">
+              ◎ &nbsp; Archive Record
+              &nbsp;·&nbsp; <span lang="ko">기록 보관하기</span>
+            </button>
+            <p class="type-caption text-ghost mt-x1">
+              Protect this moment with a private PIN
+              &nbsp;·&nbsp; <span lang="ko">개인 PIN으로 이 순간을 보호해요</span>
+            </p>
+
+            <hr class="sori-rule" style="margin:var(--sori-x-4,48px) 0; opacity:0.3;" aria-hidden="true" />
+
+            <!-- Secondary: Browse existing archive -->
+            <button class="voice-record-btn" type="button" id="journal-archive-cta"
+              aria-label="See your archive — 지난 기록 보기" style="opacity:0.65; font-size:clamp(11px,1.1vw,13px);">
+              → &nbsp; See your archive
+              &nbsp;·&nbsp; <span lang="ko">지난 기록 보기</span>
+            </button>
+            <p class="type-caption text-ghost">
+              Past moments, held safely
+              &nbsp;·&nbsp; <span lang="ko">지난 순간들이 안전하게 보관되어 있어요</span>
+            </p>
+          </div>
+
+        </div>
+      </section>
+    </div><!-- /#step-journal -->
+
+
+    <!-- ================================================================
+         STEP: REFLECTION (#step-reflection)  — legacy, kept intact
+         Now bypassed by the primary new flow (gateway→expression→
+         voice-record→analysis→journal). Retained for compatibility.
+         ================================================================ -->
+    <div id="step-reflection" class="sori-step">
+      <section class="sori-section sori-section--warm" id="reflection" aria-labelledby="reflection-heading">
+        <div class="sori-container">
+          <span class="type-numeral fade-in-up" aria-hidden="true">04</span>
+          <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="reflection-heading">Reflection</h1>
+          <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">반영</p>
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
+            What Sori heard &nbsp;·&nbsp; <span lang="ko">소리가 들은 것</span>
+          </p>
+          <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
+          <p class="type-body text-mid mt-x3 fade-in-up delay-2">
+            This is not an analysis. It is a quiet reflection —
+            a shape for what you shared, held without judgment.
+          </p>
+          <p class="type-body text-mid mt-x1 fade-in-up delay-2" lang="ko">
+            분석이 아니라, 온전히 당신이 한 이야기를 담았어요.
+          </p>
+          <div class="mirror-card mt-x4 fade-in-up delay-3" aria-live="polite">
+            <p class="mirror-card__feeling">Something heavy has been resting in you.</p>
+            <p class="mirror-card__feeling mt-x1" lang="ko">무언가 무거운 것이 당신 마음 속에 남아 있어요.</p>
+            <p class="mirror-card__affirmation">You don't need to name it perfectly right now.</p>
+            <p class="mirror-card__affirmation" lang="ko">지금 정확히 이름 붙이지 않아도 괜찮아요.</p>
+          </div>
+          <p class="type-caption mt-x4 text-ghost fade-in-up delay-4">
+            Generated by Sori — not a diagnosis
+          </p>
+          <div id="reflection-archive-cta-wrapper" class="fade-in-up delay-4">
+            <button class="voice-record-btn" type="button" id="reflection-archive-cta"
+              aria-label="View your archive — 지난 기록 보기">
+              → &nbsp; See your archive &nbsp;·&nbsp;
+              <span lang="ko">지난 기록 보기</span>
+            </button>
+            <p class="type-caption mt-x2 text-ghost">
+              Your past moments, held safely
+            </p>
+          </div>
+        </div>
+      </section>
+    </div><!-- /#step-reflection -->
+
+
+    <!-- ================================================================
+         STEP: ARCHIVE (#step-archive)  — §05, terminal step
+         ================================================================ -->
+    <div id="step-archive" class="sori-step">
+      <section class="sori-section" id="archive" aria-labelledby="archive-heading">
+        <div class="sori-container archive-container">
+
+          <button class="pin-back-btn fade-in-up" id="btn-back-archive" type="button"
+            style="align-self: flex-start; width: 100%; text-align: left; margin-bottom: var(--sori-x-4);">
+            ← Home &nbsp;·&nbsp; <span lang="ko">홈으로</span>
+          </button>
+
+          <header class="archive-header fade-in-up">
+            <h1 class="type-h1" id="archive-heading">
+              Archive <span class="text-ghost">기록</span>
+            </h1>
+            <p class="type-caption text-mid mt-x1">
+              Past moments held safely &nbsp;·&nbsp; <span lang="ko">안전하게 보관된 지난 순간들</span>
+            </p>
+          </header>
+
+          <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
+
+          <div id="archive-auth-area" class="auth-centered fade-in-up delay-2">
+            <p class="type-body text-mid mb-x4" id="archive-auth-msg">
+              정했던 PIN 번호를 입력하고 기록을 확인해보세요
+            </p>
+
+            <div class="pin-dots-wrapper mb-x2" id="archive-verify-dots">
+              <span class="pin-dot"></span><span class="pin-dot"></span>
+              <span class="pin-dot"></span><span class="pin-dot"></span>
+            </div>
+
+            <input type="password" id="archive-verify-input" class="pin-hidden-input" inputmode="numeric"
+              pattern="\d{4}" maxlength="4" />
+            <p class="pin-error mt-x2" id="archive-verify-error"></p>
+          </div>
+
+          <div id="archive-content" class="archive-split-layout mt-x6" style="display:none;">
+            <div class="archive-column-left">
+              <div class="calendar-wrapper">
+                <div class="calendar-header type-caption text-deep mb-x2">
+                  <span id="calendar-month-year"></span>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+              </div>
+            </div>
+
+            <div class="archive-column-right" id="archive-detail-view">
+              <p class="type-caption text-ghost mb-x4" id="past-date-label">Select a day · 날짜를 선택하세요</p>
+              <div id="entries-list-container" class="sori-stack--tight">
+                <p class="type-body text-ghost">Your past reflections will appear here.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- ================================================================
+         STEP: PIN CALENDAR (#step-pin-calendar)  — Task 2 §06
+         ─────────────────────────────────────────────────────────────
+         Architecture: one SPA step, three sliding sub-panels.
+           #pin-cal-panel      — custom calendar (entry date highlighted)
+           #pin-set-panel      — Step 1: Set 4-digit PIN
+           #pin-confirm-panel  — Step 2: Confirm PIN
+           #pin-success-panel  — Success state: record protected
+         All panel transitions controlled by sori-flow.js.
+         ================================================================ -->
+    <div id="step-pin-calendar" class="sori-step">
+      <section class="sori-section" id="pin-calendar" aria-labelledby="pin-step-heading"
+        style="min-height:100svh; display:flex; align-items:flex-start; padding-top:var(--sori-x-8,96px);">
+        <div class="sori-container pin-step-container">
+
+          <!-- ── Panel 0: Calendar ────────────────────────────────── -->
+          <div id="pin-cal-panel" class="pin-panel pin-panel--active" role="region" aria-label="Select your entry date">
+
+            <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="pin-step-heading">
+              Archive Record
+            </h1>
+            <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">기록 보관하기</p>
+
+            <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
+              Select your entry date to protect it
+              &nbsp;·&nbsp; <span lang="ko">날짜를 선택해 기록을 보호하세요</span>
+            </p>
+
+            <hr class="sori-rule mt-x3 fade-in-up delay-1" aria-hidden="true" />
+
+            <div class="archive-split-layout mt-x4 fade-in-up delay-2" style="width: 100%;">
+
+              <div class="archive-column-left">
+                <div class="pin-cal-header">
+                  <button class="pin-cal-nav-btn" id="pin-cal-prev" type="button" aria-label="Previous month">‹</button>
+                  <span class="pin-cal-month-label" id="pin-cal-month-label">—</span>
+                  <button class="pin-cal-nav-btn" id="pin-cal-next" type="button" aria-label="Next month">›</button>
+                </div>
+
+                <div class="pin-calendar-grid" id="pin-calendar-mount" role="grid" aria-label="Calendar"></div>
+
+                <p class="type-caption mt-x4 text-ghost" style="font-style:italic;">
+                  Highlighted date = your journal entry
+                  &nbsp;·&nbsp; <span lang="ko">강조된 날짜 = 당신의 저널</span>
+                </p>
+
+                <div id="pin-protect-action" style="display: none; margin-top: 32px; text-align: center;">
+                  <button class="voice-record-btn" type="button" id="pin-protect-btn">
+                    🔒 &nbsp; Protect Record &nbsp;·&nbsp; <span lang="ko">기록 보호하기</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="archive-column-right" id="pin-journal-preview-container"
+                style="display: none; opacity: 0; transition: opacity 0.4s ease;">
+                <p class="type-caption text-ghost mb-x4" style="text-align: left;">
+                  Selected Record &nbsp;·&nbsp; <span lang="ko">선택된 기록</span>
+                </p>
+                <div id="pin-journal-preview" style="transform: scale(0.95); transform-origin: top left;"></div>
+              </div>
+
+            </div>
+          </div>
+          <!-- ── Panel 1: Set PIN ──────────────────────────────────── -->
+          <div id="pin-set-panel" class="pin-panel" role="region" aria-label="Set your PIN">
+
+            <!-- Back link -->
+            <button class="pin-back-btn" id="pin-set-back" type="button" aria-label="Back to calendar">
+              ← Back &nbsp;·&nbsp; <span lang="ko">뒤로</span>
+            </button>
+
+            <p class="type-numeral mt-x4" aria-hidden="true" style="opacity:0.55;">01 / 02</p>
+
+            <h2 class="type-h2 mt-x3" style="font-weight:400; text-align:center;">
+              Protect your privacy<br>
+              <span lang="ko" style="font-size:0.85em; opacity:0.7; display:inline-block; margin-top:4px;">프라이버시
+                보호</span>
+            </h2>
+            <p class="type-body text-mid mt-x1" style="max-width:340px; line-height:1.7; text-align:center;">
+              Set a 4-digit PIN to secure this record.<br>
+              <span lang="ko" style="display:inline-block; margin-top:4px;">4자리 PIN을 설정해 기록을 보호하세요.</span>
+            </p>
+            <!-- 4-dot masked indicator -->
+            <div class="pin-dots-wrapper mt-x6" id="pin-set-dots" aria-label="PIN entry — 4 digits required"
+              role="group">
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+            </div>
+
+            <!-- Accessible hidden input — keyboard entry fills the dots -->
+            <input type="password" id="pin-set-input" class="pin-hidden-input" inputmode="numeric" pattern="\d{4}"
+              maxlength="4" autocomplete="new-password" aria-label="Enter your 4-digit PIN"
+              aria-describedby="pin-set-hint" />
+
+            <p class="type-micro mt-x2 text-ghost" id="pin-set-hint">
+              Tap the dots to begin typing
+              &nbsp;·&nbsp; <span lang="ko">점을 탭해 입력을 시작하세요</span>
+            </p>
+
+            <p class="pin-error mt-x2" id="pin-set-error" role="alert" aria-live="polite"></p>
+
+          </div><!-- /#pin-set-panel -->
+
+
+          <!-- ── Panel 2: Confirm PIN ──────────────────────────────── -->
+          <div id="pin-confirm-panel" class="pin-panel" role="region" aria-label="Confirm your PIN">
+
+            <button class="pin-back-btn" id="pin-confirm-back" type="button" aria-label="Back to PIN entry">
+              ← Back &nbsp;·&nbsp; <span lang="ko">뒤로</span>
+            </button>
+
+            <p class="type-numeral mt-x4" aria-hidden="true" style="opacity:0.55;">02 / 02</p>
+
+            <h2 class="type-h2 mt-x3" style="font-weight:400; text-align:center;">
+              Confirm your PIN<br>
+              <span lang="ko" style="font-size:0.85em; opacity:0.7; display:inline-block; margin-top:4px;">한 번 더
+                입력해주세요</span>
+            </h2>
+            <p class="type-body text-mid mt-x1" style="max-width:340px; line-height:1.7; text-align:center;">
+              Enter the same 4 digits once more.<br>
+              <span lang="ko" style="display:inline-block; margin-top:4px;">같은 4자리를 한 번 더 입력해 주세요.</span>
+            </p>
+
+            <div class="pin-dots-wrapper mt-x6" id="pin-confirm-dots" aria-label="Confirm PIN — 4 digits" role="group">
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+              <span class="pin-dot" aria-hidden="true"></span>
+            </div>
+
+            <input type="password" id="pin-confirm-input" class="pin-hidden-input" inputmode="numeric" pattern="\d{4}"
+              maxlength="4" autocomplete="new-password" aria-label="Confirm your 4-digit PIN" />
+
+            <p class="type-micro mt-x2 text-ghost">
+              Tap the dots to begin typing
+              &nbsp;·&nbsp; <span lang="ko">점을 탭해 입력을 시작하세요</span>
+            </p>
+
+            <p class="pin-error mt-x2" id="pin-confirm-error" role="alert" aria-live="polite"></p>
+
+          </div><!-- /#pin-confirm-panel -->
+
+
+          <!-- ── Panel 3: Success ──────────────────────────────────── -->
+          <div id="pin-success-panel" class="pin-panel" role="region" aria-label="Record protected">
+
+            <!-- Minimalist checkmark — SVG drawn in CSS/inline -->
+            <div class="pin-success-icon mt-x8" aria-hidden="true">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                <circle cx="28" cy="28" r="26" stroke="var(--color-dawn-sage,#A9B4AA)" stroke-width="1.2" />
+                <path d="M18 28.5 L25 35.5 L38 21" stroke="var(--color-deep-sepia,#3E3731)" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+
+            <h2 class="type-h2 mt-x5" style="font-weight:400; text-align:center;" lang="en">
+              Record Protected
+            </h2>
+            <p class="type-h2 mt-x1" style="font-weight:300; font-size:clamp(18px,2vw,24px); text-align:center;"
+              lang="ko">
+              기록이 보호되었습니다
+            </p>
+
+            <p class="type-body text-mid mt-x3" style="max-width:340px; line-height:1.75; text-align:center;">
+              Your journal entry is now secured.<br>Only your PIN can unlock it.<br>
+              <span lang="ko" style="display:inline-block; margin-top:8px;">저널이 보호됐어요. PIN만이 잠금을 해제할 수 있어요.</span>
+            </p>
+
+            <div class="mt-x6"
+              style="display:flex; flex-direction:column; align-items:center; gap:var(--sori-x-2,24px); width:100%;">
+
+              <p class="type-caption text-ghost" id="pin-success-redirect-msg" style="margin-bottom: -8px;">
+                Redirecting to home in 3 seconds... &nbsp;·&nbsp; <span lang="ko">3초 뒤 홈으로 돌아갑니다...</span>
+              </p>
+
+              <button class="voice-record-btn" type="button" id="pin-success-archive-cta"
+                aria-label="View archive — 기록 보관함 보기">
+                → &nbsp; View Archive
+                &nbsp;·&nbsp; <span lang="ko">기록 보관함 보기</span>
+              </button>
+              <button class="pin-back-btn" type="button" id="pin-success-home-cta" style="opacity:0.55;">
+                ← Back to home
+                &nbsp;·&nbsp; <span lang="ko">홈으로</span>
+              </button>
+            </div>
+
+          </div><!-- /#pin-success-panel -->
+
+        </div><!-- /.sori-container -->
+      </section>
+    </div><!-- /#step-pin-calendar -->
+
+
+  </main><!-- /#sori-app -->
+
+
+  <!-- ================================================================
+       SCRIPT LOADING ORDER (updated for v2 flow)
+
+       1. sori-resonance.js  — ES module. Three.js canvas in #gateway.
+                               Attaches audio-start listener to #nav-enter-cta.
+       2. sori-voice.js      — v2. MediaRecorder + silence detection +
+                               fetch /api/analyze + UI population.
+                               Must load before sori-flow.js.
+       3. sori-archive.js    — Builds calendar DOM. Must complete before
+                               sori-motion.js observes .fade-in-up nodes.
+       4. sori-flow.js       — v2. SPA Step Controller. Emotion card → voice
+                               step transition. Journal/archive wiring.
+       5. sori-motion.js     — MUST load last. Queries all .fade-in-up nodes.
+       ================================================================ -->
+  <script type="module" src="sori-resonance.js"></script>
+  <script src="sori-voice.js"></script>
+  <script src="sori-archive.js"></script>
+  <script src="sori-flow.js"></script>
+  <script src="sori-motion.js"></script>
+
+  <!-- ================================================================
+       MODAL CONTROLLER — "What is Sori?"
+       Pure vanilla JS. No dependencies.
+
+       Scroll lock is managed exclusively by sori-flow.js via the
+       .scroll-locked class on <html>. The modal does NOT touch
+       body/html overflow — opening the modal from the gateway keeps
+       the scroll lock; opening from any other step has no scroll
+       side-effect because the modal is position:fixed over the page.
+
+       Focus trap: Tab / Shift-Tab cycle within the modal.
+       Keyboard: Escape closes.
+       Pointer: click outside the card closes.
+       ================================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      const backdrop = document.getElementById('modal-backdrop');
+      const openBtn = document.getElementById('nav-what-is-sori');
+      const closeBtn = document.getElementById('modal-close');
+
+      if (!backdrop || !openBtn || !closeBtn) {
+        console.warn('[sori-modal] ⚠️  Required DOM elements not found');
+        return;
+      }
+
+      /* ── Collect focusable children inside the modal ──────────── */
+      function _getFocusable() {
+        return Array.from(backdrop.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ));
+      }
+
+      /* ── Open ─────────────────────────────────────────────────── */
+      function openModal() {
+        backdrop.classList.add('is-open');
+        openBtn.setAttribute('aria-expanded', 'true');
+        // Delay focus by two frames so the CSS entrance animation starts first
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { closeBtn.focus(); });
+        });
+        console.log('[sori-modal] ✅ Modal opened');
+      }
+
+      /* ── Close ────────────────────────────────────────────────── */
+      function closeModal() {
+        backdrop.classList.remove('is-open');
+        openBtn.setAttribute('aria-expanded', 'false');
+        openBtn.focus();
+        console.log('[sori-modal] ✅ Modal closed');
+      }
+
+      /* ── Focus trap (Tab / Shift-Tab cycles within modal) ──────── */
+      backdrop.addEventListener('keydown', function (e) {
+        if (!backdrop.classList.contains('is-open')) return;
+
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeModal();
+          return;
+        }
+
+        if (e.key !== 'Tab') return;
+
+        const focusable = _getFocusable();
+        if (!focusable.length) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+      /* ── Backdrop click — only close when clicking the scrim itself */
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeModal();
+      });
+
+      /* ── Wire the trigger and close buttons ────────────────────── */
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+
+      console.log('[sori-modal] ✅ Controller initialised');
+    }());
+  </script>
+
+</body>
+
+</html>

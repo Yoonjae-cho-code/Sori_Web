@@ -1,0 +1,22 @@
+<!--
+  SORI · favicon fix
+  Add ONE of the following to your <head> in index.html.
+
+  ── OPTION A (quickest) — suppress the request entirely ──────────────────
+  <link rel="icon" href="data:,">
+
+  ── OPTION B — use an inline SVG favicon (shows a music note in the tab) ─
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+
+  ── OPTION C — serve from Express (add to server.js) ─────────────────────
+  app.get('/favicon.ico', (_req, res) => res.status(204).end());
+
+  Recommendation: Use Option A or B in index.html — it requires no server
+  change and works with Live Server. Option C is useful if you ever serve
+  index.html directly from Express.
+
+  WHERE TO PUT IT — paste immediately after the <title> tag:
+-->
+
+<title>Sori · 소리 — A Space to Hear Yourself</title>
+<link rel="icon" href="data:,">   <!-- ← add this line -->

@@ -1,0 +1,1737 @@
+/* ============================================================
+   SORI · 소리 · GLOBAL CSS DESIGN SYSTEM
+   Brand Guidelines v7.0 · Website Plan v3.1
+   Cho Yoonjae · LASALLE College of the Arts · 2026
+   ============================================================
+   ⛔ SYSTEM-WIDE PROHIBITIONS (enforced at token level)
+      — Pure Black  #000000  : PERMANENTLY EXCLUDED
+      — Pure White  #FFFFFF  : PERMANENTLY EXCLUDED
+      — font-weight 700+     : PERMANENTLY FORBIDDEN
+      — border-radius 0      : PERMANENTLY FORBIDDEN
+      — border-radius 50%    : PERMANENTLY FORBIDDEN
+      — Progress bars / %    : NEVER RENDERED
+      — Notification badges  : NEVER RENDERED
+      — Social share buttons : NEVER RENDERED
+   ============================================================ */
+
+
+/* ============================================================
+   § 0  GOOGLE FONTS IMPORT
+   Playfair Display · DM Sans · Noto Serif KR · Noto Sans KR
+   ⛔ System defaults (Arial, Helvetica, Georgia) are forbidden
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500&family=Noto+Serif+KR:wght@400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+/*
+   Font weight reference — allowed values only:
+   ─────────────────────────────────────────────────────────
+   Playfair Display  →  400 (Regular), 500 (Medium), 600 (SemiBold)
+   DM Sans           →  300 (Light), 400 (Regular), 500 (Medium)
+   Noto Serif KR     →  400 (Regular), 500 (Medium)
+   Noto Sans KR      →  300 (Light), 400 (Regular), 500 (Medium)
+   ─────────────────────────────────────────────────────────
+   ⛔ 700 (Bold) and above: PERMANENTLY FORBIDDEN in all contexts
+      Hierarchy is achieved through scale and tracking — never weight.
+*/
+
+
+/* ============================================================
+   § 1  DESIGN TOKENS — :root VARIABLES
+   ============================================================ */
+
+:root {
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.1  SPACING SYSTEM — × Unit (x-height)
+     Source: Brand Guidelines §02, Website Plan §7.7
+
+     × = x-height of the lowercase "o" in the Sori wordmark.
+     Base value: 12px — apply clamp() for responsive contexts.
+     ALL padding, margin, and gap must be multiples of --sori-x.
+     No spacing value may appear outside this system.
+     ────────────────────────────────────────────────────────── */
+
+  --sori-x: 12px;
+  /*  ×    =  12px  base unit */
+  --sori-x-2: calc(var(--sori-x) * 2);
+  /*  2×   =  24px  logo clear space minimum */
+  --sori-x-3: calc(var(--sori-x) * 3);
+  /*  3×   =  36px  hero wordmark protection */
+  --sori-x-4: calc(var(--sori-x) * 4);
+  /*  4×   =  48px  section transition gap */
+  --sori-x-5: calc(var(--sori-x) * 5);
+  /*  5×   =  60px  */
+  --sori-x-6: calc(var(--sori-x) * 6);
+  /*  6×   =  72px  */
+  --sori-x-8: calc(var(--sori-x) * 8);
+  /*  8×   =  96px  section block padding */
+  --sori-x-10: calc(var(--sori-x) * 10);
+  /* 10×   = 120px  */
+  --sori-x-12: calc(var(--sori-x) * 12);
+  /* 12×   = 144px  void section padding */
+
+  /*
+     Context mapping:
+     ──────────────────────────────────────────────────────────
+     Wordmark clear space minimum   →  --sori-x     (all sides)
+     Wordmark clear space standard  →  --sori-x-2   (digital standard)
+     Hero: wordmark to adjacent     →  --sori-x-3   (Bilingual Gateway, Peaceful Exit)
+     Mirror Card internal padding   →  --sori-x-2   (min 2× on all sides)
+     Section transition spacing     →  --sori-x-4   (post-reflection transition)
+     Generous clear space           →  --sori-x-4   (editorial, packaging, exhibition)
+  */
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.2  COLOR PALETTE — 7-Color System
+     Source: Brand Guidelines §04, Website Plan §7.2
+
+     Application Ratio  (any single surface, screen, or spread):
+       55%  Silky Cream     — Primary Canvas
+       20%  Oatmeal Beige   — Secondary Canvas
+       10%  Sepia tones     — All typographic layers
+        5%  Dawn Sage       — Single signal per screen (BUCK Rule)
+       <1%  Mother-of-Pearl — Hover / interactive feedback only
+
+     ⛔ ABSOLUTE EXCLUSIONS:
+        Pure Black  #000000   PERMANENTLY EXCLUDED
+        Pure White  #FFFFFF   PERMANENTLY EXCLUDED
+        High-chroma (neon, vivid blue, hot pink, saturated red)
+        Gradients only between adjacent palette members
+     ────────────────────────────────────────────────────────── */
+
+  /* ── 55% Primary Canvas ────────────────────────────────────
+     Silky Cream · 실키 크림
+     Use:  ALL section backgrounds, all void space, scrollable canvas.
+           At any scroll position, Silky Cream must be visually dominant. */
+  --color-silky-cream: #F6F4F0;
+
+  /* ── 20% Secondary Canvas ──────────────────────────────────
+     Oatmeal Beige · 오트밀 베이지
+     Use:  Mirror Card bg, Emotion Cards, panels, secondary containers.
+     ⚠️  HEX confirmed v7.0: #E3DCCB — NOT the v3.0 value #EDE8DF */
+  --color-oatmeal-beige: #E3DCCB;
+
+  /* ── 5% Signal Color · BUCK Punctuation Rule ───────────────
+     Dawn Sage · 돈 세이지
+     Use:  Exactly ONE element per screen. Marks emotional weight — not
+           information hierarchy. When Dawn Sage appears on multiple
+           elements, it ceases to function as a signal.
+     ⚠️  HEX confirmed v7.0: #A9B4AA — NOT the v3.0 value #A8B5A2 */
+  --color-dawn-sage: #A9B4AA;
+
+  /* ── <1% Tactile Accent ─────────────────────────────────────
+     Mother-of-Pearl · 마더오브펄
+     Use:  Hover states, toggle feedback ONLY. Never on static
+           backgrounds or text. Never in print layouts.
+     ⚠️  HEX confirmed v7.0: #E8E2E5 — NOT the v3.0 value #E8E5DF */
+  --color-mother-of-pearl: #E8E2E5;
+
+  /* ── 5% of surface · Typography + Primary Mark ─────────────
+     딥 퍼플
+     Use:  Headlines, wordmark, all primary calls to action. */
+  --color-deep-purple: #311F5D;
+
+  /* ── Within 10% typography budget ──────────────────────────
+     딥 퍼플
+     Use:  Body copy, secondary labels.
+     NEW in v7.0: absent from v3.0 — required for type hierarchy. */
+  --color-deep-purple: #311F5D;
+
+  /* ── Within 10% typography budget ──────────────────────────
+     Ghost Sepia · 고스트 세피아
+     Use:  Captions, hairline rules, dividers, micro-copy, timestamps.
+     NEW in v7.0: replaces Deep Sepia-at-opacity approach (not print-safe). */
+  --color-deep-purple: #311F5D;
+
+  /* ── Permitted gradients (adjacent palette members only) ─── */
+  --gradient-canvas: linear-gradient(180deg, var(--color-silky-cream), var(--color-oatmeal-beige));
+  --gradient-warm: linear-gradient(180deg, var(--color-oatmeal-beige), var(--color-silky-cream));
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.3  EMOTION COLOR SYSTEM v2.1
+     Source: Website Plan §7.5
+
+     These 8 colors are EXCLUSIVELY for Emotion Card backgrounds.
+     They operate independently from the main brand palette.
+     They are NEVER used on text, rules, or structural elements.
+     ────────────────────────────────────────────────────────── */
+
+  --emotion-burned-out: #C9B8A8;
+  /* 지쳐        — 부정 ① */
+  --emotion-anxious: #A9C2D6;
+  /* 불안해      — 부정 ② */
+  --emotion-numb: #B0C0B0;
+  /* 멍해        — 부정 ③ */
+  --emotion-meh: #C8BFA8;
+  /* 그냥 그래   — 중립 ① */
+  --emotion-lonely: #B8B0D0;
+  /* 외로워      — 중립 ② */
+  --emotion-okay: #D0BFA0;
+  /* 오늘은 괜찮아 — 긍정 ① */
+  --emotion-lighter: #A8C8B8;
+  /* 한결 나아진  — 긍정 ② */
+  --emotion-proud: #D0A8B8;
+  /* 나 잘하고 있어 — 긍정 ③ */
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.4  TYPOGRAPHY — FONT STACKS
+     Source: Brand Guidelines §03, Website Plan §7.6
+
+     Pairing rule:
+       Playfair Display ↔ Noto Serif KR   (display & editorial)
+       DM Sans          ↔ Noto Sans KR    (functional UI, body, captions)
+
+     ⛔ Condensed or expanded width variations: FORBIDDEN
+     ⛔ Any typeface outside this system: FORBIDDEN
+        (Includes system defaults: Arial, Helvetica, Georgia)
+     ⛔ Synthetic tracking on Korean text: FORBIDDEN
+     ────────────────────────────────────────────────────────── */
+
+  --font-display: 'Playfair Display', 'Noto Serif KR', serif;
+  --font-sans: 'DM Sans', 'Noto Sans KR', sans-serif;
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.5  TYPOGRAPHY — TYPE SCALE (1:5 Rule)
+     Source: Brand Guidelines §03, Website Plan §7.6
+
+     The 1:5 Rule:
+       Every layout must contain ≥ 1 element at D1/D2 (Display) scale
+       and ≥ 1 element at Caption scale.
+       The size ratio between them must be no less than 5:1.
+       This ratio IS the design — not a preference, a structure.
+
+     Sections with only body copy are incomplete layouts.
+     Sections with no scale contrast are guidelines violations.
+
+     ⛔ font-weight 700+            : PERMANENTLY FORBIDDEN
+     ⛔ Playfair Display ALL CAPS   : FORBIDDEN — stroke contrast breaks
+     ────────────────────────────────────────────────────────── */
+
+  /* D1 · Display — Playfair Display Regular · 64–96px */
+  --type-d1-size: clamp(64px, 7.5vw, 96px);
+  --type-d1-weight: 400;
+  /* Regular — the only permitted weight at D1 */
+  --type-d1-tracking: -0.02em;
+  --type-d1-leading: 1.1;
+  --type-d1-color: var(--color-deep-sepia);
+
+  /* D2 · Editorial Italic — Playfair Display Regular Italic · 36–56px */
+  --type-d2-size: clamp(36px, 4.5vw, 56px);
+  --type-d2-weight: 400;
+  --type-d2-tracking: 0em;
+  --type-d2-leading: 1.2;
+  --type-d2-color: var(--color-deep-sepia);
+
+  /* H1 · Section Title — Playfair Display Regular · 28–36px */
+  --type-h1-size: clamp(28px, 3vw, 36px);
+  --type-h1-weight: 400;
+  --type-h1-tracking: +0.01em;
+  --type-h1-leading: 1.3;
+  --type-h1-color: var(--color-deep-sepia);
+
+  /* H2 · Subhead — DM Sans Medium · 18–22px */
+  --type-h2-size: clamp(18px, 2vw, 22px);
+  --type-h2-weight: 500;
+  /* Medium — maximum permitted weight */
+  --type-h2-tracking: +0.06em;
+  --type-h2-leading: 1.5;
+  --type-h2-color: var(--color-deep-sepia);
+
+  /* P · Body — DM Sans Light 300 · 14–16px */
+  --type-body-size: clamp(14px, 1.5vw, 16px);
+  --type-body-weight: 300;
+  /* Light */
+  --type-body-tracking: +0.01em;
+  --type-body-leading: 1.8;
+  --type-body-color: var(--color-mid-sepia);
+
+  /* Caption / Label — DM Sans Regular · 10–12px */
+  --type-caption-size: clamp(10px, 1.1vw, 12px);
+  --type-caption-weight: 400;
+  --type-caption-tracking: +0.12em;
+  --type-caption-leading: 1.6;
+  --type-caption-color: var(--color-mid-sepia);
+
+  /* Micro / Legal — DM Sans Light · 9–10px */
+  --type-micro-size: clamp(9px, 0.9vw, 10px);
+  --type-micro-weight: 300;
+  --type-micro-tracking: +0.08em;
+  --type-micro-color: var(--color-ghost-sepia);
+
+  /*
+     Decorative Numbers (section counts, dates):
+     → DM Sans Light at Caption scale. NEVER in Playfair.
+     → Variable alias for clarity:
+  */
+  --type-numeral-font: var(--font-sans);
+  --type-numeral-size: var(--type-caption-size);
+  --type-numeral-weight: 300;
+  --type-numeral-color: var(--color-ghost-sepia);
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.6  BORDER RADIUS — ORGANIC SHAPE GRAMMAR
+     Source: Website Plan §7.3
+
+     Permitted range: 24px – 32px ONLY.
+     Any value outside this range is a design violation.
+
+     ⛔ border-radius: 0    — perfect right angle : PERMANENTLY FORBIDDEN
+     ⛔ border-radius: 50%  — perfect circle      : PERMANENTLY FORBIDDEN
+     ────────────────────────────────────────────────────────── */
+
+  --radius-sm: 24px;
+  /* Resource Card · Well-being FAB */
+  --radius-md: 28px;
+  /* Emotion Card */
+  --radius-lg: 32px;
+  /* Mirror Card · Modal · Overlay */
+  --radius-voice: 28px;
+  /* Voice Record Button (26–30px range) */
+  /* Well-being Bridge Panel (slide-up): 32px 32px 0 0
+     — declared inline or in component class, not as a variable,
+       to make the intentional bottom-flat form explicit in markup. */
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.7  TRANSITIONS & ANIMATION
+     ────────────────────────────────────────────────────────── */
+
+  --transition-base: 200ms ease-in-out;
+  /* standard micro-interactions */
+  --transition-slow: 400ms ease-in-out;
+  /* card entrances, panel reveals */
+  --transition-breath: 3000ms ease-in-out;
+  /* Resonance Field breath pulse */
+  --transition-reveal: 800ms cubic-bezier(0.25, 1, 0.5, 1);
+  /* OEM scroll-triggered reveals */
+
+
+  /* ──────────────────────────────────────────────────────────
+     § 1.8  Z-INDEX LAYERS
+     Territory 01 (Three.js Resonance Field) ALWAYS below text.
+     ────────────────────────────────────────────────────────── */
+
+  --z-canvas: 0;
+  /* Three.js canvas — behind ALL typographic layers */
+  --z-content: 10;
+  --z-card: 20;
+  --z-panel: 30;
+  --z-modal: 40;
+  --z-overlay: 50;
+}
+
+
+/* ============================================================
+   § 2  RESPONSIVE OVERRIDES
+   Base unit scales down on mobile while preserving ratios.
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .emotion-card-container {
+    /* 이름을 sori-global.css와 일치시킴 */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --sori-x: 8px;
+    /* Small screen base unit */
+  }
+}
+
+
+/* ============================================================
+   § 3  CSS RESET — SORI-SAFE
+   No #000000 or #FFFFFF anywhere. All color via tokens.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  /* 300 DM Sans Light */
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
+  color: var(--color-mid-sepia);
+  background-color: var(--color-silky-cream);
+  /* 55% rule — dominant at all times */
+  min-height: 100dvh;
+}
+
+img,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  appearance: none;
+}
+
+a {
+  color: var(--color-mid-sepia);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-deep-sepia);
+}
+
+
+/* ============================================================
+   § 4  TYPOGRAPHY SYSTEM
+   Source: Brand Guidelines §03, Website Plan §7.6
+   ============================================================ */
+
+/* ── D1 · Display ──────────────────────────────────────────── */
+.type-d1 {
+  font-family: var(--font-display);
+  font-size: var(--type-d1-size);
+  font-weight: var(--type-d1-weight);
+  /* 400 Regular — NEVER bold */
+  font-style: normal;
+  line-height: var(--type-d1-leading);
+  letter-spacing: var(--type-d1-tracking);
+  color: var(--type-d1-color);
+  text-transform: none;
+  /* ⛔ ALL CAPS forbidden for Playfair */
+}
+
+/* Korean D1 — Noto Serif KR at optically matching x-height */
+:lang(ko) .type-d1,
+.type-d1:lang(ko) {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  /* ⛔ No synthetic tracking on Korean */
+}
+
+
+/* ── D2 · Editorial Italic ─────────────────────────────────── */
+.type-d2 {
+  font-family: var(--font-display);
+  font-size: var(--type-d2-size);
+  font-weight: var(--type-d2-weight);
+  font-style: italic;
+  /* Playfair Display Regular Italic */
+  line-height: var(--type-d2-leading);
+  letter-spacing: var(--type-d2-tracking);
+  color: var(--type-d2-color);
+}
+
+:lang(ko) .type-d2,
+.type-d2:lang(ko) {
+  font-family: 'Noto Serif KR', serif;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+
+/* ── H1 · Section Title ────────────────────────────────────── */
+.type-h1,
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--type-h1-size);
+  font-weight: var(--type-h1-weight);
+  font-style: normal;
+  line-height: var(--type-h1-leading);
+  letter-spacing: var(--type-h1-tracking);
+  color: var(--type-h1-color);
+}
+
+:lang(ko) .type-h1,
+h1:lang(ko) {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+
+/* ── H2 · Subhead ──────────────────────────────────────────── */
+.type-h2,
+h2 {
+  font-family: var(--font-sans);
+  font-size: var(--type-h2-size);
+  font-weight: var(--type-h2-weight);
+  /* 500 Medium — max permitted */
+  line-height: var(--type-h2-leading);
+  letter-spacing: var(--type-h2-tracking);
+  color: var(--type-h2-color);
+}
+
+:lang(ko) .type-h2,
+h2:lang(ko) {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+
+/* ── Body / P ──────────────────────────────────────────────── */
+.type-body,
+p {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  /* 300 Light */
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
+  color: var(--type-body-color);
+}
+
+/* ⛔ Centred body copy longer than 3 lines is forbidden.
+   Use .text-center only on short copy (≤ 3 lines). */
+.text-center {
+  text-align: center;
+}
+
+:lang(ko) .type-body,
+p:lang(ko) {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+
+/* ── Caption / Label ───────────────────────────────────────── */
+.type-caption,
+label,
+figcaption,
+caption {
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--type-caption-tracking);
+  color: var(--type-caption-color);
+}
+
+:lang(ko) .type-caption,
+label:lang(ko) {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+
+/* ── Micro / Legal ─────────────────────────────────────────── */
+.type-micro {
+  font-family: var(--font-sans);
+  font-size: var(--type-micro-size);
+  font-weight: var(--type-micro-weight);
+  letter-spacing: var(--type-micro-tracking);
+  color: var(--type-micro-color);
+  /* Ghost Sepia — breathing depth */
+}
+
+:lang(ko) .type-micro {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+
+/* ── Decorative Numerals (section counts, dates) ────────────
+   ⛔ Must be DM Sans Light at Caption scale — NEVER Playfair */
+.type-numeral {
+  font-family: var(--type-numeral-font);
+  font-size: var(--type-numeral-size);
+  font-weight: var(--type-numeral-weight);
+  color: var(--type-numeral-color);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ── Editorial Italic Interruption (FISK rule) ──────────────
+   Italic may interrupt a roman sentence mid-phrase.
+   The interruption IS the punctuation. */
+.type-italic-interrupt {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+
+/* ============================================================
+   § 5  LAYOUT PRIMITIVES
+   All spacing values are multiples of --sori-x.
+   ============================================================ */
+
+/* ── Container ──────────────────────────────────────────────── */
+.sori-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--sori-x-4);
+  /* 4× = 48px sides */
+}
+
+@media (max-width: 768px) {
+  .sori-container {
+    padding-inline: var(--sori-x-2);
+    /* 2× = 24px sides on mobile */
+  }
+}
+
+
+/* ── Section Base — 55% void enforced via ample padding ─────── */
+.sori-section {
+  padding-block: var(--sori-x-8);
+  /* 8× = 96px top/bottom */
+  background-color: var(--color-silky-cream);
+  /* Primary Canvas */
+}
+
+.sori-section--warm {
+  background-color: var(--color-oatmeal-beige);
+  /* 20% canvas — secondary layer */
+}
+
+/* Territory 04: minimum 60% void surfaces (Bilingual Gateway, Peaceful Exit) */
+.sori-section--void {
+  padding-block: var(--sori-x-12);
+  /* 12× = 144px — enforces void ratio */
+  min-height: 100svh;
+}
+
+
+/* ── Spacing Stack ──────────────────────────────────────────── */
+.sori-stack>*+* {
+  margin-top: var(--sori-x-3);
+}
+
+/* 3× = 36px  */
+.sori-stack--tight>*+* {
+  margin-top: var(--sori-x);
+}
+
+/* 1× = 12px */
+.sori-stack--loose>*+* {
+  margin-top: var(--sori-x-6);
+}
+
+/* 6× = 72px */
+
+
+/* ============================================================
+   § 6  COMPONENT STYLES
+   ============================================================ */
+
+/* ── 6.1  Mirror Card ──────────────────────────────────────
+   Source: Website Plan Appendix A
+   Background: Oatmeal Beige #E3DCCB
+   Padding: min 2× on all sides (--sori-x-2 = 24px)
+   border-radius: 32px (--radius-lg)
+   Fundamental Feeling: D2 scale, Playfair Italic
+   Single Affirmation: Body scale, DM Sans Light, Mid Sepia
+   ─────────────────────────────────────────────────────────── */
+
+.mirror-card {
+  background-color: var(--color-oatmeal-beige);
+  border-radius: var(--radius-lg);
+  /* 32px */
+  padding: var(--sori-x-2);
+  /* min 2× = 24px on all sides */
+}
+
+.mirror-card__feeling {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 40px);
+  /* D2 scale per Appendix A */
+  font-weight: 400;
+  /* Regular Italic — never bold */
+  font-style: italic;
+  line-height: var(--type-d2-leading);
+  letter-spacing: var(--type-d2-tracking);
+  color: var(--color-deep-sepia);
+}
+
+.mirror-card__feeling:lang(ko) {
+  font-family: 'Noto Serif KR', serif;
+  font-style: normal;
+  letter-spacing: 0;
+  /* ⛔ No synthetic tracking */
+}
+
+.mirror-card__affirmation {
+  /* Quieter than Feeling — Mid Sepia lowers visual weight */
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.5vw, 16px);
+  /* Body scale */
+  font-weight: 300;
+  /* DM Sans Light */
+  line-height: var(--type-body-leading);
+  color: var(--color-mid-sepia);
+  /* Deliberately quieter */
+  margin-top: var(--sori-x-2);
+  /* 2× separation from Feeling */
+}
+
+.mirror-card__affirmation:lang(ko) {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+
+/* ── 6.2  Emotion Card Grid — Tactile Cards v2 ──────────────
+   Source: Website Plan §7.5 · Brand Guidelines §05
+   Replaces: horizontal bar layout + flip module (v1)
+
+   Design intent:
+     Cards sit on Silky Cream so they dissolve into the canvas —
+     the border is the only edge. The icon does the expressive work.
+     Active state uses Dawn Sage border + Oatmeal Beige fill as the
+     single BUCK signal within the emotion register.
+
+   Grid: 4 columns desktop → 2 columns mobile (≤ 768px).
+   Transition: 300ms ease-in-out — deliberate, never abrupt.
+
+   Color mapping (no new tokens required):
+     Primary label   → --color-deep-sepia  (10% typography budget)
+     Description     → --color-mid-sepia   (body copy register)
+     Card border     → --color-ghost-sepia (hairline rule weight)
+     Active border   → --color-dawn-sage   (BUCK signal — 1 per screen)
+     Active bg       → --color-oatmeal-beige (20% secondary canvas)
+     Icon stroke     → currentColor (inherits mid-sepia; deep-sepia when active)
+   ─────────────────────────────────────────────────────────── */
+
+/* ── Container — 4-col grid, breathing gap ─────────────────── */
+.emotion-card-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sori-x-2);
+  /* 24px — card-to-card breathing room */
+}
+
+@media (max-width: 900px) {
+  .emotion-card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .emotion-card-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sori-x);
+    /* Tighter on small screens */
+  }
+}
+
+
+/* ── Card base ──────────────────────────────────────────────── */
+.emotion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sori-x);
+  /* 12px between icon / label / desc */
+  padding: var(--sori-x-2);
+  /* 24px — minimum comfortable internal spacing */
+
+  background-color: var(--color-silky-cream);
+  border: 1px solid var(--color-ghost-sepia);
+  border-radius: var(--radius-sm);
+  /* 24px — organic, within permitted range */
+
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+
+  /* Single compound transition — no abrupt jumps */
+  transition:
+    border-color 300ms ease-in-out,
+    background-color 300ms ease-in-out,
+    box-shadow 300ms ease-in-out,
+    transform 300ms ease-in-out;
+}
+
+/* Hover — soft warmth, not colour-heavy */
+.emotion-card:hover {
+  border-color: var(--color-dawn-sage);
+  background-color: var(--color-oatmeal-beige);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(62, 55, 49, 0.06);
+  /* Deep Sepia shadow — never pure black */
+}
+
+/* Active — BUCK signal in border, warm canvas fill */
+.emotion-card--active {
+  border-color: var(--color-dawn-sage);
+  border-width: 1.5px;
+  background-color: var(--color-oatmeal-beige);
+  box-shadow: 0 2px 12px rgba(169, 180, 170, 0.25);
+  /* Dawn Sage penumbra */
+  transform: translateY(-1px);
+}
+
+/* Active icon — shifts from mid-sepia to deep-sepia for contrast */
+.emotion-card--active .emotion-card__icon {
+  color: var(--color-deep-sepia);
+}
+
+/* Active label — deepens to full heading weight */
+.emotion-card--active .emotion-card__label {
+  color: var(--color-deep-sepia);
+}
+
+
+/* ── Icon container ──────────────────────────────────────────── */
+.emotion-card__icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: var(--color-mid-sepia);
+  /* SVG inherits via currentColor */
+  transition: color 300ms ease-in-out;
+}
+
+.emotion-card__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+
+/* ── Label — #hashtag style, caption scale ───────────────────── */
+.emotion-card__label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  /* clamp(10px, 1.1vw, 12px) */
+  font-weight: 400;
+  letter-spacing: var(--type-caption-tracking);
+  /* +0.12em */
+  color: var(--color-deep-sepia);
+  line-height: var(--type-caption-leading);
+  transition: color 300ms ease-in-out;
+}
+
+.emotion-card__label span[lang="ko"] {
+  font-family: 'Noto Sans KR', sans-serif;
+  letter-spacing: 0;
+  /* ⛔ No synthetic tracking on Korean */
+}
+
+
+/* ── Description — micro scale, quieter register ─────────────── */
+.emotion-card__desc {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: var(--type-micro-size);
+  /* clamp(9px, 0.9vw, 10px) */
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0;
+  color: var(--color-mid-sepia);
+  margin: 0;
+}
+
+
+
+
+/* ── 6.3  Resource Card ────────────────────────────────────
+   border-radius: 24px (--radius-sm)
+   ─────────────────────────────────────────────────────────── */
+
+.resource-card {
+  background-color: var(--color-oatmeal-beige);
+  border-radius: var(--radius-sm);
+  /* 24px */
+  padding: var(--sori-x-2);
+}
+
+
+/* ── 6.4  Well-being FAB ───────────────────────────────────
+   Source: Website Plan §7.2, §7.3
+   Dawn Sage: the BUCK signal — 1 element per screen only.
+   border-radius: 24px ≠ circle (50% is forbidden)
+   ─────────────────────────────────────────────────────────── */
+
+.fab-wellbeing {
+  background-color: var(--color-dawn-sage);
+  /* Signal — 1 per screen */
+  border-radius: var(--radius-sm);
+  /* 24px — NOT 50% */
+  padding: var(--sori-x) var(--sori-x-2);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: 400;
+  letter-spacing: var(--type-caption-tracking);
+  color: var(--color-deep-sepia);
+  transition: background-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.fab-wellbeing:hover {
+  background-color: var(--color-mother-of-pearl);
+  /* Tactile feedback */
+}
+
+.fab-wellbeing:lang(ko) {
+  font-family: 'Noto Sans KR', sans-serif;
+  letter-spacing: 0;
+}
+
+
+/* ── 6.5  Well-being Bridge Panel ─────────────────────────
+   Source: Website Plan §7.3
+   Slide-up panel: border-radius top only — 32px 32px 0 0
+   The flat bottom is the organic landing point, not a right angle.
+   ─────────────────────────────────────────────────────────── */
+
+.wellbeing-panel {
+  background-color: var(--color-silky-cream);
+  border-radius: 32px 32px 0 0;
+  /* Top rounded, bottom edge = panel contact */
+  padding: var(--sori-x-4) var(--sori-x-3);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-panel);
+}
+
+
+/* ── 6.6  Voice Record Button ──────────────────────────────
+   Source: Website Plan §7.3
+   border-radius: 28px (within the 26–30px voice range)
+   Breathing animation active state — mirrors Resonance Field
+   ─────────────────────────────────────────────────────────── */
+
+.voice-record-btn {
+  border-radius: var(--radius-voice);
+  /* 28px */
+  padding: var(--sori-x) var(--sori-x-3);
+  border: 1.5px solid var(--color-ghost-sepia);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--type-caption-size);
+  color: var(--color-mid-sepia);
+  transition: border-color var(--transition-base),
+    transform var(--transition-slow);
+}
+
+.voice-record-btn:hover {
+  border-color: var(--color-dawn-sage);
+}
+
+@keyframes sori-breathe {
+
+  0%,
+  100% {
+    transform: scale(0.95);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Breathing pulse — echoes Territory 01 Resonance Field */
+.voice-record-btn--active {
+  animation: sori-breathe var(--transition-breath) ease-in-out infinite;
+}
+
+
+/* ── 6.7  Modal / Overlay ──────────────────────────────────
+   border-radius: 32px (--radius-lg)
+   Overlay uses Deep Sepia at 40% — NOT black
+   ─────────────────────────────────────────────────────────── */
+
+.sori-modal {
+  background-color: var(--color-silky-cream);
+  border-radius: var(--radius-lg);
+  /* 32px */
+  padding: var(--sori-x-4);
+  z-index: var(--z-modal);
+}
+
+/* ⛔ rgba(0,0,0,…) is forbidden — use Deep Sepia at opacity */
+.sori-overlay {
+  background-color: rgba(62, 55, 49, 0.4);
+  /* #3E3731 Deep Sepia 40% */
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+}
+
+
+/* ── 6.8  Territory 04 · Header / Wordmark Zone ───────────
+   Source: Brand Guidelines §05, Website Plan §7.4
+   Void requirement: ≥ 60% of surface
+   3× clear space between wordmark and any adjacent UI element
+   ─────────────────────────────────────────────────────────── */
+
+.sori-header {
+  display: flex;
+  align-items: center;
+  padding: var(--sori-x-2) var(--sori-x-4);
+  background-color: var(--color-silky-cream);
+}
+
+.sori-wordmark {
+  /* Wordmark protection: minimum × clear space on all sides */
+  margin: var(--sori-x);
+}
+
+
+/* ============================================================
+   § 7  GRAPHIC MOTIF SUPPORT CLASSES
+   ============================================================ */
+
+/* ── Territory 01 · Three.js Resonance Field Canvas ────────
+   Source: Brand Guidelines §05, Website Plan §7.4
+   Canvas ALWAYS z-index 0 — behind ALL typographic layers.
+   Dawn Sage #A9B4AA at opacity 0.6 — applied via Three.js material.
+   ─────────────────────────────────────────────────────────── */
+
+.resonance-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+  /* 0 — always below text */
+  pointer-events: none;
+  opacity: 0.6;
+  /* Territory 01 spec */
+  /* Three.js MeshPhongMaterial color: #A9B4AA (Dawn Sage) */
+}
+
+
+/* ── Territory 02 · Fluid Thread SVG ───────────────────────
+   Source: Brand Guidelines §05, Website Plan §7.4
+   Single continuous line — Ghost Sepia, 0.5pt stroke.
+   Hand-drawn SVG path data — imperfection is a quality signal.
+   Rule: exactly 1 Thread per screen. Cannot coexist with Territory 01.
+   ─────────────────────────────────────────────────────────── */
+
+.fluid-thread {
+  position: absolute;
+  pointer-events: none;
+  z-index: var(--z-content);
+  stroke: var(--color-ghost-sepia);
+  stroke-width: 0.5px;
+  /* 0.5–1pt per spec */
+  fill: none;
+  opacity: 0.5;
+  /* 0.4–0.6 range per spec */
+}
+
+/* Thread overlay on photography: 25–35% opacity */
+.fluid-thread--photo {
+  opacity: 0.3;
+}
+
+
+/* ── Territory 04 · Typographic Negative Space ──────────────
+   Source: Brand Guidelines §05, Website Plan §7.4 (FISK Method)
+   Minimum 60% void — enforced via padding and content restrictions.
+   ─────────────────────────────────────────────────────────── */
+
+.t04-layout {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-start;
+  padding: var(--sori-x-8);
+  background-color: var(--color-silky-cream);
+  /* The space between the display type and the edge is the composition. */
+}
+
+.t04-layout__headline {
+  /* D1 scale — carries the silence */
+  font-family: var(--font-display);
+  font-size: var(--type-d1-size);
+  font-weight: 400;
+  line-height: var(--type-d1-leading);
+  letter-spacing: var(--type-d1-tracking);
+  color: var(--color-deep-sepia);
+}
+
+.t04-layout__caption {
+  /* Caption-scale label in corner — the only permitted companion */
+  position: absolute;
+  top: var(--sori-x-2);
+  left: var(--sori-x-2);
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: 400;
+  letter-spacing: var(--type-caption-tracking);
+  color: var(--color-ghost-sepia);
+}
+
+
+/* ============================================================
+   § 8  HAIRLINE RULES & DIVIDERS
+   Ghost Sepia #C4B8B0, 0.5px — Territory 02 echo.
+   No straight rules for Echo Archive — use curved SVG instead.
+   ============================================================ */
+
+.sori-rule {
+  border: none;
+  border-top: 0.5px solid var(--color-ghost-sepia);
+  margin-block: var(--sori-x-3);
+}
+
+
+/* ============================================================
+   § 9  INTERACTIVE & FOCUS STATES
+   Mother-of-Pearl — <1% tactile accent.
+   ONLY on hover/focus — never static.
+   ============================================================ */
+
+:focus-visible {
+  outline: 1.5px solid var(--color-dawn-sage);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* Hover surface — tactile warmth */
+[data-interactive]:hover,
+.sori-interactive:hover {
+  background-color: var(--color-mother-of-pearl);
+  transition: background-color var(--transition-base);
+}
+
+
+/* ============================================================
+   § 10  UTILITY CLASSES — SPACING
+   All values are strict multiples of --sori-x.
+   No ad-hoc pixel values are permitted outside this system.
+   ============================================================ */
+
+/* Margin */
+.m-x1 {
+  margin: var(--sori-x);
+}
+
+.m-x2 {
+  margin: var(--sori-x-2);
+}
+
+.m-x3 {
+  margin: var(--sori-x-3);
+}
+
+.m-x4 {
+  margin: var(--sori-x-4);
+}
+
+.mt-x1 {
+  margin-top: var(--sori-x);
+}
+
+.mt-x2 {
+  margin-top: var(--sori-x-2);
+}
+
+.mt-x3 {
+  margin-top: var(--sori-x-3);
+}
+
+.mt-x4 {
+  margin-top: var(--sori-x-4);
+}
+
+.mb-x1 {
+  margin-bottom: var(--sori-x);
+}
+
+.mb-x2 {
+  margin-bottom: var(--sori-x-2);
+}
+
+.mb-x3 {
+  margin-bottom: var(--sori-x-3);
+}
+
+.mb-x4 {
+  margin-bottom: var(--sori-x-4);
+}
+
+.ml-x1 {
+  margin-left: var(--sori-x);
+}
+
+.ml-x2 {
+  margin-left: var(--sori-x-2);
+}
+
+.mr-x1 {
+  margin-right: var(--sori-x);
+}
+
+.mr-x2 {
+  margin-right: var(--sori-x-2);
+}
+
+/* Padding */
+.p-x1 {
+  padding: var(--sori-x);
+}
+
+.p-x2 {
+  padding: var(--sori-x-2);
+}
+
+.p-x3 {
+  padding: var(--sori-x-3);
+}
+
+.p-x4 {
+  padding: var(--sori-x-4);
+}
+
+.pt-x2 {
+  padding-top: var(--sori-x-2);
+}
+
+.pt-x4 {
+  padding-top: var(--sori-x-4);
+}
+
+.pb-x2 {
+  padding-bottom: var(--sori-x-2);
+}
+
+.pb-x4 {
+  padding-bottom: var(--sori-x-4);
+}
+
+/* Gap */
+.gap-x1 {
+  gap: var(--sori-x);
+}
+
+.gap-x2 {
+  gap: var(--sori-x-2);
+}
+
+.gap-x3 {
+  gap: var(--sori-x-3);
+}
+
+.gap-x4 {
+  gap: var(--sori-x-4);
+}
+
+
+/* ============================================================
+   § 11  UTILITY CLASSES — COLOR
+   ============================================================ */
+
+/* Backgrounds */
+.bg-cream {
+  background-color: var(--color-silky-cream);
+}
+
+.bg-beige {
+  background-color: var(--color-oatmeal-beige);
+}
+
+.bg-sage {
+  background-color: var(--color-dawn-sage);
+}
+
+.bg-pearl {
+  background-color: var(--color-mother-of-pearl);
+}
+
+/* Text */
+.text-deep {
+  color: var(--color-deep-sepia);
+}
+
+.text-mid {
+  color: var(--color-mid-sepia);
+}
+
+.text-ghost {
+  color: var(--color-ghost-sepia);
+}
+
+.text-sage {
+  color: var(--color-dawn-sage);
+}
+
+/* Gradients */
+.bg-gradient-canvas {
+  background: var(--gradient-canvas);
+}
+
+.bg-gradient-warm {
+  background: var(--gradient-warm);
+}
+
+
+/* ============================================================
+   § 12  ABSOLUTE PROHIBITION DOCUMENTATION
+   Source: Brand Guidelines v7.0 · Website Plan §7.1
+
+   The following UI patterns do not exist in the Sori design system.
+   Their selectors are documented here as a hard stop for developers.
+   ANY attempt to add these components is a design violation.
+   ============================================================ */
+
+/*
+  ⛔ STREAK COUNTER       data-component="streak"        PERMANENTLY BANNED
+     Rationale: Consecutive records attach shame to absence.
+
+  ⛔ ACHIEVEMENT BADGE    data-component="badge"          PERMANENTLY BANNED
+     Rationale: Emotion expression must not become performance.
+
+  ⛔ COMPARISON DATA      data-component="comparison"     PERMANENTLY BANNED
+     Rationale: Comparison mirrors the structure of appearance obsession.
+
+  ⛔ PROGRESS BAR / %     data-component="progress"       PERMANENTLY BANNED
+     Rationale: Healing is not linear. A percentage violates this truth.
+
+  ⛔ PUSH NOTIFICATION    data-component="notification"   PERMANENTLY BANNED
+     Rationale: Sori comes when wanted — never when demanded.
+
+  ⛔ SOCIAL SHARE         data-component="share"          PERMANENTLY BANNED
+     Rationale: The experience of this space does not leave it.
+*/
+
+
+/* ============================================================
+   END OF FILE
+   SORI Global CSS Design System
+   Brand Guidelines v7.0 · Website Plan v3.1
+   Cho Yoonjae · LASALLE College of the Arts
+   BA (Hons) Design Communication · 2026
+   ============================================================ */
+
+
+/* ============================================================
+   § 8  ARCHIVE & CALENDAR MODULE   (oem.care aesthetic)
+ 
+   Design principles applied:
+     • No card chrome — layout lives on the raw page canvas.
+     • Calendar days: transparent by default; entries marked
+       by a soft dot only — no background fill.
+     • Generous whitespace replaces decorative borders.
+     • Past reflection reads as editorial prose, not a widget.
+   ============================================================ */
+
+.archive-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sori-x-8);
+  /* 96px — oem.care-level breathing room */
+}
+
+@media (min-width: 768px) {
+  .archive-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sori-x-8);
+    align-items: start;
+  }
+}
+
+/* ── Calendar wrapper ─────────────────────────────────────── */
+
+.calendar-wrapper {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ── Calendar header (month / nav) ───────────────────────── */
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--sori-x-4);
+  /* 48px */
+}
+
+.calendar-header .type-h2 {
+  /* Month + Year in Playfair Display — editorial anchor */
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--color-deep-sepia);
+}
+
+/* ── Calendar grid ────────────────────────────────────────── */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--sori-x);
+  /* 12px gap */
+  text-align: center;
+}
+
+/* ── Day-of-week labels ───────────────────────────────────── */
+
+.calendar-day-label {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  color: var(--color-ghost-sepia);
+  font-size: var(--type-micro-size);
+  /* 9–10px */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding-bottom: var(--sori-x);
+  /* 12px */
+}
+
+/* ── Day cells ────────────────────────────────────────────── */
+
+.calendar-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  /* 24px min — spec requirement */
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: var(--type-caption-size);
+  /* 10–12px */
+  color: var(--color-mid-sepia);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: color var(--transition-base), background-color var(--transition-base);
+}
+
+.calendar-day:disabled {
+  color: var(--color-ghost-sepia);
+  cursor: default;
+  opacity: 0.4;
+}
+
+.calendar-day--empty {
+  visibility: hidden;
+}
+
+.calendar-day:not(:disabled):hover {
+  background-color: var(--color-oatmeal-beige);
+  color: var(--color-deep-sepia);
+}
+
+/* ── Days with entries: dot indicator only (no bg fill) ───── */
+
+.calendar-day--has-entry {
+  color: var(--color-deep-sepia);
+  font-weight: 400;
+}
+
+/* Soft centered dot below the number */
+.calendar-day--has-entry::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-sm);
+  /* rounds to a circle at 3px */
+  background-color: var(--color-dawn-sage);
+}
+
+/* ── Selected day ─────────────────────────────────────────── */
+
+.calendar-day--selected {
+  background-color: var(--color-deep-sepia) !important;
+  color: var(--color-silky-cream) !important;
+}
+
+/* Hide dot on selected day — selected state speaks for itself */
+.calendar-day--selected::after {
+  display: none;
+}
+
+
+/* ── Past Reflection viewer ───────────────────────────────── */
+
+/*
+  Renders as pure editorial prose — no card, no border, no bg.
+  This is the oem.care principle: the content IS the design.
+*/
+
+#past-reflection {
+  padding-top: var(--sori-x-4);
+  /* 48px top breathing room */
+  padding-left: 0;
+  transition: opacity var(--transition-slow);
+}
+
+#past-date-label {
+  /* "• MM.DD.YY · emotion" — mirrors oem.care bullet+date format */
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: var(--type-micro-size);
+  /* 9–10px */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia);
+  margin-bottom: var(--sori-x-3);
+  /* 36px */
+}
+
+#past-narrative {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 21px);
+  font-weight: 400;
+  font-style: italic;
+  /* Playfair Display italic — oem.care register */
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: var(--color-deep-sepia);
+  margin: 0;
+}
+
+/* A quiet hairline above the reflection — editorial column separator */
+#past-reflection::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background-color: var(--color-ghost-sepia);
+  margin-bottom: var(--sori-x-4);
+  /* 48px */
+}
+
+
+/* ── Archive Auth Area ────────────────────────────────────── */
+
+/*
+  Auth prompt: No card chrome. Just centered type on canvas.
+  The button already uses .voice-record-btn elsewhere; we only
+  control spacing here.
+*/
+
+#archive-auth-area {
+  padding: var(--sori-x-8) 0;
+  /* 96px vertical — generous void */
+  background: transparent;
+  /* canvas shows through — Silky Cream */
+  text-align: center;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   § 9  MOTION & FLIP MODULE (OEM UPGRADE)
+   ============================================================ */
+
+/* ── Scroll Reveals ──────────────────────────────────────── */
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(var(--sori-x-2));
+  /* Start 24px lower */
+  transition: opacity var(--transition-breath), transform var(--transition-breath);
+}
+
+.fade-in-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggering utility for grouped elements */
+.delay-1 {
+  transition-delay: 100ms;
+}
+
+.delay-2 {
+  transition-delay: 200ms;
+}
+
+.delay-3 {
+  transition-delay: 300ms;
+}
+
+.delay-4 {
+  transition-delay: 400ms;
+}
+
+/* ── 3D Flip Module ──────────────────────────────────────────
+   Retained for non-emotion-card uses. The emotion card grid (v2)
+   no longer uses this module — the new .emotion-card component
+   replaces the flip interaction with a direct --active state.
+   ─────────────────────────────────────────────────────────── */
+
+.flip-module {
+  perspective: 1000px;
+  border-radius: var(--radius-base);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+}
+
+.flip-module__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--transition-slow);
+}
+
+.flip-module:not(.is-selected):hover .flip-module__inner,
+.flip-module:not(.is-selected):focus-within .flip-module__inner {
+  transform: rotateY(180deg);
+}
+
+.flip-module__front,
+.flip-module__back {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sori-x-4) var(--sori-x-2);
+}
+
+.flip-module__front {
+  transform: rotateY(0deg);
+}
+
+.flip-module__back {
+  transform: rotateY(180deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--color-mother-of-pearl);
+  color: var(--color-mid-sepia);
+}
+
+
+/* ============================================================
+   §  FLOW SYSTEM — SPA Step Controller
+   Source: sori-flow.js integration
+   ============================================================
+
+   These rules sit at the BOTTOM of sori-global.css so they
+   have the highest cascade position and override any earlier
+   display/opacity declarations without needing extra specificity.
+
+   ⚠️  Do not reorder or move these rules above the component
+       classes in §6, as some step children inherit styles from
+       those classes (e.g. .sori-section, .mirror-card).
+
+   Architecture note:
+     The transition animation is intentionally NOT declared in
+     CSS here. It is driven entirely by sori-flow.js inline styles.
+     This is required because CSS transitions do not fire across
+     a display: none ↔ block toggle — the display change must
+     happen in a separate JS frame from the opacity change, which
+     requires explicit setTimeout() phasing in JS.
+     The CSS classes below define only the stable resting states.
+   ============================================================ */
+
+
+/* ── Step wrapper · inactive state ─────────────────────────
+   display: none removes the step from the document layout
+   entirely, so hidden steps contribute zero height to the
+   page and their children are removed from tab order.
+   ─────────────────────────────────────────────────────────── */
+.sori-step {
+  display: none;
+  opacity: 0;
+}
+
+/* ── Step wrapper · active state ───────────────────────────
+   The active step is a normal block-level element in document
+   flow. Its children scroll normally. The header above it
+   stays in its natural in-flow position.
+   ─────────────────────────────────────────────────────────── */
+.sori-step--active {
+  display: block;
+  opacity: 1;
+}
+
+
+/* ── Expression: Continue CTA wrapper ──────────────────────
+   The CTA itself is a .voice-record-btn child. This wrapper
+   provides the breathing space beneath the voice section.
+
+   Opacity and pointer-events are set to their HIDDEN values
+   via inline style in index.html so the element is invisible
+   before JS parses — no flash. sori-flow.js then transitions
+   opacity to 1 when the user engages with an emotion card or
+   the voice button.
+
+   We do NOT set opacity: 0 here in CSS because sori-flow.js
+   relies on inline style to set the hidden state. If CSS also
+   set opacity: 0, a specificity conflict could prevent the JS
+   transition from overriding it cleanly.
+   ─────────────────────────────────────────────────────────── */
+#expression-continue-cta {
+  margin-top: var(--sori-x-6);
+  /* 6× = 72px — space after voice section  */
+  padding-bottom: var(--sori-x-4);
+  /* 4× = 48px — section-end breathing room */
+}
+
+#expression-continue-cta .type-caption {
+  margin-top: var(--sori-x-2);
+  /* 2× = 24px below the button             */
+}
+
+
+/* ── Reflection: Archive CTA wrapper ───────────────────────
+   Forward-path CTA from §04 Reflection to §05 Archive.
+   Same voice-record-btn styling — one consistent forward
+   gesture language across the application.
+   ─────────────────────────────────────────────────────────── */
+#reflection-archive-cta-wrapper {
+  margin-top: var(--sori-x-6);
+  /* 6× = 72px — space after mirror card    */
+  padding-bottom: var(--sori-x-4);
+  /* 4× = 48px — section-end breathing room */
+}
+
+#reflection-archive-cta-wrapper .type-caption {
+  margin-top: var(--sori-x-2);
+}

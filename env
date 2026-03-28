@@ -1,0 +1,27 @@
+# ============================================================
+#  SORI · 소리 — Environment Variables  (v6 — updated)
+#  Copy this file to .env and fill in your keys.
+#  .env is gitignored — never commit real keys.
+# ============================================================
+
+# ── OpenAI (Whisper STT + GPT-4o analysis) ─────────────────
+# Required. Used for both Whisper transcription and GPT-4o
+# journal generation. Audio is never stored on disk.
+OPENAI_API_KEY=sk-...
+
+# ── MongoDB ─────────────────────────────────────────────────
+# Required. Local dev default shown below.
+# For Atlas: mongodb+srv://<user>:<pass>@cluster.mongodb.net/sori
+MONGODB_URI=mongodb://localhost:27017/sori
+
+# ── Server ─────────────────────────────────────────────────
+PORT=3000
+
+# ── CORS ───────────────────────────────────────────────────
+# Frontend origin — set to your dev server / production domain.
+CLIENT_ORIGIN=http://localhost:5500
+
+# ── REMOVED in v6 ──────────────────────────────────────────
+# ANTHROPIC_API_KEY is no longer used. The analysis pipeline
+# was migrated from Claude to GPT-4o in server.js v6.
+# Delete this key from your .env if you have it.

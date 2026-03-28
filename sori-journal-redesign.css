@@ -1,0 +1,384 @@
+/* ============================================================
+   SORI · 소리
+   JOURNAL REDESIGN PATCH  ·  oem.care editorial aesthetic
+   ─────────────────────────────────────────────────────────────
+
+   HOW TO APPLY — two options:
+
+   OPTION A (Recommended):
+     In index.html, find the inline <style> block. Locate the
+     section that begins with "§JOURNAL — Dynamic journal card"
+     and ends with the closing brace of the mobile tweak. Replace
+     that entire block (from the §JOURNAL comment to the last
+     @media rule closing brace) with the CSS in [SECTION I] below.
+
+   OPTION B — External Stylesheet:
+     Add a new <link> tag in <head> AFTER the inline <style>:
+       <link rel="stylesheet" href="sori-journal-redesign.css" />
+     Then paste [SECTION I] into this file. The late-linked
+     stylesheet will override the inline block without touching it.
+
+   NO JS CHANGES NEEDED — all existing IDs and class names are
+   preserved. Only visual rendering is affected.
+   ============================================================ */
+
+
+/* ============================================================
+   [SECTION I] · #step-journal — Editorial Redesign
+   ─────────────────────────────────────────────────────────────
+   Design principles:
+     • No card chrome — journal entry lives on the raw canvas.
+     • Left-aligned editorial column, max 640px, generously padded.
+     • Typography hierarchy: micro-caps date → Playfair italic
+       emotion headline → Playfair italic narrative → indented
+       transcript prose. No element louder than the words.
+     • Hairlines and spacing do all the work borders used to do.
+     • Reveal animation: entry lifts up from below, 700ms.
+   ============================================================ */
+
+
+/* ── Step: section & container shell ─────────────────────── */
+
+#step-journal .sori-section {
+  background: var(--color-silky-cream);
+  display: flex;
+  align-items: flex-start;
+  /* top-anchored — editorial scroll */
+  justify-content: center;
+  min-height: 100svh;
+  padding-block: var(--sori-x-12);
+  /* 144px — maximum void */
+  padding-inline: var(--sori-x-4);
+}
+
+#step-journal .sori-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* left-flush editorial alignment */
+  width: 100%;
+  max-width: 640px;
+}
+
+
+/* ── Journal card: strip ALL card chrome ─────────────────── */
+/*
+  The .journal-card wrapper becomes a transparent column.
+  Background, border-radius, and box-shadow are fully removed.
+  The entry is printed directly onto the Silky Cream canvas.
+*/
+
+.journal-card {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
+
+  /* Reveal: entry rises from 24px below into position */
+  opacity: 0;
+  transform: translateY(24px);
+  animation: journalEntryReveal 700ms cubic-bezier(0.22, 1, 0.36, 1) 80ms forwards;
+}
+
+@keyframes journalEntryReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ── Header: date (left) + numeral (right) ───────────────── */
+/*
+  Date now reads as "• YY.MM.DD" — bullet + compressed date
+  matches the oem.care micro-date format.
+  Numeral fades to ghost — a quiet counter, not a label.
+*/
+
+.journal-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--sori-x-6);
+  /* 72px — editorial breath */
+}
+
+.journal-card__date {
+  font-family: var(--font-sans);
+  font-size: clamp(9px, 0.9vw, 10px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia);
+  line-height: 1.4;
+}
+
+/* Prepend the bullet marker via CSS — no HTML change needed */
+.journal-card__date::before {
+  content: '•  ';
+  letter-spacing: 0;
+  opacity: 0.5;
+}
+
+.journal-card__numeral {
+  font-family: var(--font-sans);
+  font-size: clamp(9px, 0.9vw, 10px);
+  font-weight: 300;
+  color: var(--color-ghost-sepia);
+  letter-spacing: 0.14em;
+  opacity: 0.4;
+}
+
+
+/* ── Hairline rule: 32px editorial column-break ─────────── */
+/*
+  Short rule, left-aligned — the same visual punctuation that
+  oem.care uses to separate the date eyebrow from the body.
+*/
+
+.journal-card__rule {
+  border: none !important;
+  border-top: 1px solid var(--color-ghost-sepia) !important;
+  width: 32px;
+  margin: 0 0 var(--sori-x-5) 0 !important;
+  /* left-flush */
+  opacity: 0.55;
+  background: none;
+}
+
+
+/* ── Emotion keyword: large Playfair Display italic ─────── */
+/*
+  This is the editorial centerpiece — the single largest
+  typographic element on the page. Italic Playfair at 42–52px
+  reads as expressive and empathetic, not clinical.
+  Left-aligned, not centered: anchors the column.
+*/
+
+.journal-card__emotion {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.5vw, 52px);
+  font-weight: 400;
+  font-style: italic;
+  /* Playfair italic: the signature register */
+  color: var(--color-deep-sepia);
+  text-align: left !important;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: var(--sori-x);
+}
+
+/* Korean counterpart: smaller, same register, same tone */
+.journal-card__emotion-ko {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-mid-sepia);
+  text-align: left !important;
+  margin-bottom: var(--sori-x-6);
+  /* 72px — let the word land before prose */
+  opacity: 0.75;
+}
+
+
+/* ── Narrative body: editorial prose ─────────────────────── */
+/*
+  The AI-generated journal_text is the emotional payload.
+  Playfair Display italic at 19–24px with 1.85 line-height
+  gives it the quality of a private letter — not a report.
+*/
+
+.journal-card__body {
+  font-family: var(--font-display) !important;
+  font-size: clamp(17px, 2.1vw, 22px) !important;
+  font-weight: 400 !important;
+  font-style: italic !important;
+  color: var(--color-deep-sepia) !important;
+  line-height: 1.85 !important;
+  letter-spacing: 0.01em;
+  text-align: left;
+  margin-bottom: var(--sori-x-8);
+  /* 96px — generous gap before transcript */
+}
+
+
+/* ── Transcript: indented prose, no box ─────────────────── */
+/*
+  Strip the oatmeal bg and solid left-border.
+  Replace with: left-indent + a single-pixel shadow on the
+  left margin. The content looks like a handwritten aside.
+*/
+
+.journal-card__transcript {
+  background: transparent !important;
+  border: none !important;
+  /* remove old border-left */
+  border-radius: 0 !important;
+  padding: 0 0 0 var(--sori-x-3) !important;
+  /* 36px left indent */
+  margin: 0 0 var(--sori-x-6) 0;
+
+  /* Soft vertical hairline in left margin */
+  box-shadow: -1px 0 0 0 rgba(100, 80, 60, 0.2);
+}
+
+.journal-card__transcript-label {
+  display: block;
+  font-family: var(--font-sans) !important;
+  font-size: clamp(9px, 0.9vw, 10px) !important;
+  font-weight: 300 !important;
+  font-style: normal !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia) !important;
+  margin-bottom: var(--sori-x);
+}
+
+/* Transcript text — inherits italic from blockquote, slightly larger */
+.journal-card__transcript p,
+.journal-card__transcript>*:not(.journal-card__transcript-label) {
+  font-family: var(--font-sans);
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-mid-sepia);
+  line-height: 1.75;
+  margin: 0;
+}
+
+
+/* ── Footer disclaimer ────────────────────────────────────── */
+
+.journal-card__footer {
+  text-align: left !important;
+  margin-top: var(--sori-x-5);
+  padding-top: var(--sori-x-3);
+  border-top: 1px solid rgba(100, 80, 60, 0.08);
+  /* near-invisible separator */
+}
+
+
+/* ── Archive CTA below the entry ─────────────────────────── */
+/*
+  Ghost button matches the Sori voice-record-btn pattern.
+  Margin-top creates the editorial "page break" feeling
+  between the entry and the navigation forward.
+*/
+
+.journal-archive-cta {
+  margin-top: var(--sori-x-10);
+  /* 120px — hard editorial gap */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* left-flush, consistent with column */
+  gap: var(--sori-x-2);
+}
+
+
+/* ── Staggered fade-in for sub-elements ─────────────────── */
+/*
+  After the card itself reveals, individual sections fade in
+  one by one to create a reading rhythm.
+*/
+
+.journal-card__header {
+  animation-delay: 100ms;
+}
+
+.journal-card__rule {
+  animation-delay: 180ms;
+}
+
+.journal-card__emotion {
+  animation-delay: 260ms;
+}
+
+.journal-card__emotion-ko {
+  animation-delay: 320ms;
+}
+
+.journal-card__body {
+  animation-delay: 400ms;
+}
+
+.journal-card__transcript {
+  animation-delay: 520ms;
+}
+
+.journal-card__footer {
+  animation-delay: 620ms;
+}
+
+.journal-card__header,
+.journal-card__rule,
+.journal-card__emotion,
+.journal-card__emotion-ko,
+.journal-card__body,
+.journal-card__transcript,
+.journal-card__footer {
+  opacity: 0;
+  animation: journalSectionReveal 500ms ease-out forwards;
+}
+
+@keyframes journalSectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Archive CTA — delayed further to appear last */
+.journal-archive-cta {
+  opacity: 0;
+  animation: journalSectionReveal 500ms ease-out 740ms forwards;
+}
+
+
+/* ── Mobile tweaks ────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  #step-journal .sori-section {
+    padding-block: var(--sori-x-8);
+    /* 96px on mobile — still generous */
+    padding-inline: var(--sori-x-3);
+  }
+
+  .journal-card__emotion {
+    font-size: clamp(28px, 9vw, 40px);
+  }
+
+  .journal-card__body {
+    font-size: clamp(16px, 4.5vw, 20px) !important;
+  }
+
+  .journal-card__header {
+    margin-bottom: var(--sori-x-4);
+  }
+
+  .journal-archive-cta {
+    margin-top: var(--sori-x-8);
+  }
+}
+
+@media (max-width: 768px) {
+
+  .journal-content,
+  .insight-box {
+    /* 실제 클래스명으로 변경하세요 */
+    width: 100%;
+    padding: 20px 15px;
+    /* 모바일에 맞는 안쪽 여백 */
+    box-sizing: border-box;
+    /* 패딩이 너비에 포함되도록 설정 */
+  }
+}

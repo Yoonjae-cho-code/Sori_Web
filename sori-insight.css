@@ -1,0 +1,201 @@
+/* ============================================================
+   SORI · 소리  —  sori-insight.css
+   Psychological Insight Section styles
+   ============================================================ */
+
+/* ── Section wrapper ──────────────────────────────────────── */
+
+.insight-section {
+  display: none;
+  margin-top: var(--sori-x-10, 120px);
+  padding-top: var(--sori-x-6, 72px);
+  border-top: 1px solid rgba(100, 80, 60, 0.08);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.insight-section--visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.insight-section[hidden] {
+  display: none !important;
+}
+
+
+/* ── Shared eyebrow label ─────────────────────────────────── */
+
+.insight-label {
+  display: block;
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(9px, 0.9vw, 10px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia, #C4B8B0);
+  margin-bottom: var(--sori-x-4, 48px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   PART 1 — QUOTE
+   ═══════════════════════════════════════════════════════════ */
+
+.insight-quote {
+  margin-bottom: var(--sori-x-10, 120px);
+}
+
+.insight-quote__body {
+  margin: 0;
+  padding: 0;
+}
+
+.insight-quote__text {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(16px, 1.9vw, 22px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  color: var(--color-deep-sepia, #3E3731);
+  margin: 0 0 var(--sori-x-2, 24px);
+}
+
+.insight-quote__text--ko {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-mid-sepia, #6B6058);
+  opacity: 0.7;
+  margin-bottom: var(--sori-x-3, 36px);
+}
+
+.insight-quote__attribution {
+  margin: 0;
+}
+
+.insight-quote__attribution cite {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(9px, 0.9vw, 10px);
+  font-weight: 300;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia, #C4B8B0);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   PART 2 — RECOMMENDATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+.insight-recs__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.insight-recs__item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  column-gap: var(--sori-x-2, 24px);
+  align-items: baseline;
+  padding-bottom: var(--sori-x-4, 48px);
+  position: relative;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.insight-section--visible .insight-recs__item:nth-child(1) {
+  transition-delay: 120ms;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.insight-section--visible .insight-recs__item:nth-child(2) {
+  transition-delay: 220ms;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.insight-section--visible .insight-recs__item:nth-child(3) {
+  transition-delay: 320ms;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.insight-recs__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(100, 80, 60, 0.06);
+}
+
+.insight-recs__numeral {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(9px, 0.9vw, 10px);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-ghost-sepia, #C4B8B0);
+  line-height: 1.8;
+  user-select: none;
+}
+
+.insight-recs__text {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 300;
+  color: var(--color-mid-sepia, #6B6058);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+
+/* ── Mobile ───────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .insight-section {
+    margin-top: var(--sori-x-8, 96px);
+    padding-top: var(--sori-x-4, 48px);
+  }
+
+  .insight-quote {
+    margin-bottom: var(--sori-x-8, 96px);
+  }
+
+  .insight-quote__text {
+    font-size: clamp(15px, 4.5vw, 20px);
+  }
+
+  .insight-recs__item {
+    grid-template-columns: 22px 1fr;
+    column-gap: var(--sori-x, 12px);
+    padding-bottom: var(--sori-x-3, 36px);
+  }
+}
+
+@media (max-width: 768px) {
+
+  .journal-content,
+  .insight-box {
+    /* 실제 클래스명으로 변경하세요 */
+    width: 100%;
+    padding: 20px 15px;
+    /* 모바일에 맞는 안쪽 여백 */
+    box-sizing: border-box;
+    /* 패딩이 너비에 포함되도록 설정 */
+  }
+}

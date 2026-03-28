@@ -1,0 +1,63 @@
+/* ============================================================
+   SORI · 소리
+   EMOJI PATCH  —  append to sori-journal-redesign.css
+   (or paste into the §JOURNAL inline <style> block in index.html)
+   ============================================================ */
+
+
+/* ── Emotion emoji — placed between hairline rule and h2 ─── */
+/*
+  One single emoji between the 32px rule and the Playfair italic
+  headline. It reads as a quiet visual accent — not a badge,
+  not a label, just a character the page breathes around.
+
+  Size: 32px — large enough to read as intentional, small enough
+  to let the Playfair italic emotion word dominate after it.
+
+  No background, no border, no pill — it floats on the canvas.
+  The default opacity is 0; .journal-card__emoji--revealed fades
+  it in after the rule with a slight upward drift.
+*/
+
+.journal-card__emoji {
+  display: block;
+  /* own line — editorial column rhythm */
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: var(--sori-x-3);
+  /* 36px gap before emotion headline */
+
+  /* iOS emoji render crisply on retina at 32px; no font stack needed */
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+
+  /* Reveal start state */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Override parent stagger — emoji has its own timing */
+  animation: none !important;
+}
+
+/* Triggered by JS after two rAF frames */
+.journal-card__emoji--revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile: slightly smaller so it doesn't overpower the small viewport */
+@media (max-width: 640px) {
+  .journal-card__emoji {
+    font-size: 26px;
+    margin-bottom: var(--sori-x-2);
+  }
+}
+
+@media (max-width: 768px) {
+  .emotion-card-container {
+    /* 이름을 sori-global.css와 일치시킴 */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}

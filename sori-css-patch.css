@@ -1,0 +1,765 @@
+/* ============================================================
+   🚀 SORI · 소리 — THE MASTER PATCH (V6 FINAL)
+   (디자인 원복: 헤더 투명도, 폰트, 랜딩 정렬, 노란색 버튼 완벽 복구)
+   ============================================================ */
+
+/* ── 1. GLOBAL BACKGROUND & TEXT COLOR ── */
+html,
+body,
+#sori-app {
+  background-color: #DBC9E3 !important;
+  background: #DBC9E3 !important;
+}
+
+.sori-main,
+.step-transition-overlay,
+.sori-step,
+.sori-section,
+#step-gateway,
+#gateway.t04-layout,
+#step-expression,
+#step-voice-record,
+#step-analysis,
+#step-reflection,
+#step-archive,
+#step-pin-calendar,
+#resonance-field.resonance-canvas,
+.resonance-canvas#resonance-field {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+h1,
+h2,
+p,
+span,
+div,
+caption,
+label,
+a,
+cite,
+.type-micro,
+.type-caption,
+.type-body,
+.type-h1,
+.type-h2,
+.type-d1,
+.type-d2 {
+  color: #311F5D !important;
+}
+
+.type-micro,
+.type-caption,
+.insight-label,
+.sori-journal-card__numeral,
+.calendar-day-label,
+.sori-modal__footer,
+.sori-modal__label,
+#step-expression .sori-rule,
+.sori-journal-card__emotion-ko,
+.journal-card__emotion-ko {
+  font-weight: 400 !important;
+  opacity: 0.9 !important;
+}
+
+/* ── 2. HEADER & NAVIGATION (헤더 투명화 & Playfair 폰트 복원) ── */
+.sori-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 80px !important;
+  padding: 0 8% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  z-index: 9990 !important;
+  background: transparent !important;
+  /* 배경 분리 현상 해결 */
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.sori-wordmark__btn .type-h2 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 500 !important;
+  font-size: clamp(26px, 3vw, 32px) !important;
+}
+
+.sori-nav__btn {
+  font-family: 'Playfair Display', serif !important;
+  font-size: clamp(16px, 1.5vw, 18px) !important;
+  font-weight: 500 !important;
+}
+
+/* ── 3. GATEWAY / LANDING PAGE (타이틀 복구 및 3D 중앙 정렬) ── */
+#step-gateway {
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+#gateway.t04-layout {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 3D 구체 완벽 중앙 정렬 */
+#resonance-field.resonance-canvas {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1000 !important;
+  pointer-events: none !important;
+}
+
+/* 좌측 상단 큰 Sori 타이틀 복구 */
+#step-gateway.sori-step--active .gateway__display {
+  position: absolute !important;
+  top: clamp(120px, 18vh, 180px) !important;
+  left: 8% !important;
+  z-index: 3000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+#step-gateway:not(.sori-step--active) .gateway__display {
+  display: none !important;
+}
+
+/* ── 4. YELLOW BUTTONS & CARDS (#EDED8B 적용) ── */
+/* 사라졌던 버튼 형태와 색상 완벽 복구 */
+.gateway__begin-cta,
+#nav-enter-cta.gateway__begin-cta,
+.voice-record-btn,
+#step-voice-record .voice-record-btn,
+#step-analysis .voice-record-btn {
+  background-color: #EDED8B !important;
+  background: #EDED8B !important;
+  color: #311F5D !important;
+  border: none !important;
+  border-radius: 40px !important;
+  padding: 16px 36px !important;
+  font-size: clamp(16px, 2vw, 19px) !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+}
+
+/* 랜딩페이지 중앙 시작 버튼 위치 강제 고정 */
+.gateway__begin-cta {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 2000 !important;
+}
+
+/* 감정 카드 노란색 복구 */
+.emotion-card,
+#step-expression .emotion-card {
+  background-color: #EDED8B !important;
+  background: #EDED8B !important;
+  border-radius: 16px !important;
+  border: none !important;
+  color: #311F5D !important;
+}
+
+.emotion-card .type-h2,
+.emotion-card h2 {
+  font-weight: 600 !important;
+}
+
+.emotion-card .emotion-card__desc,
+.emotion-card span,
+.emotion-card p {
+  font-weight: 500 !important;
+  opacity: 0.9 !important;
+
+  /* 👇 글자 크기 및 줄바꿈을 위해 추가된 부분 */
+  font-size: 14px !important;
+  /* 💡 여기서 숫자를 키우면 글자가 커집니다 (기존 12~13px) */
+  line-height: 1.5 !important;
+
+  /* 단어가 중간에 쪼개지지 않고 예쁘게 줄바꿈됨 */
+  margin-top: 3px !important;
+  /* 제목과 설명 사이의 여백 */
+}
+
+/* ── 5. EXPRESS PAGE & VOICE RECORD SECTION ── */
+#step-expression.sori-step--active {
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+#step-expression:not(.sori-step--active) {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html body #step-voice-record .sori-section,
+html body #step-analysis .sori-section {
+  padding-bottom: 15vh !important;
+}
+
+/* ── 6. OEM.CARE STYLE JOURNAL CARD (스크롤/줄바꿈 유지) ── */
+html body #step-journal.sori-step--active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-top: 130px !important;
+  padding-bottom: 60px !important;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+}
+
+.sori-journal-card,
+html body #step-journal .sori-journal-card,
+.journal-card {
+  background-color: #C8E5C8 !important;
+  background: #C8E5C8 !important;
+  border-radius: 24px !important;
+  padding: clamp(32px, 5vw, 48px) !important;
+  max-width: 640px !important;
+  margin: 0 auto !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  border: none !important;
+  box-shadow: 0 8px 32px rgba(49, 31, 93, 0.05) !important;
+}
+
+.sori-journal-card__body,
+.journal-card__body,
+.sori-journal-card__transcript,
+.journal-card__transcript,
+.insight-quote__text {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  line-height: 1.8 !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+  font-size: clamp(15px, 2vw, 17px) !important;
+}
+
+.sori-journal-card__header,
+.journal-card__header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  border-bottom: 1.5px solid rgba(49, 31, 93, 0.15) !important;
+  padding-bottom: 16px !important;
+}
+
+.sori-journal-card__emotion,
+.journal-card__emotion {
+  font-size: clamp(24px, 4vw, 32px) !important;
+  font-family: 'Playfair Display', serif !important;
+  font-style: italic !important;
+  font-weight: 600 !important;
+  text-align: right !important;
+  margin: 0 !important;
+}
+
+.sori-journal-card__transcript,
+.journal-card__transcript {
+  background: rgba(255, 255, 255, 0.6) !important;
+  padding: 20px 24px !important;
+  border-radius: 16px !important;
+  border-left: 4px solid #311F5D !important;
+  font-style: italic !important;
+}
+
+/* ── 7. ARCHIVE & CALENDAR ── */
+html body #step-pin-calendar.sori-step--active,
+html body #step-archive.sori-step--active {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding-top: 140px !important;
+  padding-bottom: 60px !important;
+  height: auto !important;
+  min-height: 100svh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background-color: #DBC9E3 !important;
+  z-index: 500 !important;
+  pointer-events: auto !important;
+}
+
+.archive-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 96px;
+}
+
+@media (min-width: 768px) {
+  .archive-layout {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  html body #step-archive .archive-split-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 120px !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+}
+
+.archive-split-layout {
+  display: flex;
+  gap: 120px;
+  align-items: flex-start;
+}
+
+.archive-column-left {
+  flex: 1;
+  max-width: 380px;
+}
+
+.archive-column-right {
+  flex: 1.5;
+  border-left: 1px solid rgba(49, 31, 93, 0.12);
+  padding-left: 96px;
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .archive-split-layout {
+    flex-direction: column;
+  }
+
+  .archive-column-right {
+    border-left: none;
+    border-top: 1px solid rgba(49, 31, 93, 0.12);
+    padding: 48px 0;
+  }
+}
+
+.calendar-wrapper {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 48px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  text-align: center;
+}
+
+.calendar-day-label {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding-bottom: 12px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  font-size: 13px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 200ms;
+}
+
+.calendar-day:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.calendar-day--empty {
+  visibility: hidden;
+}
+
+.calendar-day--selected,
+.pin-cal-day--entry {
+  background-color: #C8E5C8 !important;
+  color: #311F5D !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+#step-pin-calendar #pin-cal-panel {
+  padding-bottom: 20px !important;
+  margin: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.pin-cal-header {
+  margin-top: -40px !important;
+  margin-bottom: 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 360px;
+}
+
+.pin-panel {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 24px !important;
+}
+
+.pin-panel--active {
+  display: flex;
+}
+
+/* ── 8. JOURNAL BUTTON HOVER STATES ── */
+.journal-archive-cta {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  margin-top: 20px !important;
+}
+
+.journal-save-record-btn,
+.sori-journal-card__new-entry {
+  background-color: transparent !important;
+  border: 1.5px solid #311F5D !important;
+  color: #311F5D !important;
+  padding: 12px 24px !important;
+  border-radius: 32px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+html body .journal-save-record-btn:hover,
+html body .journal-save-record-btn:hover *,
+html body .sori-journal-card__new-entry:hover,
+html body .sori-journal-card__new-entry:hover * {
+  background-color: #311F5D !important;
+  background: #311F5D !important;
+  color: #C8E5C8 !important;
+}
+
+/* ============================================================
+   🚀 SORI · 소리 — V8: TYPOGRAPHY, SPACING & ARCHIVE LAYOUT
+   (글자 굵기, 구분선, 숫자 번호(1., 2.), 달력 스플릿 레이아웃 완벽 구현)
+   ============================================================ */
+
+/* ── 1. 'A thought for you', 'Gentle steps' 글자 크기/굵기 강화 ── */
+.insight-label {
+  font-size: clamp(17px, 2.2vw, 20px) !important;
+  /* 글씨 크기 확대 */
+  font-weight: 600 !important;
+  /* Semi-bold로 굵게 */
+  opacity: 1 !important;
+  /* 흐리지 않고 또렷하게 */
+  display: block !important;
+  margin-bottom: 16px !important;
+  color: #311F5D !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── 2. 'Gentle steps' 위에 얇은 구분 선 추가 ── */
+.insight-recs {
+  position: relative !important;
+  margin-top: 32px !important;
+  padding-top: 32px !important;
+  /* 구분선과 글씨 사이의 여백 */
+}
+
+.insight-recs::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 1.5px !important;
+  /* 선 두께 */
+  background-color: rgba(49, 31, 93, 0.15) !important;
+  /* 연한 남색 선 */
+}
+
+/* ── 3. '1.01', '2.02' 문제 해결 → '1.', '2.'로 깔끔하게 ── */
+.insight-recs__numeral {
+  display: none !important;
+  /* 기존 자바스크립트가 만들던 01, 02 숫자를 강제 숨김 */
+}
+
+.insight-recs__list {
+  list-style-type: decimal !important;
+  /* 브라우저 기본 1. 2. 3. 리스트 활성화 */
+  padding-left: 24px !important;
+  margin: 0 !important;
+}
+
+.insight-recs__list li {
+  font-size: clamp(15px, 2vw, 17px) !important;
+  line-height: 1.7 !important;
+  margin-bottom: 12px !important;
+  padding-left: 8px !important;
+  color: #311F5D !important;
+}
+
+.insight-recs__list li::marker {
+  font-weight: 600 !important;
+  /* 1. 2. 숫자 부분만 굵고 진하게 강조 */
+  color: #311F5D !important;
+}
+
+/* ── 4. 아카이브(달력) 좌우 스플릿 레이아웃 강제 적용 (3번째 스크린샷 구현) ── */
+html body #step-archive .archive-split-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 40px !important;
+  width: 100% !important;
+}
+
+/* 데스크탑(PC) 화면에서는 좌우로 완벽하게 쪼개짐 */
+@media (min-width: 768px) {
+  html body #step-archive .archive-split-layout {
+    flex-direction: row !important;
+    gap: 80px !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    max-width: 1040px !important;
+    /* 너무 넓어지지 않게 고정 */
+    margin: 40px auto 0 !important;
+  }
+
+  html body #step-archive .archive-column-left {
+    flex: 1 !important;
+    max-width: 380px !important;
+  }
+
+  html body #step-archive .archive-column-right {
+    flex: 1.5 !important;
+    border-left: 1px solid rgba(49, 31, 93, 0.15) !important;
+    /* 가운데 연한 구분선 */
+    padding-left: 80px !important;
+    /* 선과 오른쪽 컨텐츠 사이 여백 */
+    min-height: 500px !important;
+  }
+}
+
+/* ============================================================
+   🚀 SORI · 소리 — V9: 랜딩페이지 버튼 클릭 먹통 강제 해결
+   (Archive 구조 100% 보존 / 3D 배경 클릭 가로채기 방지)
+   ============================================================ */
+
+/* 1. 시작 화면 영역 자체의 클릭 권한 활성화 */
+#step-gateway.sori-step--active,
+#gateway.t04-layout {
+  pointer-events: auto !important;
+}
+
+/* 2. 시작 버튼을 최상단(9999)으로 끌어올리고 클릭 강제 활성화 */
+.gateway__begin-cta,
+#nav-enter-cta.gateway__begin-cta {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 9999 !important;
+}
+
+/* 3. 3D 배경이나 얇은 선(SVG)들이 버튼 앞을 막아서지 못하도록 완벽 차단 */
+#resonance-field.resonance-canvas,
+.fluid-thread {
+  pointer-events: none !important;
+}
+
+/* ============================================================
+   🚀 SORI · 소리 — V10: 모달창(About) 뚫림 방지 패치
+   (시작 버튼 Z-index 충돌 해결 / 기존 Archive 기능 100% 보존)
+   ============================================================ */
+
+.sori-modal-backdrop {
+  z-index: 10000 !important;
+  /* 시작 버튼(9999)보다 무조건 높게, 화면 최상위로 강제 배치 */
+}
+
+/* ============================================================
+   🚀 SORI · 소리 — V11: 아카이브 달력 그리드 깨짐 완벽 복구
+   (클래스 이름 불일치 해결 및 7칸 바둑판 정렬 강제 적용)
+   ============================================================ */
+
+/* 1. 달력 전체를 7칸 바둑판(Grid) 모양으로 강제 정렬 */
+.pin-calendar-grid {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 12px !important;
+  text-align: center !important;
+  width: 100% !important;
+  max-width: 360px !important;
+  margin: 0 auto !important;
+}
+
+/* 2. 요일 (Mon, Tue...) 라벨 디자인 */
+.pin-cal-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  padding-bottom: 12px !important;
+  color: #311F5D !important;
+  opacity: 0.7 !important;
+}
+
+/* 3. 날짜 (1, 2, 3...) 동그라미 버튼 디자인 */
+.pin-cal-day {
+  aspect-ratio: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  /* 예쁜 원형 버튼 */
+  font-size: 14px !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  border: none !important;
+  color: #311F5D !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+}
+
+/* 마우스 올렸을 때 살짝 배경색 깔리기 */
+.pin-cal-day:not(:disabled):hover {
+  background-color: rgba(49, 31, 93, 0.1) !important;
+}
+
+/* 4. 기록이 있는 날짜 (초록색 강조) */
+.pin-cal-day--entry {
+  background-color: #C8E5C8 !important;
+  font-weight: 600 !important;
+}
+
+/* 5. 1일 전의 빈 칸들 투명하게 숨기기 */
+.pin-cal-day--empty {
+  visibility: hidden !important;
+}
+
+/* ============================================================
+   🚀 SORI · 소리 — V12: PIN 설정창 레이아웃 & 입력창 디자인 완벽 복구
+   (텍스트 중앙 정렬 / 실제 PIN 입력창 시각화 및 고급화)
+   ============================================================ */
+
+/* 1. 패널 내부 중앙 정렬 (왼쪽으로 쏠림 현상 방지) */
+.pin-panel {
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+}
+
+/* '뒤로' 버튼은 원래대로 다시 왼쪽 끝에 예쁘게 붙이기 */
+.pin-panel .pin-back-btn {
+  align-self: flex-start !important;
+  margin-bottom: 24px !important;
+}
+
+/* 2. 제목과 설명 글자의 줄 간격 및 중앙 정렬 최적화 */
+.pin-panel .type-h2 {
+  line-height: 1.4 !important;
+  margin-bottom: 8px !important;
+  text-align: center !important;
+}
+
+.pin-panel .type-body {
+  line-height: 1.6 !important;
+  margin-bottom: 24px !important;
+  text-align: center !important;
+}
+
+/* 3. 오류를 일으키던 기존의 투명한 점(Dots) 래퍼는 아예 숨김 */
+.pin-dots-wrapper {
+  display: none !important;
+}
+
+/* 4. 🌟 실제 PIN 입력창(Input)을 눈에 띄고 고급스럽게 디자인 */
+.pin-hidden-input {
+  display: block !important;
+  position: relative !important;
+  width: 200px !important;
+  height: 64px !important;
+  font-size: 32px !important;
+  letter-spacing: 16px !important;
+  /* 숫자 사이 간격 넓게 띄우기 */
+  text-indent: 16px !important;
+  /* letter-spacing 때문에 우측으로 쏠리는 현상 중앙 보정 */
+  text-align: center !important;
+  border: 2px solid rgba(49, 31, 93, 0.2) !important;
+  border-radius: 16px !important;
+  /* 부드러운 둥근 모서리 */
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  color: #311F5D !important;
+  margin: 16px auto !important;
+  transition: all 0.2s ease-in-out !important;
+  outline: none !important;
+  font-family: monospace !important;
+  /* 어떤 숫자를 쳐도 너비가 일정하게 유지됨 */
+}
+
+/* 입력창 클릭(포커스) 시 빛나는 강조 효과 */
+.pin-hidden-input:focus {
+  border-color: #311F5D !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 16px rgba(49, 31, 93, 0.1) !important;
+}
+
+/* 모바일 환경 (화면 너비 768px 이하) 설정 */
+@media (max-width: 768px) {
+
+  /* 1. 화면 높이 조정 (모바일 하단 바에 잘리지 않도록) */
+  body,
+  .container,
+  .gateway-section {
+    height: 100dvh;
+    padding: 0 20px;
+    /* 좌우 숨 쉴 틈(안전 여백) 확보 */
+  }
+
+  /* 2. 전체 글꼴 크기 약간 축소 (줄바꿈 방지) */
+  html {
+    font-size: 14px;
+    /* 기존보다 약간 작게 조절 */
+  }
+
+  /* 3. 버튼 등 터치 영역 확대 */
+  button,
+  .btn {
+    min-height: 48px;
+    padding: 12px 24px;
+  }
+}

@@ -1,0 +1,165 @@
+<!--
+  ================================================================
+  PASTE LOCATION: immediately after </div><!-- /#step-voice-record -->
+  ================================================================
+
+  STEP: TRANSCRIPTION (#step-transcription)
+  ─────────────────────────────────────────
+  Purpose:
+    Shows the user their own words — the raw Whisper transcript —
+    before any AI analysis is applied. This is a deliberate trust
+    and transparency moment: the user reads what Sori heard, then
+    decides to proceed.
+
+  Entry:  Automatic — triggered by sori-voice.js after /api/transcribe
+          returns successfully. window.soriFlow.goToStep('step-transcription')
+          is called; the transcript is already in #transcription-text.
+
+  Exit:   "View Analysis · 분석 보기" button
+          → sori-flow.js wires this to the next analysis step.
+
+  Layout  (Sori design system):
+    Territory: Silky Cream canvas (default .sori-section background).
+    Typography hierarchy:
+      • .type-numeral — section counter (Ghost Sepia, DM Sans Light)
+      • .type-h1      — "What Sori heard" heading (Playfair Display 400)
+      • #transcription-text — the transcript itself (.type-body, Deep Sepia)
+        Deep Sepia instead of the usual Mid Sepia because these are the
+        user's own words — they deserve full typographic weight.
+      • .type-caption — 1:5 scale anchor below the transcript block
+      • .voice-record-btn — "View Analysis" forward CTA
+
+  ⛔ Do not add:
+      border-radius: 0 or 50%
+      font-weight ≥ 700
+      Any pure #000 or #fff value
+      A second Dawn Sage–bordered element (BUCK rule)
+  ================================================================
+-->
+
+<div id="step-transcription" class="sori-step">
+
+  <!--
+    SECTION: TRANSCRIPTION
+    Territory: Silky Cream · Default .sori-section background.
+    1:5 scale rule satisfied:
+      Large: .type-h1 (28–36 px)
+      Small: .type-caption (10–12 px)  →  ratio > 5:1  ✓
+  -->
+  <section
+    class="sori-section"
+    id="transcription"
+    aria-labelledby="transcription-heading"
+  >
+    <div class="sori-container">
+
+      <!-- Section counter — DM Sans Light, Caption scale, Ghost Sepia -->
+      <span class="type-numeral fade-in-up" aria-hidden="true">04</span>
+
+      <!--
+        Section title — Playfair Display Regular 400.
+        "What Sori heard" frames the transcript as a reflection,
+        not a verbatim record — keeps the tone of a quiet witness.
+      -->
+      <h1
+        class="type-h1 mt-x2 fade-in-up delay-1"
+        id="transcription-heading"
+      >
+        What Sori heard
+      </h1>
+      <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">
+        소리가 들은 것
+      </p>
+
+      <!-- Caption — satisfies the 1:5 scale contrast rule -->
+      <p class="type-caption mt-x2 text-ghost fade-in-up delay-1">
+        Your words, as they arrived
+        &nbsp;·&nbsp; <span lang="ko">당신의 말이 닿은 대로</span>
+      </p>
+
+      <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
+
+      <!--
+        Transcript display block.
+        id="transcription-text" — targeted by sori-voice.js:
+          transcriptionEl.textContent = transcript;
+
+        Styling choices:
+          .type-body     — DM Sans Light 300, 14–16 px, line-height 1.8
+          .text-deep     — Deep Sepia (#3E3731), not Mid Sepia
+                           These are the user's own words; they deserve
+                           the highest typographic prominence on this screen.
+          max-width 600px — comfortable reading line length, centred.
+          aria-live="polite" — screen readers announce when JS injects text.
+      -->
+      <div
+        class="mt-x4 fade-in-up delay-2"
+        style="max-width: 600px;"
+      >
+        <p
+          id="transcription-text"
+          class="type-body text-deep"
+          aria-live="polite"
+          aria-atomic="true"
+          style="line-height: 1.85; font-style: italic;"
+        >
+          <!--
+            Populated by sori-voice.js → _injectTranscriptAndAdvance().
+            Empty on page load; never shown to the user in its empty state
+            because this step is hidden (display:none via .sori-step)
+            until sori-flow.js transitions here.
+          -->
+        </p>
+      </div>
+
+      <!--
+        Reassurance caption — reminds the user Sori is still private.
+        Below the transcript, above the CTA. Quiet Ghost Sepia.
+      -->
+      <p
+        class="type-caption mt-x3 text-ghost fade-in-up delay-3"
+      >
+        Only you can see this
+        &nbsp;·&nbsp; <span lang="ko">오직 당신만 볼 수 있어요</span>
+      </p>
+
+
+      <!--
+        "View Analysis" CTA
+        ───────────────────
+        Wired by sori-flow.js: id="transcription-analysis-cta"
+        → goToStep('step-analysis')   (or the next step in your graph)
+
+        Uses .voice-record-btn (not .fab-wellbeing) — consistent with
+        all other forward-path CTAs in the Sori SPA.
+        Dawn Sage border-color on hover is the sole BUCK signal on this screen.
+
+        ⛔ Do not change to .fab-wellbeing — that class carries a filled
+           Dawn Sage background which would violate the BUCK single-signal rule
+           if a Dawn Sage–bordered button is already present elsewhere.
+      -->
+      <div
+        class="mt-x6 fade-in-up delay-4"
+        style="padding-bottom: var(--sori-x-4);"
+      >
+        <button
+          class="voice-record-btn"
+          type="button"
+          id="transcription-analysis-cta"
+          aria-label="View Analysis — 분석 보기"
+        >
+          → &nbsp; View Analysis &nbsp;·&nbsp;
+          <span lang="ko">분석 보기</span>
+        </button>
+
+        <!-- Caption: 1:5 anchor + privacy reassurance -->
+        <p class="type-caption mt-x2 text-ghost">
+          Sori will reflect on what you shared
+          &nbsp;·&nbsp; <span lang="ko">소리가 당신이 나눈 것을 반영할 거예요</span>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- /#step-transcription -->

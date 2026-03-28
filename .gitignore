@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment secrets — NEVER commit
+.env
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+.claude/
+node_modules/
+.env
+.DS_Store
