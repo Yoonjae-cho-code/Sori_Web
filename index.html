@@ -129,14 +129,19 @@
 
     #step-gateway.sori-step--active {
       height: 100svh;
+      background-color: transparent !important;
+      /* 배경을 투명하게 하여 뒤의 3D가 보이게 함 */
     }
 
     /* ── Gateway layout ────────────────────────────────────────────────── */
     #gateway.t04-layout {
-      flex-direction: row;
+      display: flex;
+      flex-direction: column;
+      /* row에서 column으로 변경 추천 (모바일 대응) */
       align-items: center;
-      /* ← vertically centres the wordmark */
-      justify-content: flex-start;
+      justify-content: center;
+      background-color: transparent !important;
+      /* 여기도 투명하게 추가 */
       padding: 0 var(--sori-x-12);
       /* horizontal padding only; vertical centering via flex */
       overflow: visible;
@@ -869,7 +874,7 @@
                   <path d="M33,24 L35,27" stroke-width="1" stroke-opacity="0.4" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#Drained &nbsp;|&nbsp; <span lang="ko">#번아웃온</span></span>
+              <span class="emotion-card__label">#Drained &nbsp;|&nbsp; <span lang="ko">#지침</span></span>
               <p class="emotion-card__desc" lang="ko"> I’m completely spent. I don't have the energy for anything.</p>
             </button>
 
@@ -882,7 +887,7 @@
                   <path d="M3,18 L8,9 L13,23 L18,7 L23,23 L28,11 L33,18" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#Restless &nbsp;|&nbsp; <span lang="ko">#초조한</span></span>
+              <span class="emotion-card__label">#Restless &nbsp;|&nbsp; <span lang="ko">#불안</span></span>
               <p class="emotion-card__desc" lang="ko">I feel uneasy and on edge.</p>
             </button>
 
@@ -894,7 +899,7 @@
                   <line x1="3" y1="18" x2="33" y2="18" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#numb &nbsp;|&nbsp; <span lang="ko">#무감각한</span></span>
+              <span class="emotion-card__label">#numb &nbsp;|&nbsp; <span lang="ko">#멍함</span></span>
               <p class="emotion-card__desc" lang="ko">I don’t feel anything at all right now.</p>
             </button>
 
@@ -950,7 +955,7 @@
                   <circle cx="33" cy="5" r="0.8" fill="currentColor" stroke="none" opacity="0.5" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#lighter &nbsp;|&nbsp; <span lang="ko">#홀가분한</span></span>
+              <span class="emotion-card__label">#lighter &nbsp;|&nbsp; <span lang="ko">#홀가분</span></span>
               <p class="emotion-card__desc" lang="ko">My mind feels a bit more at ease. I think I can finally rest.</p>
             </button>
 
