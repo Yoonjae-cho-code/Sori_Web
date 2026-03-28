@@ -333,9 +333,9 @@ async function analyseTranscript(text) {
 const app = express();
 // localhost와 127.0.0.1 모두 허용 (브라우저에 따라 둘 중 하나로 접근)
 const ALLOWED_ORIGINS = [
-  CLIENT_ORIGIN,
-  CLIENT_ORIGIN.replace('localhost', '127.0.0.1'),
-  CLIENT_ORIGIN.replace('127.0.0.1', 'localhost'),
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://sori-web.onrender.com' // 이 주소를 정확히 추가하세요 (끝에 /가 없어야 함)
 ];
 app.use(cors({
   origin: (origin, callback) => {
