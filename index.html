@@ -10,7 +10,7 @@
   <link rel="icon" href="data:,">
   <meta name="description"
     content="Sori is a bilingual mental wellness companion — a quiet space to express, reflect, and breathe. No metrics, no streaks, only presence." />
-  <meta name="theme-color" content="#F6F4F0" />
+  <meta name="theme-color" content="#DBC9E3" />
 
   <!-- ─── Google Fonts — Lora (high-legibility editorial serif) ──────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,15 +50,24 @@
        ─────────────────────────────────────────────────────────────── */
     html,
     body {
-      background-color: #F6F4F0 !important;
-      /* Silky Cream — brand canvas */
-      /* Scroll lock is managed via .scroll-locked class (see sori-css-patch.css §G)
-         and toggled by sori-flow.js _setScrollLock(). Do NOT set overflow here. */
+      background-color: #DBC9E3 !important;
+      /* Silky Cream 대신 요청하신 보라색 적용 */
+      margin: 0;
+      padding: 0;
     }
 
     /* ── Site header ───────────────────────────────────────────────────── */
     .sori-header {
+      background-color: #DBC9E3 !important;
+      /* 배경과 완벽히 일치 */
+      border: none !important;
+      /* 경계선 제거 */
+      box-shadow: none !important;
+      /* 그림자 제거 */
       justify-content: space-between;
+      position: relative;
+      z-index: 100;
+      /* 콘텐츠보다 위로 */
     }
 
     /* ── Task 1: wordmark as a home-reset button ───────────────────────── */
@@ -187,22 +196,24 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      margin: 0;
-      z-index: var(--z-content);
-      background-color: var(--color-silky-cream);
+
+      /* 거대해지는 문제 해결 */
+      width: auto !important;
+      min-width: 180px;
+      max-width: 280px;
+      height: 56px !important;
+      /* 높이 고정 */
+
+      background-color: #F6F4F0;
+      /* 버튼은 읽기 쉽게 밝은 크림색 유지 추천 */
       border: 1.5px solid var(--color-dawn-sage);
       border-radius: 28px;
-      padding: var(--sori-x-3) var(--sori-x-6);
-      cursor: pointer;
-      font-family: var(--font-sans);
-      font-size: clamp(12px, 1.3vw, 15px);
-      font-weight: 400;
-      letter-spacing: var(--type-caption-tracking);
-      color: var(--color-deep-sepia);
-      text-align: center;
-      white-space: nowrap;
-      animation: sori-begin-pulse var(--transition-breath) ease-in-out infinite;
-      transition: background-color var(--transition-base), border-color var(--transition-base);
+      padding: 0 32px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
     }
 
     .gateway__begin-cta:hover {
@@ -790,7 +801,7 @@
 
         <!-- Territory 01 · Resonance Field Canvas -->
         <canvas class="resonance-canvas" id="resonance-field" aria-hidden="true"
-          style="opacity:1;background:#F6F4F0;"></canvas>
+          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:0;"></canvas>
 
         <!-- Territory 02 · Fluid Thread -->
         <svg class="fluid-thread" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
