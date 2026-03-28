@@ -89,7 +89,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sori';
 const BCRYPT_SALT_ROUNDS = 12;
 const PIN_COOKIE = 'sori_uid';    // HTTP-only cookie name
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.info('[sori/db] ✅ MongoDB connected:', process.env.MONGODB_URI))
   .catch(err => {
     console.error(
