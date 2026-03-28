@@ -672,6 +672,50 @@
         padding: var(--sori-x-4);
       }
     }
+
+    body,
+    .type-h1,
+    .type-h2,
+    .type-body,
+    .type-caption,
+    #gateway-headline,
+    #expression-heading {
+      color: #311F5D !important;
+    }
+
+    /* 2. 3D 구체가 보이도록 모든 가림막 섹션 투명화 */
+    #sori-app,
+    .sori-step,
+    .sori-section,
+    #step-gateway,
+    #gateway {
+      background-color: transparent !important;
+      background: transparent !important;
+    }
+
+    /* 3. 애니메이션 지연 시간 정의 */
+    .delay-1 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.5s;
+    }
+
+    .delay-3 {
+      animation-delay: 0.9s;
+    }
+
+    /* 문구용 지연 시간 */
+
+    /* 4. 'Choose what feels...' 문구 크기 및 스타일 강화 */
+    .type-caption.fade-in-up.delay-3 {
+      font-size: 16px !important;
+      line-height: 1.6;
+      margin-top: 24px;
+      opacity: 0;
+      /* 애니메이션 시작 전까지 숨김 */
+    }
   </style>
 </head>
 
@@ -852,8 +896,8 @@
           <h1 class="type-h1 mt-x2 fade-in-up delay-1" id="expression-heading">Express</h1>
           <p class="type-h1 mt-x1 fade-in-up delay-1" lang="ko">표현하기</p>
 
-          <p class="type-caption mt-x2 text-ghost fade-in-up delay-2"
-            style="font-size: 15px !important; color: var(--color-mid-sepia) !important;">
+          <p class="type-caption mt-x2 text-ghost fade-in-up delay-3"
+            style="font-size: 15px !important; color: var(--color-deep-purple) !important;">
             Choose what feels closest right now &nbsp;·&nbsp;
             <span lang="ko">지금 느껴지는 감정과 가장 가까운 감정을 골라요</span>
           </p>
