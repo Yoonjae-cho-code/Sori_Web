@@ -379,6 +379,23 @@ body {
   background-color: var(--color-silky-cream);
   /* 55% rule — dominant at all times */
   min-height: 100dvh;
+  /* vh 대신 dvh(Dynamic Viewport Height) 사용  */
+  overflow-x: hidden;
+  /* 모바일에서 가로 스크롤 방지 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 시작 페이지(Gateway) 컨테이너 정렬 */
+#step-gateway {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100dvh;
+  padding: var(--sori-x-4);
+  /* 브랜드 간격 시스템 적용 */
 }
 
 img,
@@ -1026,15 +1043,26 @@ label:lang(ko) {
 
 .resonance-canvas {
   position: absolute;
-  inset: 0;
-  z-index: var(--z-canvas);
-  /* 0 — always below text */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 명시적으로 100% 부여 */
+  z-index: 1;
+  /* 0에서 1로 상향 조정 */
   pointer-events: none;
   opacity: 0.6;
-  /* Territory 01 spec */
-  /* Three.js MeshPhongMaterial color: #A9B4AA (Dawn Sage) */
 }
 
+/* 캔버스 위에 올라가는 텍스트와 버튼 레이어를 더 높게 설정 */
+.sori-step--active {
+  position: relative;
+  z-index: 10;
+  /* 캔버스보다 위에 오도록 설정 */
+  /* Territory 01 spec */
+  /* Three.js MeshPhongMaterial color: #EDED8B */
+
+}
 
 /* ── Territory 02 · Fluid Thread SVG ───────────────────────
    Source: Brand Guidelines §05, Website Plan §7.4
