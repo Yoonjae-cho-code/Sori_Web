@@ -51,23 +51,20 @@
     html,
     body {
       background-color: #DBC9E3 !important;
-      /* Silky Cream 대신 요청하신 보라색 적용 */
+      /* 요청하신 보라색으로 변경 */
       margin: 0;
       padding: 0;
     }
 
     /* ── Site header ───────────────────────────────────────────────────── */
     .sori-header {
-      background-color: #DBC9E3 !important;
-      /* 배경과 완벽히 일치 */
+      background-color: transparent !important;
+      /* 배경과 분리되지 않도록 투명화 */
       border: none !important;
-      /* 경계선 제거 */
-      box-shadow: none !important;
-      /* 그림자 제거 */
       justify-content: space-between;
       position: relative;
       z-index: 100;
-      /* 콘텐츠보다 위로 */
+      /* 3D 오브젝트보다 위에 오도록 설정 */
     }
 
     /* ── Task 1: wordmark as a home-reset button ───────────────────────── */
@@ -801,7 +798,7 @@
 
         <!-- Territory 01 · Resonance Field Canvas -->
         <canvas class="resonance-canvas" id="resonance-field" aria-hidden="true"
-          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:0;"></canvas>
+          style="opacity:1; background:transparent !important; position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
 
         <!-- Territory 02 · Fluid Thread -->
         <svg class="fluid-thread" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"

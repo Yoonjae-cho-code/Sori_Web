@@ -312,20 +312,22 @@ import * as THREE from 'three';
     return;
   }
 
-  // ── Renderer ──────────────────────────────────────────────────────────────
-  //
-  //  alpha: true → 캔버스가 투명하여 뒤에 있는 페이지 배경색(#DBC9E3)이 그대로
-  //  비쳐 보입니다. 구체(sphere)는 정상적으로 렌더링됩니다.
-  //
+  // // — Renderer ——————————————————————————————————
   const renderer = new THREE.WebGLRenderer({
     canvas,
-    antialias      : true,
-    alpha          : true,           // transparent — 페이지 배경색이 뒤로 비침
+    antialias: true,
+    alpha: true,            // 캔버스 배경 투명화 활성화
+    premultipliedAlpha: false, // 모바일 브라우저의 투명도 합성 오류 방지
     powerPreference: 'high-performance',
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));  // cap at 2×
-  renderer.setClearColor(0x000000, 0);   // fully transparent clear
 
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight); // 초기 크기 명시적 설정
+  renderer.setClearColor(0x000000, 0); // 배경을 완전히 투명(Alpha 0)으로 설정
+
+  // [중요] Scene 자체에 배경색이 설정되어 있다면 투명도가 작동하지 않습니다.
+  // scene 정의부 근처에서 아래 코드가 있는지 확인하고 null로 설정하세요.
+  // scene.background = null;
   // ── Camera ────────────────────────────────────────────────────────────────
   //   FOV 45° keeps the sphere looking naturally round (not fish-eyed).
   //   z = 3.4 → the sphere (r ≈ 1.0 + max-disp 0.32) fills ~50 % of height.
@@ -343,8 +345,8 @@ import * as THREE from 'three';
 
   // ── Uniforms ──────────────────────────────────────────────────────────────
   const uniforms = {
-    uTime     : { value: 0.0 },
-    uBreath   : { value: 0.0 },
+    uTime: { value: 0.0 },
+    uBreath: { value: 0.0 },
     uHeartbeat: { value: 0.0 },
   };
 
@@ -366,11 +368,11 @@ import * as THREE from 'three';
   function _resize() {
     // The canvas fills its CSS container; read the rendered size from the
     // parent section so we stay pixel-perfect without inline style hacks.
-    const w = canvas.clientWidth  || canvas.parentElement?.clientWidth  || 600;
+    const w = canvas.clientWidth || canvas.parentElement?.clientWidth || 600;
     const h = canvas.clientHeight || canvas.parentElement?.clientHeight || 600;
 
-    if (renderer.domElement.width  !== Math.round(w * renderer.getPixelRatio()) ||
-        renderer.domElement.height !== Math.round(h * renderer.getPixelRatio())) {
+    if (renderer.domElement.width !== Math.round(w * renderer.getPixelRatio()) ||
+      renderer.domElement.height !== Math.round(h * renderer.getPixelRatio())) {
       renderer.setSize(w, h, false);   // false → don't override CSS size
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -385,9 +387,9 @@ import * as THREE from 'three';
   //  § 6  ANIMATION LOOP
   // ──────────────────────────────────────────────────────────────────────────
 
-  let _startTime  = performance.now();
-  let _rafId      = null;
-  let _paused     = false;
+  let _startTime = performance.now();
+  let _rafId = null;
+  let _paused = false;
 
   /**
    * _heartbeatEnvelope(phase)
@@ -470,13 +472,13 @@ import * as THREE from 'three';
    */
   const _EMOTION_COLOURS = {
     'burned-out': [0.788, 0.722, 0.659],
-    'anxious'   : [0.663, 0.761, 0.839],
-    'numb'      : [0.690, 0.753, 0.690],
-    'meh'       : [0.784, 0.749, 0.659],
-    'lonely'    : [0.722, 0.690, 0.816],
-    'okay'      : [0.816, 0.749, 0.627],
-    'lighter'   : [0.659, 0.784, 0.722],
-    'proud'     : [0.816, 0.659, 0.722],
+    'anxious': [0.663, 0.761, 0.839],
+    'numb': [0.690, 0.753, 0.690],
+    'meh': [0.784, 0.749, 0.659],
+    'lonely': [0.722, 0.690, 0.816],
+    'okay': [0.816, 0.749, 0.627],
+    'lighter': [0.659, 0.784, 0.722],
+    'proud': [0.816, 0.659, 0.722],
   };
 
   let _currentEmotion = null;
