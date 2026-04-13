@@ -24,6 +24,8 @@
   <link rel="stylesheet" href="sori-modal.css" />
   <!-- ─── UI Fix Patch (must load after sori-css-patch.css) ───────────── -->
   <link rel="stylesheet" href="sori-fix.css" />
+  <!-- ─── Interview Patch (toast, hero emotion, slider, wellbeing) ──────── -->
+  <link rel="stylesheet" href="sori-updates.css" />
 
   <!-- ─── Three.js via importmap ──────────────────────────────────────── -->
   <script type="importmap">
@@ -1132,8 +1134,12 @@
       <section class="sori-section" id="analysis" aria-labelledby="analysis-heading">
         <div class="sori-container">
 
-          <!-- Loading state — visible while fetch is in flight -->
-          <div id="analysis-loading" aria-live="polite">
+          <!-- Loading state — visible while fetch is in flight.
+               #analysis-heading and #analysis-heading-ko are the
+               targets for sori-updates.js startAnalyzingCycle(),
+               which cycles through a sequence of bilingual messages
+               while the API call is in flight. -->
+          <div id="analysis-loading" aria-live="polite" aria-atomic="false">
             <div class="analysis-loader fade-in-up" aria-hidden="true">
               <div class="analysis-loader__dot"></div>
               <div class="analysis-loader__dot"></div>
@@ -1142,7 +1148,8 @@
             <p class="type-h2 mt-x4 fade-in-up delay-1" id="analysis-heading">
               Sori is listening and reflecting…
             </p>
-            <p class="type-h2 mt-x1 fade-in-up delay-1" lang="ko">
+            <!-- id="analysis-heading-ko" — targeted by startAnalyzingCycle() -->
+            <p class="type-h2 mt-x1 fade-in-up delay-1" id="analysis-heading-ko" lang="ko">
               소리가 듣고 반영 중이에요…
             </p>
             <p class="type-caption mt-x3 text-ghost fade-in-up delay-2">
@@ -1649,6 +1656,9 @@
        5. sori-motion.js     — MUST load last. Queries all .fade-in-up nodes.
        ================================================================ -->
   <script type="module" src="sori-resonance.js"></script>
+  <!-- sori-updates.js must load before sori-voice.js so that
+       window.soriUpdates is available when onAnalyzeClick fires -->
+  <script src="sori-updates.js"></script>
   <script src="sori-voice.js"></script>
   <script src="sori-archive.js"></script>
   <script src="sori-flow.js"></script>

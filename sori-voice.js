@@ -27,6 +27,13 @@
   let _recording = false, _stopGuard = false, _stream = null, _recorder = null, _audioCtx = null, _analyser = null;
   let _chunks = [], _hardTimer = null, _silenceTimer = null, _silenceStart = null, _warmupTimer = null;
   let _audioBlob = null, _analyzeBtn = null, _waveformRaf = null;
+  // ── Recording generation counter ─────────────────────────────────────────
+  // Incremented on every startRecording() and cleanup(). Each MediaRecorder
+  // 'stop' callback captures its generation at creation time; if the
+  // generation has advanced by the time the callback fires, the callback
+  // is silently discarded. This prevents stale onRecorderStop calls from
+  // a previous recording session overwriting a new one (re-recording bug).
+  let _recordingGen = 0;
 
   function recordBtn() { return document.getElementById('voice-record-trigger'); }
   function statusEl() { return document.getElementById('voice-status'); }
@@ -137,7 +144,41 @@
 
   function setStatus(text) { const el = statusEl(); if (el) el.textContent = text; }
   function setBtnListening() { const b = recordBtn(); if (!b) return; b.disabled = false; b.setAttribute('aria-pressed', 'true'); b.classList.add('voice-record-btn--active'); b.innerHTML = '● &nbsp; Listening\u2026 &nbsp;&middot;&nbsp; <span lang="ko">듣고 있어요</span>'; orbRing()?.classList.add('voice-orb-ring--active'); }
-  function setBtnStopped() { const b = recordBtn(); if (!b) return; b.disabled = true; b.setAttribute('aria-pressed', 'false'); b.classList.remove('voice-record-btn--active'); b.innerHTML = '○ &nbsp; Recorded &nbsp;&middot;&nbsp; <span lang="ko">녹음 완료</span>'; orbRing()?.classList.remove('voice-orb-ring--active'); stopWaveform(); }
+  function setBtnStopped() {
+    const b = recordBtn();
+    if (!b) return;
+    b.disabled = true;
+    b.setAttribute('aria-pressed', 'false');
+    b.classList.remove('voice-record-btn--active');
+    b.innerHTML = '○ &nbsp; Recorded &nbsp;&middot;&nbsp; <span lang="ko">녹음 완료</span>';
+    orbRing()?.classList.remove('voice-orb-ring--active');
+    stopWaveform();
+    // ── Micro-interaction: toast confirming recording captured ───────────
+    _showRecordingStoppedToast();
+  }
+
+  // ── Recording-stopped toast ─────────────────────────────────────────────
+  function _showRecordingStoppedToast() {
+    const existing = document.getElementById('sori-recording-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'sori-recording-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = '<span class="sori-toast__check" aria-hidden="true">✓</span> Recording captured &nbsp;·&nbsp; <span lang="ko">녹음 완료</span>';
+    document.body.appendChild(toast);
+    // Two-frame rAF ensures CSS transition fires after display: block
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        toast.classList.add('sori-toast--visible');
+      });
+    });
+    setTimeout(function () {
+      toast.classList.remove('sori-toast--visible');
+      setTimeout(function () { toast.remove(); }, 500);
+    }, 2200);
+  }
   function setBtnIdle() { const b = recordBtn(); if (!b) return; b.disabled = false; b.setAttribute('aria-pressed', 'false'); b.classList.remove('voice-record-btn--active'); b.innerHTML = '○ &nbsp; Speak &nbsp;&middot;&nbsp; <span lang="ko">말하기</span>'; orbRing()?.classList.remove('voice-orb-ring--active'); stopWaveform(); }
 
   function revealAnalyzeBtn() {
@@ -185,21 +226,83 @@
   function stopWaveform() { if (_waveformRaf) { cancelAnimationFrame(_waveformRaf); _waveformRaf = null; } const vis = waveVis(); if (vis) { vis.classList.remove('is-active'); vis.querySelectorAll('.waveform-bar').forEach(b => { b.style.height = '4px'; }); } }
 
   async function startRecording() {
-    if (_recording) return; _audioBlob = null; hideAnalyzeBtn();
+    if (_recording) return;
+    _audioBlob = null;
+    hideAnalyzeBtn();
+
+    // Capture generation snapshot BEFORE any async work so the closure
+    // correctly identifies which recording session this belongs to.
+    _recordingGen++;
+    const myGen = _recordingGen;
+
     try {
       setStatus('Opening a quiet space\u2026 \u00b7 조용한 공간을 여는 중이에요');
+
+      // ── Mobile guard: check API availability ──────────────────────────
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setStatus('Voice recording is not supported in this browser. \u00b7 이 브라우저는 녹음을 지원하지 않아요.');
+        return;
+      }
+
       _stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); _analyser = _audioCtx.createAnalyser(); _analyser.fftSize = 512; _analyser.smoothingTimeConstant = 0.25;
-      const src = _audioCtx.createMediaStreamSource(_stream); src.connect(_analyser);
-      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
-      _recorder = new MediaRecorder(_stream, mime ? { mimeType: mime } : {}); _chunks = [];
-      _recorder.addEventListener('dataavailable', e => { if (e.data && e.data.size > 0) _chunks.push(e.data); });
-      _recorder.addEventListener('stop', onRecorderStop); _recorder.start(250);
-      _recording = true; _stopGuard = false; setBtnListening(); setStatus('Speak freely, or rest in silence. \u00b7 자유롭게 말하거나, 침묵 속에 있어도 돼요'); window.soriResonance?.setRecordingActive?.(true); startWaveform();
-      _hardTimer = setTimeout(() => { if (_recording) stopRecording(); }, MAX_MS);
+
+      // ── AudioContext: iOS Safari requires explicit .resume() ──────────
+      // The context may be created in a 'suspended' state on iOS because
+      // the getUserMedia await crossed a task boundary. .resume() is a
+      // no-op on desktop where state is already 'running'.
+      _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (_audioCtx.state === 'suspended') {
+        await _audioCtx.resume().catch(function () { /* non-fatal */ });
+      }
+
+      _analyser = _audioCtx.createAnalyser();
+      _analyser.fftSize = 512;
+      _analyser.smoothingTimeConstant = 0.25;
+      const src = _audioCtx.createMediaStreamSource(_stream);
+      src.connect(_analyser);
+
+      // ── MIME type: prefer opus/webm, fall back for iOS (mp4) ─────────
+      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+        : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+        : '';
+
+      _recorder = new MediaRecorder(_stream, mime ? { mimeType: mime } : {});
+      _chunks = [];
+
+      _recorder.addEventListener('dataavailable', function (e) {
+        if (e.data && e.data.size > 0) _chunks.push(e.data);
+      });
+
+      // ── Generation-scoped stop listener ──────────────────────────────
+      // If cleanup() has already incremented _recordingGen, this callback
+      // is silently discarded — preventing stale data from overwriting a
+      // new recording session (re-recording same-output bug).
+      _recorder.addEventListener('stop', function () {
+        if (_recordingGen !== myGen) {
+          console.log('[sori-voice] 🚫 Stale stop event discarded (gen ' + myGen + ' vs current ' + _recordingGen + ')');
+          return;
+        }
+        onRecorderStop();
+      });
+
+      _recorder.start(250);
+      _recording = true;
+      _stopGuard = false;
+      setBtnListening();
+      setStatus('Speak freely, or rest in silence. \u00b7 자유롭게 말하거나, 침묵 속에 있어도 돼요');
+      window.soriResonance?.setRecordingActive?.(true);
+      startWaveform();
+      _hardTimer = setTimeout(function () { if (_recording) stopRecording(); }, MAX_MS);
       _warmupTimer = setTimeout(startSilenceDetection, WARMUP_MS);
+
     } catch (err) {
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') setStatus('Microphone access is needed. \u00b7 마이크 권한이 필요해요.'); else setStatus('Something went gently wrong. Please try again. \u00b7 다시 시도해 주세요.'); cleanup();
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setStatus('Microphone access is needed. \u00b7 마이크 권한이 필요해요.');
+      } else {
+        setStatus('Something went gently wrong. Please try again. \u00b7 다시 시도해 주세요.');
+      }
+      cleanup();
     }
   }
 
@@ -219,25 +322,94 @@
 
   async function onAnalyzeClick() {
     if (!_audioBlob) { setStatus('No recording found. Please record again. \u00b7 다시 녹음해 주세요.'); return; }
-    const blob = _audioBlob; _audioBlob = null; hideAnalyzeBtn(); goToStep(LOADING_STEP);
+    const blob = _audioBlob;
+    _audioBlob = null;
+    hideAnalyzeBtn();
+    goToStep(LOADING_STEP);
+
+    // ── Start the Analyzing... cycling text animation ────────────────────
+    if (window.soriUpdates && typeof window.soriUpdates.startAnalyzingCycle === 'function') {
+      window.soriUpdates.startAnalyzingCycle();
+    }
+
     try {
-      const form = new FormData(); form.append('audio', blob, 'recording.webm');
+      const form = new FormData();
+      // ── Use the correct file extension for the MIME type (iOS fix) ────
+      const mimeType = blob.type || 'audio/webm';
+      const ext = mimeType.includes('mp4') ? 'mp4'
+        : mimeType.includes('ogg') ? 'ogg'
+        : 'webm';
+      form.append('audio', blob, 'recording.' + ext);
+      // Cache-bust: prevents any proxy/SW from returning a stale response
+      form.append('_ts', Date.now().toString());
+
       const res = await fetch('/api/analyze', { method: 'POST', body: form });
-      if (!res.ok) { let errText = `Server error ${res.status}`; try { const j = await res.json(); if (j.error) errText = j.error; } catch (_) { } throw new Error(errText); }
-      const data = await res.json(); onTranscriptReceived(data);
-    } catch (err) { buildErrorCard(err.message); goToStep(JOURNAL_STEP); setBtnIdle(); }
+      if (!res.ok) {
+        let errText = 'Server error ' + res.status;
+        try { const j = await res.json(); if (j.error) errText = j.error; } catch (_) { }
+        throw new Error(errText);
+      }
+      const data = await res.json();
+      onTranscriptReceived(data);
+    } catch (err) {
+      if (window.soriUpdates && typeof window.soriUpdates.stopAnalyzingCycle === 'function') {
+        window.soriUpdates.stopAnalyzingCycle();
+      }
+      buildErrorCard(err.message);
+      goToStep(JOURNAL_STEP);
+      setBtnIdle();
+    }
   }
 
   function onTranscriptReceived(data) {
+    // Stop the analyzing cycle animation
+    if (window.soriUpdates && typeof window.soriUpdates.stopAnalyzingCycle === 'function') {
+      window.soriUpdates.stopAnalyzingCycle();
+    }
     try { buildJournalCard(data); } catch (buildErr) { buildErrorCard('The journal card could not be rendered. ' + buildErr.message); }
-    window.soriFlow?.populateInsight?.(data); goToStep(JOURNAL_STEP); setBtnIdle(); setStatus('');
+    window.soriFlow?.populateInsight?.(data);
+
+    // ── Hero emotion display: brief interstitial on step-analysis ────────
+    // Show a large emotion keyword for ~1.8s before auto-advancing to journal.
+    if (window.soriUpdates && typeof window.soriUpdates.showHeroEmotion === 'function') {
+      window.soriUpdates.showHeroEmotion(data, function () {
+        goToStep(JOURNAL_STEP);
+        setBtnIdle();
+        setStatus('');
+      });
+    } else {
+      goToStep(JOURNAL_STEP);
+      setBtnIdle();
+      setStatus('');
+    }
   }
 
   function cleanup() {
-    _recording = false; _stopGuard = false; _audioBlob = null;
-    clearTimeout(_hardTimer); clearTimeout(_warmupTimer); stopSilenceDetection(); stopWaveform(); setBtnIdle(); hideAnalyzeBtn();
-    if (_stream) { _stream.getTracks().forEach(t => t.stop()); _stream = null; }
-    _recorder = null; _chunks = []; try { if (_audioCtx) _audioCtx.close(); } catch (_) { } _audioCtx = null; _analyser = null; window.soriResonance?.setRecordingActive?.(false);
+    // Advance generation counter FIRST — this silently invalidates any
+    // inflight onRecorderStop callbacks from the outgoing session.
+    _recordingGen++;
+    _recording = false;
+    _stopGuard = false;
+    _audioBlob = null;
+    clearTimeout(_hardTimer);
+    clearTimeout(_warmupTimer);
+    stopSilenceDetection();
+    stopWaveform();
+    setBtnIdle();
+    hideAnalyzeBtn();
+    if (_stream) { _stream.getTracks().forEach(function (t) { t.stop(); }); _stream = null; }
+    // Stop the recorder gracefully (stream tracks stopped above will
+    // trigger the native stop internally, but we call it explicitly to
+    // be safe). The generation-scoped stop listener will ignore this.
+    if (_recorder && _recorder.state !== 'inactive') {
+      try { _recorder.stop(); } catch (e) { /* ignore */ }
+    }
+    _recorder = null;
+    _chunks = [];
+    try { if (_audioCtx) _audioCtx.close(); } catch (_) { }
+    _audioCtx = null;
+    _analyser = null;
+    window.soriResonance?.setRecordingActive?.(false);
   }
 
   document.addEventListener('click', function soriVoiceDelegate(e) {

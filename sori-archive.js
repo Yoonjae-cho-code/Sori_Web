@@ -99,6 +99,13 @@
     authArea.style.display = 'none';
     archiveContent.style.display = 'flex';
     await fetchEntries();
+    // ── Progressive wellbeing section (sori-updates.js) ───────────────────
+    // Rendered after entries load so the heatmap and checklist have real data.
+    // The counseling resources link is only shown conditionally inside
+    // renderWellbeingSection — never on first-session results directly.
+    if (window.soriUpdates && typeof window.soriUpdates.renderWellbeingSection === 'function') {
+      window.soriUpdates.renderWellbeingSection(entries);
+    }
   }
 
   async function fetchEntries(providedPin) {

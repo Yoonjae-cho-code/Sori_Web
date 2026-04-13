@@ -186,16 +186,3 @@
     padding-bottom: var(--sori-x-3, 36px);
   }
 }
-
-@media (max-width: 768px) {
-
-  .journal-content,
-  .insight-box {
-    /* 실제 클래스명으로 변경하세요 */
-    width: 100%;
-    padding: 20px 15px;
-    /* 모바일에 맞는 안쪽 여백 */
-    box-sizing: border-box;
-    /* 패딩이 너비에 포함되도록 설정 */
-  }
-}

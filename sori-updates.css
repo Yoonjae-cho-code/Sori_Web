@@ -1,0 +1,834 @@
+/* ============================================================
+   SORI · 소리  —  sori-updates.css  v1
+   User Interview Patch — April 2026
+   ============================================================
+   Covers five new feature areas:
+     §1  Recording-stopped toast
+     §2  Hero emotion interstitial (analysis → journal transition)
+     §3  Emotion Temperature Slider
+     §4  Emotional heatmap & wellbeing section
+     §5  Conditional counseling resources card
+
+   Design constraints (from sori-global.css):
+     — No pure #000 / #fff
+     — No font-weight ≥ 700
+     — All spacing in multiples of --sori-x (12 px)
+     — Transitions: 400–600 ms ease / ease-in-out
+   ============================================================ */
+
+
+/* ============================================================
+   §1  RECORDING-STOPPED TOAST
+   ────────────────────────────────────────────────────────────
+   Appears at the bottom-centre of the viewport the moment
+   the MediaRecorder fires its 'stop' event. Fades in over
+   300 ms, holds 2.2 s, then fades out. No tap / dismiss needed.
+   ============================================================ */
+
+#sori-recording-toast {
+  /* Position */
+  position: fixed;
+  bottom: calc(var(--sori-x) * 5);   /* 60 px from bottom edge */
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  z-index: 9999;
+
+  /* Sizing */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sori-x);
+  padding: calc(var(--sori-x) * 1.25) calc(var(--sori-x) * 2.5);
+  white-space: nowrap;
+
+  /* Appearance — matches Sori's oatmeal palette */
+  background-color: rgba(246, 244, 240, 0.96);   /* --color-oatmeal-beige near-opaque */
+  border: 1px solid rgba(169, 180, 170, 0.45);   /* --color-dawn-sage translucent */
+  border-radius: 28px;
+  box-shadow:
+    0 4px 24px rgba(100, 80, 60, 0.10),
+    0 1px 4px  rgba(100, 80, 60, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Typography */
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(12px, 1.15vw, 14px);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--color-deep-sepia, #3a2e28);
+
+  /* Transition — enter */
+  opacity: 0;
+  transition:
+    opacity 320ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+#sori-recording-toast.sori-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Check-mark icon */
+.sori-toast__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(169, 180, 170, 0.28);   /* dawn-sage ghost ring */
+  font-size: 11px;
+  color: var(--color-dawn-sage, #a9b4aa);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Mobile: nudge up above thumb-safe zone */
+@media (max-width: 640px) {
+  #sori-recording-toast {
+    bottom: calc(var(--sori-x) * 8);   /* 96 px — above bottom nav area */
+  }
+}
+
+
+/* ============================================================
+   §2  HERO EMOTION INTERSTITIAL
+   ────────────────────────────────────────────────────────────
+   Full-cover overlay that appears on #step-analysis after the
+   API resolves. Shows the primary emotion as a large typographic
+   "hero" keyword, then fades out and advances to the journal.
+   ============================================================ */
+
+.sori-hero-emotion {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--sori-x) * 1.5);
+  padding: var(--sori-x-4);
+  text-align: center;
+  pointer-events: none;
+
+  /* Entry: fade + slight upward drift */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity  500ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sori-hero-emotion--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Exit: fade out faster */
+.sori-hero-emotion--out {
+  opacity: 0;
+  transition: opacity 400ms ease-in;
+}
+
+/* Large nature-glyph emoji */
+.sori-hero-emotion__emoji {
+  font-size: clamp(48px, 8vw, 72px);
+  line-height: 1;
+  display: block;
+  /* Slow gentle breathe while visible */
+  animation: hero-emoji-breathe 2.8s ease-in-out infinite;
+}
+
+@keyframes hero-emoji-breathe {
+  0%, 100% { transform: scale(0.96); }
+  50%       { transform: scale(1.04); }
+}
+
+/* Primary emotion label — editorial Playfair italic */
+.sori-hero-emotion__keyword {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(40px, 7vw, 72px);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--color-deep-sepia, #3a2e28);
+  margin: 0;
+}
+
+/* Korean counterpart */
+.sori-hero-emotion__ko {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(18px, 2.8vw, 28px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-mid-sepia, #6b5a4e);
+  opacity: 0.75;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Subtle "Sori heard you" caption below */
+.sori-hero-emotion__hint {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 300;
+  letter-spacing: 0.10em;
+  color: var(--color-ghost-sepia, #b0a090);
+  margin-top: var(--sori-x);
+}
+
+/* Keep #step-analysis container position:relative so the
+   absolute hero overlay is correctly anchored */
+#step-analysis .sori-container {
+  position: relative;
+}
+
+
+/* ============================================================
+   §3  EMOTION TEMPERATURE SLIDER
+   ────────────────────────────────────────────────────────────
+   Injected below the emotion card grid as an alternative input.
+   A mode-toggle switches between "Cards" and "Temperature".
+   The slider uses a CSS gradient track and a custom thumb.
+   ============================================================ */
+
+/* ── Mode toggle ──────────────────────────────────────────── */
+
+.emotion-input-toggle {
+  display: flex;
+  gap: 4px;
+  align-self: flex-start;          /* left-align inside the column */
+  padding: 3px;
+  background: rgba(219, 201, 227, 0.28);  /* lavender ghost */
+  border-radius: 24px;
+  margin-bottom: var(--sori-x-3);
+}
+
+.emotion-toggle-btn {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-deep-sepia, #3a2e28);
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  padding: calc(var(--sori-x) * 0.6) calc(var(--sori-x) * 1.5);
+  cursor: pointer;
+  transition:
+    background 280ms ease,
+    color 280ms ease;
+  white-space: nowrap;
+}
+
+.emotion-toggle-btn--active {
+  background: rgba(246, 244, 240, 0.95);   /* oatmeal chip */
+  box-shadow: 0 1px 6px rgba(100, 80, 60, 0.08);
+  color: var(--color-deep-sepia, #3a2e28);
+}
+
+.emotion-toggle-btn:not(.emotion-toggle-btn--active):hover {
+  background: rgba(246, 244, 240, 0.45);
+}
+
+.emotion-toggle-btn:focus-visible {
+  outline: 1.5px solid var(--color-deep-purple, #311F5D);
+  outline-offset: 2px;
+}
+
+/* ── Slider panel ─────────────────────────────────────────── */
+
+.emotion-slider-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sori-x-2);
+  width: 100%;
+  padding: var(--sori-x-3) 0 var(--sori-x-4);
+  /* Reveal animation — same pattern as fade-in-up */
+  animation: sliderPanelReveal 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.emotion-slider-panel[hidden] {
+  display: none;
+}
+
+@keyframes sliderPanelReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Instructional prompt */
+.emotion-slider__prompt {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: var(--color-mid-sepia, #6b5a4e);
+  text-align: center;
+  margin: 0;
+}
+
+/* Gradient track (decorative, behind the range input) */
+.emotion-slider__track-wrapper {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  margin: var(--sori-x) 0 calc(var(--sori-x) * 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.emotion-slider__gradient-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  /* Cool (left) → neutral (mid) → warm (right) */
+  background: linear-gradient(
+    to right,
+    #9fb8d4,   /* muted steel-blue — heavy/drained  */
+    #c4b8b0,   /* warm grey       — numb/meh        */
+    #d4a574,   /* gentle amber    — alright          */
+    #a9b4aa    /* sage green      — lighter/proud    */
+  );
+  opacity: 0.55;
+}
+
+/* ── Range input — custom styled ─────────────────────────── */
+
+.emotion-slider__range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  /* Transparent track — the decorative gradient track shows underneath */
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Webkit thumb */
+.emotion-slider__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-oatmeal-beige, #f6f4f0);
+  border: 1.5px solid var(--color-dawn-sage, #a9b4aa);
+  box-shadow: 0 2px 10px rgba(100, 80, 60, 0.14);
+  cursor: grab;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.emotion-slider__range::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+  box-shadow: 0 4px 18px rgba(100, 80, 60, 0.20);
+}
+
+/* Firefox thumb */
+.emotion-slider__range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-oatmeal-beige, #f6f4f0);
+  border: 1.5px solid var(--color-dawn-sage, #a9b4aa);
+  box-shadow: 0 2px 10px rgba(100, 80, 60, 0.14);
+  cursor: grab;
+  transition: transform 180ms ease;
+}
+
+.emotion-slider__range::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+/* Firefox track */
+.emotion-slider__range::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 4px;
+}
+
+.emotion-slider__range:focus-visible {
+  outline: none;
+}
+
+.emotion-slider__range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-deep-purple, #311F5D);
+  outline-offset: 3px;
+}
+
+/* ── Endpoint labels ──────────────────────────────────────── */
+
+.emotion-slider__labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: calc(var(--sori-x) * 0.25);
+}
+
+.emotion-slider__label-start,
+.emotion-slider__label-end {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(10px, 0.9vw, 11px);
+  font-weight: 300;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia, #b0a090);
+}
+
+/* ── Live readout ─────────────────────────────────────────── */
+
+.emotion-slider__readout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--sori-x) * 0.75);
+  padding: var(--sori-x-2) var(--sori-x-3);
+  background: rgba(246, 244, 240, 0.70);
+  border: 1px solid rgba(169, 180, 170, 0.30);
+  border-radius: 20px;
+  transition:
+    background 300ms ease,
+    border-color 300ms ease;
+  margin-top: var(--sori-x);
+}
+
+/* Tone tints — cool, neutral, warm */
+.emotion-slider__readout.tone-cool {
+  background: rgba(159, 184, 212, 0.12);
+  border-color: rgba(159, 184, 212, 0.35);
+}
+
+.emotion-slider__readout.tone-neutral {
+  background: rgba(196, 184, 176, 0.14);
+  border-color: rgba(196, 184, 176, 0.35);
+}
+
+.emotion-slider__readout.tone-warm {
+  background: rgba(212, 165, 116, 0.10);
+  border-color: rgba(212, 165, 116, 0.35);
+}
+
+.emotion-slider__readout-emoji {
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.emotion-slider__readout-label {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(20px, 2.8vw, 26px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-deep-sepia, #3a2e28);
+  letter-spacing: -0.01em;
+}
+
+.emotion-slider__readout-ko {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(14px, 1.6vw, 17px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-mid-sepia, #6b5a4e);
+  opacity: 0.75;
+}
+
+/* ── Confirm button pulse animation ──────────────────────── */
+
+.emotion-slider__confirm {
+  align-self: center;
+  margin-top: var(--sori-x-2);
+}
+
+.emotion-slider__confirm.is-confirming {
+  animation: confirm-pulse 280ms ease-out;
+}
+
+@keyframes confirm-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* Mobile tweaks for slider */
+@media (max-width: 640px) {
+  .emotion-input-toggle {
+    align-self: center;
+  }
+
+  .emotion-slider__readout {
+    flex-wrap: wrap;
+    gap: var(--sori-x);
+  }
+}
+
+
+/* ============================================================
+   §4  EMOTIONAL HEATMAP & WELLBEING SECTION
+   ────────────────────────────────────────────────────────────
+   Appended below the archive calendar after PIN unlock.
+   An 8-week dot grid colour-coded by emotion sentiment,
+   followed by the mental-health checklist.
+   ============================================================ */
+
+/* ── Wellbeing section wrapper ───────────────────────────── */
+
+.wellbeing-section {
+  width: 100%;
+  margin-top: var(--sori-x-6);
+  padding-top: var(--sori-x-2);
+}
+
+/* ── Heatmap grid ─────────────────────────────────────────── */
+
+.emotion-heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: var(--sori-x-2);
+}
+
+/* Day-of-week header labels */
+.heatmap-dow-label {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--color-ghost-sepia, #b0a090);
+  text-align: center;
+  text-transform: uppercase;
+  padding-bottom: 3px;
+}
+
+/* Individual day cell */
+.heatmap-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  transition: transform 120ms ease;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.25);
+}
+
+/* Sentiment tints — chosen to complement the Sori lavender palette */
+.heatmap-cell--positive {
+  background-color: rgba(169, 180, 170, 0.65);   /* sage — calm, growing */
+}
+
+.heatmap-cell--neutral {
+  background-color: rgba(196, 184, 176, 0.45);   /* warm grey — meh/numb */
+}
+
+.heatmap-cell--negative {
+  background-color: rgba(159, 148, 176, 0.60);   /* muted lavender — difficult */
+}
+
+.heatmap-cell--none {
+  background-color: rgba(196, 184, 176, 0.14);   /* near-invisible — no entry */
+}
+
+.heatmap-cell--empty {
+  visibility: hidden;                              /* padding cells */
+}
+
+/* ── Heatmap legend ────────────────────────────────────────── */
+
+.wellbeing-heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--sori-x) * 1.25);
+  flex-wrap: wrap;
+  margin-bottom: var(--sori-x-4);
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-dot--positive { background-color: rgba(169, 180, 170, 0.65); }
+.legend-dot--neutral  { background-color: rgba(196, 184, 176, 0.45); }
+.legend-dot--negative { background-color: rgba(159, 148, 176, 0.60); }
+.legend-dot--none     { background-color: rgba(196, 184, 176, 0.18); border: 1px solid rgba(196, 184, 176, 0.4); }
+
+/* ── Wellbeing checklist ──────────────────────────────────── */
+
+.wellbeing-checklist {
+  width: 100%;
+}
+
+.checklist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sori-x-3);
+}
+
+.checklist-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sori-x);
+  padding: var(--sori-x-2) 0;
+  border-bottom: 1px solid rgba(196, 184, 176, 0.18);
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-item__question {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 300;
+  color: var(--color-deep-sepia, #3a2e28);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.checklist-item__ko {
+  display: block;
+  font-size: clamp(11px, 1vw, 13px);
+  color: var(--color-mid-sepia, #6b5a4e);
+  opacity: 0.75;
+  margin-top: 3px;
+}
+
+.checklist-item__answers {
+  display: flex;
+  gap: var(--sori-x);
+}
+
+/* Yes / No answer buttons */
+.checklist-answer-btn {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-mid-sepia, #6b5a4e);
+  background: rgba(246, 244, 240, 0.70);
+  border: 1px solid rgba(196, 184, 176, 0.35);
+  border-radius: 20px;
+  padding: calc(var(--sori-x) * 0.5) calc(var(--sori-x) * 1.5);
+  cursor: pointer;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.checklist-answer-btn:hover {
+  background: rgba(246, 244, 240, 0.95);
+  border-color: rgba(169, 180, 170, 0.55);
+}
+
+.checklist-answer-btn--selected {
+  background: rgba(219, 201, 227, 0.40);   /* lavender tint — Sori brand */
+  border-color: rgba(169, 148, 196, 0.50);
+  color: var(--color-deep-sepia, #3a2e28);
+}
+
+.checklist-answer-btn:focus-visible {
+  outline: 1.5px solid var(--color-deep-purple, #311F5D);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   §5  CONDITIONAL COUNSELING RESOURCES CARD
+   ────────────────────────────────────────────────────────────
+   Rendered ONLY when:
+     (a) ≥ 3 of 5 checklist items answered "Yes", OR
+     (b) ≥ 60% of last 14 entries are in NEGATIVE_EMOTIONS.
+   The card fades in softly — no alarming visuals.
+   ============================================================ */
+
+.counseling-resources-card {
+  padding: var(--sori-x-3) 0 var(--sori-x-2);
+  /* Entrance animation */
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 500ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.counseling-resources-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Eyebrow label */
+.counseling-eyebrow {
+  display: block;
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(10px, 0.9vw, 11px);
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ghost-sepia, #b0a090);
+  margin-bottom: var(--sori-x-2);
+}
+
+/* Body copy */
+.counseling-body {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 300;
+  color: var(--color-mid-sepia, #6b5a4e);
+  line-height: 1.7;
+  margin: 0 0 var(--sori-x) 0;
+}
+
+/* Links container */
+.counseling-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sori-x);
+  margin: var(--sori-x-2) 0 var(--sori-x-3);
+}
+
+/* Individual link */
+.counseling-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sori-x);
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 400;
+  color: var(--color-deep-sepia, #3a2e28);
+  text-decoration: none;
+  padding: calc(var(--sori-x) * 0.75) calc(var(--sori-x) * 1.75);
+  background: rgba(246, 244, 240, 0.85);
+  border: 1px solid rgba(169, 180, 170, 0.35);
+  border-radius: 20px;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease;
+  /* Constrain width to content */
+  align-self: flex-start;
+}
+
+.counseling-link:hover {
+  background: rgba(246, 244, 240, 1.0);
+  border-color: rgba(169, 180, 170, 0.60);
+}
+
+.counseling-link:focus-visible {
+  outline: 1.5px solid var(--color-deep-purple, #311F5D);
+  outline-offset: 3px;
+  border-radius: 20px;
+}
+
+.counseling-link--phone {
+  letter-spacing: 0.01em;
+}
+
+.counseling-link__meta {
+  font-size: clamp(10px, 0.9vw, 11px);
+  letter-spacing: 0.06em;
+  color: var(--color-ghost-sepia, #b0a090);
+  font-weight: 300;
+}
+
+/* Disclaimer */
+.counseling-disclaimer {
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: clamp(10px, 0.9vw, 11px);
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--color-ghost-sepia, #b0a090);
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Mobile overrides */
+@media (max-width: 640px) {
+  .counseling-link {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .wellbeing-heatmap-legend {
+    gap: var(--sori-x);
+  }
+}
+
+
+/* ============================================================
+   §6  JOURNAL CARD — EMOTION BADGE ENLARGEMENT
+   ────────────────────────────────────────────────────────────
+   User feedback: the emoji + emotion summary on the right side
+   of the journal card header is too small and easy to miss.
+   Lifted out of the header row into a dedicated full-width
+   block immediately below the date/numeral row.
+   ============================================================ */
+
+/* Reflow the dynamically built card's emotion badge */
+.sori-journal-card {
+  /* ensure flex/block context for badge reflow */
+}
+
+.sori-journal-card__header {
+  flex-wrap: wrap;
+  row-gap: var(--sori-x-2);
+}
+
+/* The badge — previously a small inline element — becomes
+   a full-width "emotion stamp" spanning the card width */
+.sori-journal-card__emotion-badge {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--sori-x) * 0.75);
+  width: 100%;
+  padding: var(--sori-x) 0 var(--sori-x-2);
+  border-bottom: 1px solid rgba(100, 80, 60, 0.08);
+  margin-bottom: var(--sori-x-2);
+  flex-wrap: wrap;
+}
+
+.sori-journal-card__emotion-emoji {
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sori-journal-card__emotion-en {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(22px, 3.2vw, 32px);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  color: var(--color-deep-sepia, #3a2e28);
+  line-height: 1.15;
+}
+
+.sori-journal-card__emotion-ko {
+  font-family: var(--font-display, 'Playfair Display', serif);
+  font-size: clamp(14px, 1.8vw, 20px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-mid-sepia, #6b5a4e);
+  opacity: 0.75;
+  line-height: 1.15;
+}
