@@ -1359,3 +1359,53 @@ button#pin-success-archive-cta:hover span {
 }
 /* ── END M · HOTFIX ─────────────────────────────────────────── */
 
+
+/* ══════════════════════════════════════════════════════════════
+   ── N. FINAL FORCE-OVERRIDE · BUTTON LEGIBILITY (NUCLEAR) ─────
+   ──────────────────────────────────────────────────────────────
+   Why this exists
+     Even with Section M's id + class targeting, late-injected
+     CTAs (emoji overlays, emotion-slider confirm, JS-rendered
+     archive buttons) can still inherit the global
+       span, div, p { color: #311F5D !important; }
+     declared in Section 1. This block is the final, catch-all
+     enforcement so ANY <span>, :lang(ko), or [lang="ko"] node
+     living inside a primary interactive element paints at
+     #FAFAF8 — regardless of how or when it was authored.
+   Constraint respect
+     • Targets ONLY button descendants and named CTA hooks
+       (.voice-record-btn, #nav-enter-cta, #emotion-temp-confirm,
+        [class*="cta"], [id*="btn"], [class*="btn"])
+     • Does NOT touch body copy, narrative p/div, journal card
+       text, or the Three.js canvas (#resonance-field).
+     • Uses -webkit-text-fill-color for Safari gradient-text
+       safety and opacity: 1 to neutralize the
+       "opacity: 0.9 !important" carried by §4a descendants.
+   ════════════════════════════════════════════════════════════ */
+
+/* Final Force-Override for Button Legibility */
+button[class*="btn"] span,
+button[id*="btn"] span,
+button[class*="cta"] span,
+button[id*="cta"] span,
+.voice-record-btn span,
+.gateway__begin-cta span,
+.emotion-slider__confirm span,
+#nav-enter-cta span,
+#emotion-temp-confirm span,
+#voice-record-trigger span,
+#analyze-trigger span,
+#view-journal-btn span,
+#journal-save-record-cta span,
+#journal-archive-cta span,
+#reflection-archive-cta span,
+#pin-protect-btn span,
+#pin-success-archive-cta span,
+button :lang(ko),
+button [lang="ko"] {
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important;
+  opacity: 1 !important;
+}
+/* ── END N · NUCLEAR OVERRIDE ──────────────────────────────── */
+

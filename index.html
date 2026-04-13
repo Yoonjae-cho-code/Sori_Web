@@ -22,12 +22,15 @@
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 
   <!-- ─── Design System ───────────────────────────────────────────────── -->
+  <!-- sori-fix.css removed — sori-css-patch.css is the single master patch file.
+       Load order matters: sori-updates.css MUST precede sori-css-patch.css so
+       the patch file wins the cascade for any shared selectors. -->
   <link rel="stylesheet" href="sori-global.css" />
-  <link rel="stylesheet" href="sori-css-patch.css" />
   <link rel="stylesheet" href="sori-modal.css" />
-  <!-- ─── sori-css-patch.css is the single master patch file (sori-fix.css removed) ── -->
   <!-- ─── Interview Patch (toast, hero emotion, slider, wellbeing) ──────── -->
   <link rel="stylesheet" href="sori-updates.css" />
+  <!-- ─── Master Patch (must load LAST so it overrides updates + global) ── -->
+  <link rel="stylesheet" href="sori-css-patch.css" />
 
   <!-- ─── Three.js via importmap ──────────────────────────────────────── -->
   <script type="importmap">
