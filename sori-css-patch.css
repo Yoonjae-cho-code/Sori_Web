@@ -1361,51 +1361,72 @@ button#pin-success-archive-cta:hover span {
 
 
 /* ══════════════════════════════════════════════════════════════
-   ── N. FINAL FORCE-OVERRIDE · BUTTON LEGIBILITY (NUCLEAR) ─────
+   ── N. SURGICAL COLOR HIERARCHY (replaces the nuclear override)
    ──────────────────────────────────────────────────────────────
-   Why this exists
-     Even with Section M's id + class targeting, late-injected
-     CTAs (emoji overlays, emotion-slider confirm, JS-rendered
-     archive buttons) can still inherit the global
-       span, div, p { color: #311F5D !important; }
-     declared in Section 1. This block is the final, catch-all
-     enforcement so ANY <span>, :lang(ko), or [lang="ko"] node
-     living inside a primary interactive element paints at
-     #FAFAF8 — regardless of how or when it was authored.
-   Constraint respect
-     • Targets ONLY button descendants and named CTA hooks
-       (.voice-record-btn, #nav-enter-cta, #emotion-temp-confirm,
-        [class*="cta"], [id*="btn"], [class*="btn"])
-     • Does NOT touch body copy, narrative p/div, journal card
-       text, or the Three.js canvas (#resonance-field).
-     • Uses -webkit-text-fill-color for Safari gradient-text
-       safety and opacity: 1 to neutralize the
-       "opacity: 0.9 !important" carried by §4a descendants.
+   Regression being fixed
+     The previous "nuclear" rule used `button :lang(ko)` and
+     `button [lang="ko"]` as catch-alls. That matched EVERY
+     <button> on the page — including .emotion-card and other
+     light-background interactive elements — making their
+     Korean labels white-on-cream and effectively invisible.
+
+   Three-layer color logic
+     (1) Restore #311F5D as the default for ALL Korean text.
+     (2) Force #FAFAF8 ONLY on a whitelist of dark-purple CTAs
+         (identified by id OR the .voice-record-btn class).
+     (3) Defensively re-assert #311F5D on .emotion-card Korean
+         text so, even if the card ever sits inside a whitelisted
+         CTA selector, its label stays legible on the light
+         #D4C4E1 / #EDE8F5 card background.
    ════════════════════════════════════════════════════════════ */
 
-/* Final Force-Override for Button Legibility */
-button[class*="btn"] span,
-button[id*="btn"] span,
-button[class*="cta"] span,
-button[id*="cta"] span,
-.voice-record-btn span,
-.gateway__begin-cta span,
-.emotion-slider__confirm span,
-#nav-enter-cta span,
-#emotion-temp-confirm span,
-#voice-record-trigger span,
-#analyze-trigger span,
-#view-journal-btn span,
-#journal-save-record-cta span,
-#journal-archive-cta span,
-#reflection-archive-cta span,
-#pin-protect-btn span,
-#pin-success-archive-cta span,
-button :lang(ko),
-button [lang="ko"] {
+/* N1 · Revert global Korean color to Deep Purple
+   Pins :lang(ko) and [lang="ko"] back to brand text color for
+   every surface EXCEPT the whitelisted primary CTAs below.       */
+:lang(ko),
+[lang="ko"],
+.ko-text {
+  color: #311F5D !important;
+  -webkit-text-fill-color: #311F5D !important;
+}
+
+/* N2 · Surgical white override — DARK-PURPLE CTAs ONLY
+   Uses descendant `*` only under a specific id or the
+   .voice-record-btn class — never as a standalone universal. */
+#nav-enter-cta *,
+#emotion-temp-confirm *,
+#voice-record-trigger *,
+#analyze-trigger *,
+#view-journal-btn *,
+#journal-save-record-cta *,
+#journal-archive-cta *,
+#reflection-archive-cta *,
+#pin-protect-btn *,
+#pin-success-archive-cta *,
+.voice-record-btn *,
+.gateway__begin-cta * {
   color: #FAFAF8 !important;
   -webkit-text-fill-color: #FAFAF8 !important;
-  opacity: 1 !important;
 }
-/* ── END N · NUCLEAR OVERRIDE ──────────────────────────────── */
+
+/* N3 · Emotion Card safety net — stays Deep Purple
+   .emotion-card is a <button>, but its background is the light
+   #D4C4E1 accent. Re-assert #311F5D so Korean labels remain
+   readable regardless of any upstream button-scoped overrides. */
+.emotion-card,
+.emotion-card *,
+.emotion-card :lang(ko),
+.emotion-card [lang="ko"],
+.emotion-card span,
+.emotion-card__label,
+.emotion-card__label :lang(ko),
+.emotion-card__label [lang="ko"],
+.emotion-card__label span,
+.emotion-card__desc,
+.emotion-card__desc :lang(ko),
+.emotion-card__desc [lang="ko"] {
+  color: #311F5D !important;
+  -webkit-text-fill-color: #311F5D !important;
+}
+/* ── END N · SURGICAL COLOR HIERARCHY ──────────────────────── */
 
