@@ -57,27 +57,23 @@
    *   // → { emoji: '🌸', ko: '감사' }
    */
   const EMOTION_MAP = {
-    // ── Positive / Expanding ───────────────────────────────────────────────
-    Joy: { emoji: '✨', ko: '기쁨' },  // sparkle — light & active
-    Gratitude: { emoji: '🌸', ko: '감사' },  // blossom — warmth offered
-    Hope: { emoji: '🌅', ko: '희망' },  // dawn — forward light
-    Calm: { emoji: '🍃', ko: '평온' },  // leaf — quiet settledness
-    Anticipation: { emoji: '🌱', ko: '기대' },  // sprout — readiness, becoming
-    Trust: { emoji: '🤍', ko: '신뢰' },  // white heart — safe ground
+    // ── Positive ───────────────────────────────────────────────────────────
+    Happy:        { emoji: '☀️',  ko: '행복' },   // sun — warm, full-bodied delight
+    Excited:      { emoji: '🌟',  ko: '설렘' },   // star — energised, lit with anticipation
+    Grateful:     { emoji: '🌸',  ko: '감사' },   // blossom — soft warmth offered outward
+    Calm:         { emoji: '🍃',  ko: '평온' },   // leaf — quiet settledness, peace
 
-    // ── Difficult / Contracting ────────────────────────────────────────────
-    Sadness: { emoji: '🌧', ko: '슬픔' },  // rain cloud — grief, weight
-    Loneliness: { emoji: '🌙', ko: '외로움' },  // moon — solitary, unseen
-    Anxiety: { emoji: '🌀', ko: '불안' },  // spiral — looping worry
-    Fear: { emoji: '🌫', ko: '두려움' },  // fog — immediate dread
-    Anger: { emoji: '🔥', ko: '분노' },  // flame — heat, injustice
-    Overwhelm: { emoji: '🌊', ko: '벅참' },  // wave — too much to carry
-    Shame: { emoji: '🍂', ko: '부끄러움' },  // falling leaf — exposure
-    Disgust: { emoji: '🪨', ko: '혐오' },  // stone — rejection, heaviness
+    // ── Negative ───────────────────────────────────────────────────────────
+    Sad:          { emoji: '🌧',  ko: '슬픔' },   // rain cloud — grief, heaviness, weight
+    Angry:        { emoji: '🔥',  ko: '화남' },   // flame — heat, injustice, frustration
+    Anxious:      { emoji: '🌀',  ko: '불안' },   // spiral — looping worry, tension
+    Exhausted:    { emoji: '🌑',  ko: '지침' },   // dark moon — drained, nothing left
 
-    // ── Complex / Transitional ─────────────────────────────────────────────
-    Resilience: { emoji: '🌿', ko: '회복탄력성' },  // herb — persisting, quiet strength
-    Surprise: { emoji: '🌟', ko: '놀람' },  // star burst — unexpected turn
+    // ── Neutral / Complex ──────────────────────────────────────────────────
+    Nostalgic:    { emoji: '🌙',  ko: '그리움' }, // crescent — soft longing, looking back
+    Ambivalent:   { emoji: '🌫',  ko: '애매' },   // fog — unclear, between two feelings
+    Relieved:     { emoji: '🌿',  ko: '해방' },   // herb — quiet release, a held breath let go
+    Accomplished: { emoji: '🌅',  ko: '성취' },   // dawn — a summit reached, new horizon
   };
 
   /**
@@ -102,6 +98,7 @@
 
   let _currentStep = 'step-gateway';
   let _selectedEmotion = null;
+  let _selectedEmotionTemperature = null; // 0–100 from slider; null when chosen via card
 
   // ─────────────────────────────────────────────────────────────────────────
   //  SCROLL LOCK
@@ -293,11 +290,12 @@
     card.setAttribute('aria-selected', 'true');
 
     _selectedEmotion = emotion;
+    _selectedEmotionTemperature = null; // card selection carries no temperature value
 
     window.soriResonance?.setEmotionState?.(emotion);
 
     window.dispatchEvent(new CustomEvent('sori:emotion-selected', {
-      detail: { emotion: emotion },
+      detail: { emotion: emotion, emotionTemperature: null },
       bubbles: false,
     }));
 
@@ -309,6 +307,17 @@
 
   $emotionCards.forEach(function (card) {
     card.addEventListener('click', _handleCardClick);
+  });
+
+  // ── Capture emotion + temperature from slider path ────────────────────────
+  // sori-updates.js fires 'sori:emotion-selected' with emotionTemperature set
+  // when the slider confirm button is used. Capture it here so the /api/entry
+  // payload always has the most recent values regardless of input mode.
+  window.addEventListener('sori:emotion-selected', function (e) {
+    if (!e.detail) return;
+    if (e.detail.emotion) _selectedEmotion = e.detail.emotion;
+    _selectedEmotionTemperature = (e.detail.emotionTemperature != null)
+      ? Number(e.detail.emotionTemperature) : null;
   });
 
   console.log('[sori-flow] 🃏', $emotionCards.length, 'emotion cards wired to step-voice-record transition');
@@ -657,6 +666,7 @@
 
     // Clear emotion selection
     _selectedEmotion = null;
+    _selectedEmotionTemperature = null;
     $emotionCards.forEach(function (c) {
       c.classList.remove('emotion-card--active');
       c.setAttribute('aria-selected', 'false');
@@ -1257,10 +1267,13 @@
         narrative: narrativeEl ? narrativeEl.textContent.trim() : 'A quiet moment.',
         transcript: finalTranscript, // 정제된 실제 대사 삽입
         quote: {
-          en: quoteEnEl ? quoteEnEl.textContent.trim().replace(/^“|”$|^"|"$/g, '') : '',
-          ko: quoteKoEl ? quoteKoEl.textContent.trim().replace(/^“|”$|^"|"$/g, '') : '',
+          en: quoteEnEl ? quoteEnEl.textContent.trim().replace(/^”|”$|^”|”$/g, '') : '',
+          ko: quoteKoEl ? quoteKoEl.textContent.trim().replace(/^”|”$|^”|”$/g, '') : '',
           source: quoteSourceEl ? quoteSourceEl.textContent.trim().replace(/^—\s*/, '') : ''
-        }
+        },
+        // emotionTemperature is null when the card path was used (GPT picks emotion from audio);
+        // it carries the 0–100 slider value when the temperature path was used.
+        emotionTemperature: _selectedEmotionTemperature,
       };
 
       // 3. 기록 DB 저장 호출
@@ -1315,6 +1328,7 @@
   }
   window.soriFlow = Object.freeze({
     get selectedEmotion() { return _selectedEmotion; },
+    get selectedEmotionTemperature() { return _selectedEmotionTemperature; },
     goToStep: goToStep,
     populateInsight: populateInsight,
     getEmotionMeta: getEmotionMeta,

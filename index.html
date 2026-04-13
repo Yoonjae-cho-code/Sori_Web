@@ -12,11 +12,14 @@
     content="Sori is a bilingual mental wellness companion — a quiet space to express, reflect, and breathe. No metrics, no streaks, only presence." />
   <meta name="theme-color" content="#DBC9E3" />
 
-  <!-- ─── Google Fonts — Lora (high-legibility editorial serif) ──────── -->
+  <!-- ─── Google Fonts — Lora + Source Serif 4 (editorial serifs) ──────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Source+Serif+4:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
+  <!-- ─── Pretendard (contemporary Korean / EN sans-serif) ──────────────── -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 
   <!-- ─── Design System ───────────────────────────────────────────────── -->
   <link rel="stylesheet" href="sori-global.css" />
@@ -899,6 +902,7 @@
 
     <!-- ================================================================
          STEP: EXPRESSION (#step-expression)
+         12 emotion cards in a 4×3 grid (Positive / Negative / Neutral-Complex)
          §03 Emotion card selection ONLY — voice UI removed.
 
          Interaction change (v2):
@@ -926,117 +930,191 @@
           </p>
           <hr class="sori-rule fade-in-up delay-1" aria-hidden="true" />
 
-          <!-- ── Emotion Cards (8 × tactile cards, 4×2 grid) ──────────────── -->
+          <!-- ── Emotion Cards (12 × tactile cards, 4×3 grid) ──────────────── -->
           <div class="emotion-card-container fade-in-up delay-3" style="margin-top: 60px;" role="listbox"
             aria-label="Emotion selection — 감정 선택" aria-required="true">
 
-            <!-- 1 · Drained — 번아웃온 -->
-            <button class="emotion-card" data-emotion="Drained" type="button" role="option" aria-selected="false"
-              aria-label="Drained — 번아웃온">
+            <!-- ── Positive (row 1) ──────────────────────────────────────── -->
+
+            <!-- 1 · Happy — 행복 -->
+            <button class="emotion-card" data-emotion="Happy" type="button" role="option" aria-selected="false"
+              aria-label="Happy — 행복">
               <div class="emotion-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round">
-                  <path d="M3,22 C7,22 9,20 13,21 C17,22 19,23 23,22 C27,21 29,23 33,24" />
-                  <path d="M33,24 L35,27" stroke-width="1" stroke-opacity="0.4" />
+                  <circle cx="18" cy="18" r="6" />
+                  <line x1="18" y1="4" x2="18" y2="7" />
+                  <line x1="18" y1="29" x2="18" y2="32" />
+                  <line x1="4" y1="18" x2="7" y2="18" />
+                  <line x1="29" y1="18" x2="32" y2="18" />
+                  <line x1="8.5" y1="8.5" x2="10.6" y2="10.6" />
+                  <line x1="25.4" y1="25.4" x2="27.5" y2="27.5" />
+                  <line x1="27.5" y1="8.5" x2="25.4" y2="10.6" />
+                  <line x1="10.6" y1="25.4" x2="8.5" y2="27.5" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#Drained &nbsp;|&nbsp; <span lang="ko">#지침</span></span>
-              <p class="emotion-card__desc" lang="ko"> I’m completely spent. I don't have the energy for anything.</p>
+              <span class="emotion-card__label">#Happy &nbsp;|&nbsp; <span lang="ko">#행복</span></span>
+              <p class="emotion-card__desc">Everything feels warm and right. I’m genuinely happy.</p>
             </button>
 
-            <!-- 2 · Restles — 초조한 -->
-            <button class="emotion-card" data-emotion="Restless" type="button" role="option" aria-selected="false"
-              aria-label="Restless — 초조한">
+            <!-- 2 · Excited — 설렘 -->
+            <button class="emotion-card" data-emotion="Excited" type="button" role="option" aria-selected="false"
+              aria-label="Excited — 설렘">
               <div class="emotion-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round">
-                  <path d="M3,18 L8,9 L13,23 L18,7 L23,23 L28,11 L33,18" />
+                  <path d="M18,4 L21,14 L32,14 L23,20 L26,31 L18,25 L10,31 L13,20 L4,14 L15,14 Z" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#Restless &nbsp;|&nbsp; <span lang="ko">#불안</span></span>
-              <p class="emotion-card__desc" lang="ko">I feel uneasy and on edge.</p>
+              <span class="emotion-card__label">#Excited &nbsp;|&nbsp; <span lang="ko">#설렘</span></span>
+              <p class="emotion-card__desc">Something ahead is making my heart race in the best way.</p>
             </button>
 
-            <!-- 3 · Numb — 무감각한 -->
-            <button class="emotion-card" data-emotion="numb" type="button" role="option" aria-selected="false"
-              aria-label="Numb — 무감각한">
-              <div class="emotion-card__icon" aria-hidden="true">
-                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                  <line x1="3" y1="18" x2="33" y2="18" />
-                </svg>
-              </div>
-              <span class="emotion-card__label">#numb &nbsp;|&nbsp; <span lang="ko">#멍함</span></span>
-              <p class="emotion-card__desc" lang="ko">I don’t feel anything at all right now.</p>
-            </button>
-
-            <!-- 4 · Meh — 그저그런 -->
-            <button class="emotion-card" data-emotion="meh" type="button" role="option" aria-selected="false"
-              aria-label="Meh — 그저그런">
-              <div class="emotion-card__icon" aria-hidden="true">
-                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                  <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none" />
-                  <circle cx="24" cy="14" r="1.5" fill="currentColor" stroke="none" />
-                  <line x1="11" y1="22" x2="25" y2="22" />
-                </svg>
-              </div>
-              <span class="emotion-card__label">#meh &nbsp;|&nbsp; <span lang="ko">#그저그런</span></span>
-              <p class="emotion-card__desc" lang="ko">I’m just okay. Nothing special, for better or worse.</p>
-            </button>
-
-            <!-- 5 · Lonely — 외로운 -->
-            <button class="emotion-card" data-emotion="lonely" type="button" role="option" aria-selected="false"
-              aria-label="Lonely — 외로운">
-              <div class="emotion-card__icon" aria-hidden="true">
-                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                  <circle cx="18" cy="20" r="1.5" fill="currentColor" stroke="none" />
-                  <circle cx="18" cy="20" r="5.5" stroke-opacity="0.45" />
-                  <circle cx="18" cy="20" r="10" stroke-opacity="0.18" />
-                </svg>
-              </div>
-              <span class="emotion-card__label">#lonely &nbsp;|&nbsp; <span lang="ko">#외로운</span></span>
-              <p class="emotion-card__desc" lang="ko">I feel like I’m all alone in this world. It’s lonely.</p>
-            </button>
-
-            <!-- 6 · Alright — 괜찮은 -->
-            <button class="emotion-card" data-emotion="Alright" type="button" role="option" aria-selected="false"
-              aria-label="Alright — 괜찮은">
+            <!-- 3 · Grateful — 감사 -->
+            <button class="emotion-card" data-emotion="Grateful" type="button" role="option" aria-selected="false"
+              aria-label="Grateful — 감사">
               <div class="emotion-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round">
-                  <path d="M3,18 C7,12 11,24 18,18 C25,12 29,24 33,18" />
+                  <path d="M18,28 C18,28 5,20 5,12 A7,7 0 0 1 18,10 A7,7 0 0 1 31,12 C31,20 18,28 18,28 Z" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#Alright &nbsp;|&nbsp; <span lang="ko">#괜찮은</span></span>
-              <p class="emotion-card__desc" lang="ko">I’m not exactly great, but I’m doing okay.</p>
+              <span class="emotion-card__label">#Grateful &nbsp;|&nbsp; <span lang="ko">#감사</span></span>
+              <p class="emotion-card__desc">I’m aware of how much I’ve been given. I feel held.</p>
             </button>
 
-            <!-- 7 · Lighter -->
-            <button class="emotion-card" data-emotion="lighter" type="button" role="option" aria-selected="false"
-              aria-label="Lighter — 홀가분한">
+            <!-- 4 · Calm — 평온 -->
+            <button class="emotion-card" data-emotion="Calm" type="button" role="option" aria-selected="false"
+              aria-label="Calm — 평온">
               <div class="emotion-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round">
-                  <path d="M3,24 C7,20 10,24 14,19 C18,14 22,13 28,9" />
-                  <circle cx="30" cy="7" r="1.2" fill="currentColor" stroke="none" />
-                  <circle cx="33" cy="5" r="0.8" fill="currentColor" stroke="none" opacity="0.5" />
+                  <path d="M3,18 C7,17 11,19 15,18 C19,17 23,19 27,18 C31,17 33,18 33,18" />
+                  <path d="M8,24 C11,22 14,25 18,24 C22,23 25,26 28,24" stroke-opacity="0.4" stroke-width="1" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#lighter &nbsp;|&nbsp; <span lang="ko">#홀가분</span></span>
-              <p class="emotion-card__desc" lang="ko">My mind feels a bit more at ease. I think I can finally rest.</p>
+              <span class="emotion-card__label">#Calm &nbsp;|&nbsp; <span lang="ko">#평온</span></span>
+              <p class="emotion-card__desc">I feel settled. There’s a quiet peace inside me right now.</p>
             </button>
 
-            <!-- 8 · Proud -->
-            <button class="emotion-card" data-emotion="proud" type="button" role="option" aria-selected="false"
-              aria-label="Proud — 자랑스러운">
+            <!-- ── Negative (row 2) ──────────────────────────────────────── -->
+
+            <!-- 5 · Sad — 슬픔 -->
+            <button class="emotion-card" data-emotion="Sad" type="button" role="option" aria-selected="false"
+              aria-label="Sad — 슬픔">
               <div class="emotion-card__icon" aria-hidden="true">
-                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                  <path d="M10,26 A8,8 0 0 1 26,26" />
-                  <path d="M5,26 A13,13 0 0 1 31,26" stroke-opacity="0.6" />
-                  <path d="M1,26 A17,17 0 0 1 35,26" stroke-opacity="0.3" />
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M8,12 Q18,4 28,12" stroke-opacity="0.5" />
+                  <line x1="14" y1="20" x2="14" y2="27" stroke-opacity="0.7" />
+                  <line x1="22" y1="18" x2="22" y2="27" stroke-opacity="0.5" />
+                  <line x1="18" y1="22" x2="18" y2="32" />
                 </svg>
               </div>
-              <span class="emotion-card__label">#proud &nbsp;|&nbsp; <span lang="ko">#뿌듯한</span></span>
-              <p class="emotion-card__desc" lang="ko">I feel accomplished. I’m really proud of myself.</p>
+              <span class="emotion-card__label">#Sad &nbsp;|&nbsp; <span lang="ko">#슬픔</span></span>
+              <p class="emotion-card__desc">Something heavy is sitting in my chest. I’m sad.</p>
+            </button>
+
+            <!-- 6 · Angry — 화남 -->
+            <button class="emotion-card" data-emotion="Angry" type="button" role="option" aria-selected="false"
+              aria-label="Angry — 화남">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M18,32 L14,22 L8,26 L12,16 L4,12 L14,10 L18,4 L22,10 L32,12 L24,16 L28,26 L22,22 Z" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Angry &nbsp;|&nbsp; <span lang="ko">#화남</span></span>
+              <p class="emotion-card__desc">I’m frustrated or upset. Something isn’t right and I feel it.</p>
+            </button>
+
+            <!-- 7 · Anxious — 불안 -->
+            <button class="emotion-card" data-emotion="Anxious" type="button" role="option" aria-selected="false"
+              aria-label="Anxious — 불안">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M18,18 m0,0 a2,2 0 1 1 0.001,0 M18,18 m0,0 a5,5 0 1 1 0.001,0 M18,18 m0,0 a9,9 0 1 1 0.001,0 M18,18 m0,0 a13,13 0 1 1 0.001,0" stroke-opacity="0.9" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Anxious &nbsp;|&nbsp; <span lang="ko">#불안</span></span>
+              <p class="emotion-card__desc">My thoughts keep looping. I can’t quite settle down.</p>
+            </button>
+
+            <!-- 8 · Exhausted — 지침 -->
+            <button class="emotion-card" data-emotion="Exhausted" type="button" role="option" aria-selected="false"
+              aria-label="Exhausted — 지침">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,14 C8,14 10,13 15,13.5 C20,14 22,15 28,15.5 C31,15.7 33,16 33,16" />
+                  <path d="M3,20 C8,20.5 13,21 20,21.5 C25,22 30,22 33,22" stroke-opacity="0.4" stroke-width="1" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Exhausted &nbsp;|&nbsp; <span lang="ko">#지침</span></span>
+              <p class="emotion-card__desc">I’m completely drained. I have nothing left to give.</p>
+            </button>
+
+            <!-- ── Neutral / Complex (row 3) ─────────────────────────────── -->
+
+            <!-- 9 · Nostalgic — 그리움 -->
+            <button class="emotion-card" data-emotion="Nostalgic" type="button" role="option" aria-selected="false"
+              aria-label="Nostalgic — 그리움">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M28,18 A10,10 0 1 1 18,8" />
+                  <circle cx="27" cy="9" r="1.2" fill="currentColor" stroke="none" />
+                  <circle cx="31" cy="6" r="0.8" fill="currentColor" stroke="none" opacity="0.55" />
+                  <circle cx="33" cy="12" r="0.7" fill="currentColor" stroke="none" opacity="0.35" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Nostalgic &nbsp;|&nbsp; <span lang="ko">#그리움</span></span>
+              <p class="emotion-card__desc">I’m thinking of something or someone from before. It’s bittersweet.</p>
+            </button>
+
+            <!-- 10 · Ambivalent — 애매 -->
+            <button class="emotion-card" data-emotion="Ambivalent" type="button" role="option" aria-selected="false"
+              aria-label="Ambivalent — 애매">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M4,14 C8,11 12,17 16,14 C20,11 24,17 28,14 C30,12.5 32,13 33,13" />
+                  <path d="M4,22 C8,19 12,25 16,22 C20,19 24,25 28,22 C30,20.5 32,21 33,21"
+                    stroke-opacity="0.4" stroke-width="1" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Ambivalent &nbsp;|&nbsp; <span lang="ko">#애매</span></span>
+              <p class="emotion-card__desc">I’m pulled in different directions. I’m not sure how I feel.</p>
+            </button>
+
+            <!-- 11 · Relieved — 해방 -->
+            <button class="emotion-card" data-emotion="Relieved" type="button" role="option" aria-selected="false"
+              aria-label="Relieved — 해방">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="18" cy="20" r="4" stroke-opacity="0.8" />
+                  <circle cx="18" cy="20" r="8" stroke-opacity="0.45" />
+                  <circle cx="18" cy="20" r="12" stroke-opacity="0.18" />
+                  <path d="M14,10 L18,6 L22,10" stroke-opacity="0.7" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Relieved &nbsp;|&nbsp; <span lang="ko">#해방</span></span>
+              <p class="emotion-card__desc">Something that was weighing on me has finally lifted.</p>
+            </button>
+
+            <!-- 12 · Accomplished — 성취 -->
+            <button class="emotion-card" data-emotion="Accomplished" type="button" role="option" aria-selected="false"
+              aria-label="Accomplished — 성취">
+              <div class="emotion-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3,26 C8,22 12,26 18,18 C22,12 26,8 33,8" />
+                  <path d="M27,6 L33,8 L31,14" />
+                </svg>
+              </div>
+              <span class="emotion-card__label">#Accomplished &nbsp;|&nbsp; <span lang="ko">#성취</span></span>
+              <p class="emotion-card__desc">I did something I’m proud of. I reached a milestone today.</p>
             </button>
 
           </div><!-- /.emotion-card-container -->

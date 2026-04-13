@@ -21,8 +21,16 @@
   const WARMUP_MS = 500;
   let _stylesInjected = false;
 
-  const EMOTION_KO = Object.freeze({ Joy: '기쁨', Sadness: '슬픔', Anger: '분노', Fear: '두려움', Disgust: '혐오', Surprise: '놀라움', Anticipation: '기대', Trust: '신뢰' });
-  const EMOTION_EMOJI = Object.freeze({ Joy: '☀️', Sadness: '🌧', Anger: '🔥', Fear: '🌑', Disgust: '💢', Surprise: '✨', Anticipation: '🌱', Trust: '🤍' });
+  const EMOTION_KO = Object.freeze({
+    Happy: '행복', Excited: '설렘', Grateful: '감사', Calm: '평온',
+    Sad: '슬픔', Angry: '화남', Anxious: '불안', Exhausted: '지침',
+    Nostalgic: '그리움', Ambivalent: '애매', Relieved: '해방', Accomplished: '성취',
+  });
+  const EMOTION_EMOJI = Object.freeze({
+    Happy: '☀️', Excited: '🌟', Grateful: '🌸', Calm: '🍃',
+    Sad: '🌧', Angry: '🔥', Anxious: '🌀', Exhausted: '🌑',
+    Nostalgic: '🌙', Ambivalent: '🌫', Relieved: '🌿', Accomplished: '🌅',
+  });
 
   let _recording = false, _stopGuard = false, _stream = null, _recorder = null, _audioCtx = null, _analyser = null;
   let _chunks = [], _hardTimer = null, _silenceTimer = null, _silenceStart = null, _warmupTimer = null;

@@ -30,13 +30,16 @@
 
 import mongoose from 'mongoose';
 
-// ── Plutchik's 8 primary emotions ──────────────────────────────────────────
-// Must stay in sync with VALID_EMOTIONS in server.js and EMOTION_KO in
-// sori-voice.js.
-// [수정 후]
+// ── 12 Emotion categories (v7) ──────────────────────────────────────────────
+// Must stay in sync with VALID_EMOTIONS in server.js, EMOTION_KO in
+// sori-voice.js, and EMOTION_MAP in sori-flow.js.
+// Positive: Happy | Excited | Grateful | Calm
+// Negative: Sad | Angry | Anxious | Exhausted
+// Neutral/Complex: Nostalgic | Ambivalent | Relieved | Accomplished
 const VALID_EMOTIONS = [
-  'Joy', 'Sadness', 'Anger', 'Fear', 'Disgust', 'Surprise', 'Anticipation', 'Trust',
-  'Anxiety', 'Gratitude', 'Loneliness', 'Resilience', 'Calm', 'Overwhelm', 'Hope', 'Shame',
+  'Happy', 'Excited', 'Grateful', 'Calm',
+  'Sad', 'Angry', 'Anxious', 'Exhausted',
+  'Nostalgic', 'Ambivalent', 'Relieved', 'Accomplished',
 ];
 
 const entrySchema = new mongoose.Schema(
@@ -67,7 +70,19 @@ const entrySchema = new mongoose.Schema(
       en: String,
       ko: String,
       source: String
-    }
+    },
+    // Temperature slider value (0–100); null when the card path was used
+    emotionTemperature: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: null,
+    },
+    // True when negative emotion + temperature ≤ 33; used for wellbeing trend analysis
+    riskFlagged: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     versionKey: false,

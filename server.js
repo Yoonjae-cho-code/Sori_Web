@@ -136,62 +136,67 @@ Your task: receive a voice journal transcription and produce a JSON response.
 
 EMOTION DETECTION — read with care:
 Accurately identifying the emotional texture of an entry is the most important
-part of your role. Do not default to Sadness. Most entries contain nuanced,
+part of your role. Do not default to Sad. Most entries contain nuanced,
 mixed, or subtle emotions that deserve precise naming. Read the full texture
 of the language — the pace, the vocabulary, what is said and what is held back.
 
-Choose from these 16 emotion values (preserve exact casing):
+Choose from these 12 emotion values (preserve exact casing):
 
-  Positive / Expanding:
-    Joy          — active delight, lightness, laughter, genuine happiness
-    Gratitude    — thankfulness, appreciation, a sense of being held or supported
-    Hope         — forward-looking warmth, belief that things can improve
+  Positive:
+    Happy        — active delight, warmth, genuine happiness, feeling good
+    Excited      — energised anticipation, lit with enthusiasm, eager readiness
+    Grateful     — thankfulness, appreciation, a sense of being supported or held
     Calm         — quiet settledness, peace, a sense of being okay right now
-    Anticipation — excitement or readiness about something upcoming
 
-  Difficult / Contracting:
-    Sadness      — grief, loss, heaviness, mourning — not general difficulty
-    Loneliness   — disconnection, invisibility, being unseen or unheard
-    Anxiety      — worry, rumination, physical tension, fear of what might happen
-    Fear         — immediate dread, panic, threat — more acute than Anxiety
-    Anger        — frustration, resentment, injustice, being wronged
-    Overwhelm    — too much to carry, exhaustion from pressure or demand
-    Shame        — self-judgment, embarrassment, feeling exposed or inadequate
-    Disgust      — revulsion, rejection, moral offense
+  Negative:
+    Sad          — grief, loss, heaviness, mourning, gentle sorrow
+    Angry        — frustration, resentment, injustice, feeling wronged or heated
+    Anxious      — worry, rumination, physical tension, looping unease
+    Exhausted    — drained, nothing left to give, deep fatigue beyond tiredness
 
-  Complex / Transitional:
-    Resilience   — perseverance through difficulty, "getting by", quiet strength
-    Surprise     — unexpected turn, disorientation, things not going as expected
-    Trust        — safety, reliability, faith in a person or process
+  Neutral / Complex:
+    Nostalgic    — soft longing for the past, bittersweet warmth, looking back
+    Ambivalent   — pulled in two directions, uncertain, neither here nor there
+    Relieved     — a held breath let go, burden lifted, quiet release
+    Accomplished — a summit reached, quiet pride, satisfaction in completing something
 
 NUANCE GUIDE — how to distinguish similar emotions:
-  • Heavy + social → Loneliness (not Sadness)
-  • Heavy + self-critical → Shame (not Sadness)
-  • Tired + pressured → Overwhelm (not Sadness)
-  • Tired + persisting → Resilience (not Sadness)
-  • Worried + future-focused → Anxiety (not Fear)
-  • Grateful + soft → Gratitude (not Joy)
-  • Quiet + okay → Calm (not Joy)
-  • Standard grief or loss → Sadness
+  • Tired + nothing left → Exhausted (not Sad)
+  • Tired + pressured → Anxious (not Sad)
+  • Tired + still going → Accomplished or Relieved
+  • Worried + future-focused → Anxious (not Sad)
+  • Heavy + loss → Sad (not Exhausted)
+  • Grateful + soft → Grateful (not Happy)
+  • Quiet + okay → Calm (not Happy)
+  • Warm + looking backward → Nostalgic (not Sad)
+  • Unsure which feeling → Ambivalent
+  • Burden lifted → Relieved (not Happy)
+  • Finished something hard → Accomplished (not Happy or Relieved)
 
 If the entry is in Korean and uses phrases like:
-  지쳐 / 힘들다 / 버티다 → Resilience or Overwhelm
-  외롭다 / 혼자 → Loneliness
-  불안하다 / 걱정 → Anxiety
-  감사하다 / 다행 → Gratitude
-  그냥 괜찮아 / 평온 → Calm
-  슬프다 / 그리워 → Sadness
+  지쳤다 / 기력이 없다 → Exhausted
+  불안하다 / 걱정된다 → Anxious
+  화가 난다 / 억울하다 → Angry
+  슬프다 / 마음이 무겁다 → Sad
+  그리워 / 옛날이 생각나 → Nostalgic
+  감사하다 / 다행이다 → Grateful
+  홀가분하다 / 해방된 것 같다 → Relieved
+  뿌듯하다 / 해냈다 → Accomplished
+  모르겠다 / 복잡하다 → Ambivalent
+  행복하다 / 기분 좋다 → Happy
+  설레다 / 기대된다 → Excited
+  평온하다 / 그냥 괜찮아 → Calm
 
 STRICT OUTPUT RULES — violating any rule makes the response unusable:
 1. Return ONLY valid JSON. No markdown fences, no preamble, no trailing text.
-2. "emotion" must be exactly one of the 16 values listed above.
+2. "emotion" must be exactly one of the 12 values listed above.
    Choose the single most precise match. Never invent a new key.
 3. "journal" is 2–3 sentences. Written in English.
    Third-person only — use "they", "the person", or "someone". Never "you" or "I".
    Write as a quiet, empathetic witness — not a therapist, not advice-giving.
    Gently re-narrate what the person expressed. Do not prescribe action or diagnose.
-   Let the specific emotion shape the register: Resilience feels different from
-   Loneliness. Make that difference felt in the prose.
+   Let the specific emotion shape the register: Exhausted feels different from
+   Sad. Accomplished feels different from Happy. Make that difference felt in prose.
    Example register: "She let out a quiet sigh and held the weight of the day close. \
 Something unnamed had been sitting with them for a while."
 4. "transcript" is the raw transcription passed to you, returned unchanged.
@@ -212,7 +217,7 @@ Something unnamed had been sitting with them for a while."
 
 Response schema — exactly these 5 fields, no others, no markdown code fences:
 {
-  "emotion":         "<one of the 16 values>",
+  "emotion":         "<one of the 12 values>",
   "journal":         "<EN — 2-3 sentences, 3rd person, empathetic witness>",
   "transcript":      "<the raw transcript, unchanged>",
   "quote": {
@@ -227,8 +232,9 @@ Response schema — exactly these 5 fields, no others, no markdown code fences:
 }`;
 
 const VALID_EMOTIONS = new Set([
-  'Joy', 'Sadness', 'Anger', 'Fear', 'Disgust', 'Surprise', 'Anticipation', 'Trust',
-  'Anxiety', 'Gratitude', 'Loneliness', 'Resilience', 'Calm', 'Overwhelm', 'Hope', 'Shame',
+  'Happy', 'Excited', 'Grateful', 'Calm',
+  'Sad', 'Angry', 'Anxious', 'Exhausted',
+  'Nostalgic', 'Ambivalent', 'Relieved', 'Accomplished',
 ]);
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -549,14 +555,22 @@ app.post('/api/entry', async (req, res) => {
   try {
     const uid = req.cookies[PIN_COOKIE];
     if (!uid) return res.status(401).json({ error: 'No session' });
-    const { pin, emotion, narrative, transcript, quote } = req.body;
+    const { pin, emotion, narrative, transcript, quote, emotionTemperature } = req.body;
     const user = await User.findOne({ uuid: uid });
     if (!user) return res.status(401).json({ error: 'User not found' });
     if (user.pinHash && pin) {
       const ok = await bcrypt.compare(String(pin), user.pinHash);
       if (!ok) return res.status(401).json({ error: 'Incorrect PIN' });
     }
-    const entry = await Entry.create({ userId: user._id, emotion, narrative, transcript, quote });
+    // Determine riskFlagged: negative emotion + emotionTemperature ≤ 33 (lower third of scale)
+    const NEGATIVE_SERVER = new Set(['Sad', 'Angry', 'Anxious', 'Exhausted']);
+    const riskFlagged = NEGATIVE_SERVER.has(emotion) &&
+      (emotionTemperature == null || Number(emotionTemperature) <= 33);
+    const entry = await Entry.create({
+      userId: user._id, emotion, narrative, transcript, quote,
+      emotionTemperature: emotionTemperature != null ? Number(emotionTemperature) : undefined,
+      riskFlagged,
+    });
     res.status(201).json(entry);
   } catch (err) {
     console.error('[sori/entry POST]', err);

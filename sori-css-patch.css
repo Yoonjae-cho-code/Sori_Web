@@ -212,6 +212,69 @@ html body #step-analysis .sori-section {
   padding-bottom: 15vh !important;
 }
 
+/* ── 5b. 12-CARD GRID & TYPOGRAPHY (v7 — expanded from 8 to 12 emotions) ── */
+
+/* Ensure the 3-row card grid is fully visible on constrained viewports.
+   The container scrolls vertically if the 12 cards exceed viewport height.     */
+#step-expression .emotion-card-container {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* On tablet / small laptop screens keep 4 columns but add bottom padding       */
+@media (max-width: 1024px) {
+  #step-expression .emotion-card-container {
+    padding-bottom: 48px;
+  }
+}
+
+/* On mobile: collapse to 2 columns so each card has enough room to breathe     */
+@media (max-width: 600px) {
+  #step-expression .emotion-card-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* Korean label inside each card — Pretendard for sharp sans-serif legibility   */
+#step-expression .emotion-card__label [lang="ko"],
+#step-expression .emotion-card__desc[lang="ko"] {
+  font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif !important;
+}
+
+/* Emotion card description — Source Serif 4 for softer body register           */
+#step-expression .emotion-card__desc {
+  font-family: 'Source Serif 4', 'Lora', serif !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  font-weight: 300 !important;
+  opacity: 0.85 !important;
+}
+
+/* Positive group (cards 1–4): subtle warm tint on active/hover state           */
+#step-expression .emotion-card[data-emotion="Happy"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Excited"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Grateful"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Calm"].emotion-card--active {
+  border-color: #A89BC2 !important; /* muted purple-warm */
+}
+
+/* Negative group (cards 5–8): cooler border accent on selection                */
+#step-expression .emotion-card[data-emotion="Sad"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Angry"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Anxious"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Exhausted"].emotion-card--active {
+  border-color: #8878A8 !important; /* deeper purple-cool */
+}
+
+/* Neutral/Complex group (cards 9–12): mid-range purple on selection             */
+#step-expression .emotion-card[data-emotion="Nostalgic"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Ambivalent"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Relieved"].emotion-card--active,
+#step-expression .emotion-card[data-emotion="Accomplished"].emotion-card--active {
+  border-color: #967FAA !important; /* balanced mid-purple */
+}
+
 /* ── 6. OEM.CARE STYLE JOURNAL CARD (스크롤/줄바꿈 유지) ── */
 html body #step-journal.sori-step--active {
   position: fixed !important;

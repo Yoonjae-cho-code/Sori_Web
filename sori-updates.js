@@ -34,11 +34,8 @@
   const HERO_FADE_MS    = 500;    // fade-in / fade-out duration
   const CYCLE_INTERVAL  = 2600;   // ms between cycling messages
 
-  // Negative emotion keys (used for trend detection)
-  const NEGATIVE_EMOTIONS = new Set([
-    'Sadness', 'Loneliness', 'Anxiety', 'Fear', 'Anger',
-    'Overwhelm', 'Shame', 'Disgust', 'Drained', 'Restless', 'numb', 'lonely'
-  ]);
+  // Negative emotion keys (must mirror the 4 negative keys in EMOTION_MAP / server.js VALID_EMOTIONS)
+  const NEGATIVE_EMOTIONS = new Set(['Sad', 'Angry', 'Anxious', 'Exhausted']);
 
   // Number of entries required before the wellbeing section appears
   const WELLBEING_MIN_ENTRIES = 5;
@@ -187,16 +184,22 @@
   //  card clicks fire, so the rest of the flow is unchanged.
   // ─────────────────────────────────────────────────────────────────────────
 
-  // Emotion segments in ascending order (0 = heaviest → 100 = lightest)
+  // Emotion temperature segments — 12 segments across 0–100
+  // Ordered from lowest energy / most difficult (0) to highest energy / most positive (100).
+  // Each segment is ~8 units wide; slight variation keeps segment boundaries intuitive.
   const TEMP_SEGMENTS = [
-    { key: 'Drained',  min: 0,  max: 12, label: { en: 'Drained',  ko: '지침' },   tone: 'cool' },
-    { key: 'Restless', min: 13, max: 25, label: { en: 'Restless', ko: '불안' },   tone: 'cool' },
-    { key: 'numb',     min: 26, max: 37, label: { en: 'Numb',     ko: '멍함' },   tone: 'cool' },
-    { key: 'Sadness',  min: 38, max: 48, label: { en: 'Sad',      ko: '슬픔' },   tone: 'cool' },
-    { key: 'meh',      min: 49, max: 57, label: { en: 'Meh',      ko: '그저그런' }, tone: 'neutral' },
-    { key: 'Alright',  min: 58, max: 68, label: { en: 'Alright',  ko: '괜찮은' }, tone: 'warm' },
-    { key: 'lighter',  min: 69, max: 82, label: { en: 'Lighter',  ko: '홀가분' }, tone: 'warm' },
-    { key: 'proud',    min: 83, max: 100, label: { en: 'Proud',   ko: '뿌듯한' }, tone: 'warm' },
+    { key: 'Exhausted',    min: 0,   max: 8,   label: { en: 'Exhausted',    ko: '지침' },   tone: 'cool'    },
+    { key: 'Sad',          min: 9,   max: 16,  label: { en: 'Sad',          ko: '슬픔' },   tone: 'cool'    },
+    { key: 'Angry',        min: 17,  max: 24,  label: { en: 'Angry',        ko: '화남' },   tone: 'cool'    },
+    { key: 'Anxious',      min: 25,  max: 33,  label: { en: 'Anxious',      ko: '불안' },   tone: 'cool'    },
+    { key: 'Ambivalent',   min: 34,  max: 41,  label: { en: 'Ambivalent',   ko: '애매' },   tone: 'neutral' },
+    { key: 'Nostalgic',    min: 42,  max: 49,  label: { en: 'Nostalgic',    ko: '그리움' }, tone: 'neutral' },
+    { key: 'Calm',         min: 50,  max: 57,  label: { en: 'Calm',         ko: '평온' },   tone: 'warm'    },
+    { key: 'Relieved',     min: 58,  max: 66,  label: { en: 'Relieved',     ko: '해방' },   tone: 'warm'    },
+    { key: 'Happy',        min: 67,  max: 74,  label: { en: 'Happy',        ko: '행복' },   tone: 'warm'    },
+    { key: 'Grateful',     min: 75,  max: 82,  label: { en: 'Grateful',     ko: '감사' },   tone: 'warm'    },
+    { key: 'Excited',      min: 83,  max: 91,  label: { en: 'Excited',      ko: '설렘' },   tone: 'warm'    },
+    { key: 'Accomplished', min: 92,  max: 100, label: { en: 'Accomplished', ko: '성취' },   tone: 'warm'    },
   ];
 
   function _tempToSegment(value) {
@@ -348,8 +351,10 @@
 
       // Dispatch the same CustomEvent that card clicks dispatch so any
       // listener in sori-flow.js or sori-resonance.js reacts identically.
+      // Also carry emotionTemperature so sori-flow.js can persist it with the entry.
+      const temperatureValue = parseInt(rangeInput ? rangeInput.value : '50', 10);
       window.dispatchEvent(new CustomEvent('sori:emotion-selected', {
-        detail: { emotion: emotion },
+        detail: { emotion: emotion, emotionTemperature: temperatureValue },
         bubbles: false,
       }));
 
