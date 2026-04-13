@@ -7,8 +7,8 @@
 html,
 body,
 #sori-app {
-  background-color: #DBC9E3 !important;
-  background: #DBC9E3 !important;
+  background-color: #FAFAF8 !important;
+  background: #FAFAF8 !important;
 }
 
 .sori-main,
@@ -134,16 +134,16 @@ cite,
   display: none !important;
 }
 
-/* ── 4. YELLOW BUTTONS & CARDS (#EDED8B 적용) ── */
-/* 사라졌던 버튼 형태와 색상 완벽 복구 */
+/* ── 4. PRIMARY BUTTONS (IBM Ari — #655B8D) ── */
+/* Gateway CTA + all voice-record-btn primary actions */
 .gateway__begin-cta,
 #nav-enter-cta.gateway__begin-cta,
 .voice-record-btn,
 #step-voice-record .voice-record-btn,
 #step-analysis .voice-record-btn {
-  background-color: #EDED8B !important;
-  background: #EDED8B !important;
-  color: #311F5D !important;
+  background-color: #655B8D !important;
+  background: #655B8D !important;
+  color: #FAFAF8 !important;
   border: none !important;
   border-radius: 40px !important;
   padding: 16px 36px !important;
@@ -152,6 +152,18 @@ cite,
   word-break: keep-all !important;
   font-weight: 500 !important;
   cursor: pointer !important;
+  transition: background-color 220ms ease, box-shadow 220ms ease !important;
+}
+
+/* Hover: deepen to #3B3171 */
+.gateway__begin-cta:hover,
+#nav-enter-cta.gateway__begin-cta:hover,
+.voice-record-btn:hover,
+#step-voice-record .voice-record-btn:hover,
+#step-analysis .voice-record-btn:hover {
+  background-color: #3B3171 !important;
+  background: #3B3171 !important;
+  box-shadow: 0 4px 18px rgba(59, 49, 113, 0.25) !important;
 }
 
 /* 랜딩페이지 중앙 시작 버튼 위치 강제 고정 */
@@ -163,14 +175,29 @@ cite,
   z-index: 2000 !important;
 }
 
-/* 감정 카드 노란색 복구 */
+/* 감정 카드 — IBM Ari soft accent */
 .emotion-card,
 #step-expression .emotion-card {
-  background-color: #EDED8B !important;
-  background: #EDED8B !important;
+  background-color: #D4C4E1 !important;
+  background: #D4C4E1 !important;
   border-radius: 16px !important;
-  border: none !important;
+  border: 1px solid rgba(101, 91, 141, 0.18) !important;
   color: #311F5D !important;
+}
+
+.emotion-card:hover,
+#step-expression .emotion-card:hover {
+  background-color: #C8B4D8 !important;
+  background: #C8B4D8 !important;
+  border-color: #655B8D !important;
+}
+
+.emotion-card--active,
+#step-expression .emotion-card--active {
+  background-color: #D4C4E1 !important;
+  border-color: #655B8D !important;
+  border-width: 1.5px !important;
+  box-shadow: 0 2px 14px rgba(101, 91, 141, 0.22) !important;
 }
 
 .emotion-card .type-h2,
@@ -293,8 +320,8 @@ html body #step-journal.sori-step--active {
 .sori-journal-card,
 html body #step-journal .sori-journal-card,
 .journal-card {
-  background-color: #C8E5C8 !important;
-  background: #C8E5C8 !important;
+  background-color: #FAFAF8 !important;
+  background: #FAFAF8 !important;
   border-radius: 24px !important;
   padding: clamp(32px, 5vw, 48px) !important;
   max-width: 640px !important;
@@ -305,8 +332,8 @@ html body #step-journal .sori-journal-card,
   display: flex !important;
   flex-direction: column !important;
   gap: 20px !important;
-  border: none !important;
-  box-shadow: 0 8px 32px rgba(49, 31, 93, 0.05) !important;
+  border: 1.5px solid #D4C4E1 !important;
+  box-shadow: 0 8px 32px rgba(101, 91, 141, 0.08) !important;
 }
 
 .sori-journal-card__body,
@@ -345,10 +372,10 @@ html body #step-journal .sori-journal-card,
 
 .sori-journal-card__transcript,
 .journal-card__transcript {
-  background: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(212, 196, 225, 0.18) !important;
   padding: 20px 24px !important;
   border-radius: 16px !important;
-  border-left: 4px solid #311F5D !important;
+  border-left: 4px solid #655B8D !important;
   font-style: italic !important;
 }
 
@@ -364,7 +391,7 @@ html body #step-archive.sori-step--active {
   min-height: 100svh !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  background-color: #DBC9E3 !important;
+  background-color: #FAFAF8 !important;
   z-index: 500 !important;
   pointer-events: auto !important;
 }
@@ -471,8 +498,8 @@ html body #step-archive.sori-step--active {
 
 .calendar-day--selected,
 .pin-cal-day--entry {
-  background-color: #C8E5C8 !important;
-  color: #311F5D !important;
+  background-color: #655B8D !important;
+  color: #FAFAF8 !important;
   border: none !important;
   font-weight: 600 !important;
 }
@@ -533,9 +560,9 @@ html body .journal-save-record-btn:hover,
 html body .journal-save-record-btn:hover *,
 html body .sori-journal-card__new-entry:hover,
 html body .sori-journal-card__new-entry:hover * {
-  background-color: #311F5D !important;
-  background: #311F5D !important;
-  color: #C8E5C8 !important;
+  background-color: #3B3171 !important;
+  background: #3B3171 !important;
+  color: #FAFAF8 !important;
 }
 
 /* ============================================================
@@ -723,9 +750,10 @@ html body #step-archive .archive-split-layout {
   background-color: rgba(49, 31, 93, 0.1) !important;
 }
 
-/* 4. 기록이 있는 날짜 (초록색 강조) */
+/* 4. 기록이 있는 날짜 — IBM Ari interactive purple */
 .pin-cal-day--entry {
-  background-color: #C8E5C8 !important;
+  background-color: #655B8D !important;
+  color: #FAFAF8 !important;
   font-weight: 600 !important;
 }
 
@@ -826,3 +854,285 @@ html body #step-archive .archive-split-layout {
     padding: 12px 24px;
   }
 }
+
+/* ============================================================
+   🎨 SORI · 소리 — IBM ARI DESIGN SYSTEM (v1)
+   ─────────────────────────────────────────────────────────────
+   Strict application of the IBM Ari Selection colour palette
+   and typography hierarchy across all remaining components.
+
+   PALETTE
+     #FAFAF8  Primary Background (White)
+     #D4C4E1  Soft Accent (Light Purple)
+     #655B8D  Interactive (Medium Purple)
+     #3B3171  Deep Accent (Dark Purple) — borders, hover
+     #311F5D  Primary Text / Branding
+
+   TYPOGRAPHY
+     Playfair Display   EN headings, display, hero keywords
+     Source Serif 4     EN body, narrative, quotes, descriptions
+     Pretendard         ALL Korean text (global :lang(ko))
+   ============================================================ */
+
+/* ── A. ROOT DESIGN TOKENS ─────────────────────────────────── */
+:root {
+  --ari-bg:          #FAFAF8;
+  --ari-soft:        #D4C4E1;
+  --ari-interactive: #655B8D;
+  --ari-deep:        #3B3171;
+  --ari-text:        #311F5D;
+
+  /* Override legacy sepia/sage tokens with purple equivalents */
+  --color-silky-cream:     #FAFAF8;
+  --color-oatmeal-beige:   #EDE8F5;
+  --color-dawn-sage:       #655B8D;
+  --color-ghost-sepia:     #C4B8D8;
+  --color-deep-sepia:      #311F5D;
+  --color-mid-sepia:       #655B8D;
+  --color-deep-purple:     #311F5D;
+}
+
+/* ── B. GLOBAL TYPOGRAPHY ──────────────────────────────────── */
+
+/* B1: Korean text — Pretendard everywhere                      */
+:lang(ko),
+[lang="ko"],
+.ko-text,
+span[lang="ko"],
+p[lang="ko"],
+div[lang="ko"] {
+  font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif !important;
+}
+
+/* B2: English headings — Playfair Display                     */
+h1, h2, h3,
+.type-d1, .type-d2,
+.type-h1, .type-h2,
+.sori-wordmark__btn .type-h2,
+.gateway__title,
+.insight-label,
+.sori-journal-card__emotion,
+.journal-card__emotion,
+.sori-hero-emotion__keyword {
+  font-family: 'Playfair Display', 'Noto Serif KR', serif !important;
+}
+
+/* B3: English body / narrative / quotes — Source Serif 4       */
+p, li,
+.type-body,
+.type-caption,
+.sori-journal-card__body-text,
+.journal-card__body-text,
+.sori-journal-card__body,
+.journal-card__body,
+.insight-quote__text,
+.insight-recs__list li,
+.sori-journal-card__transcript p,
+.journal-card__transcript p {
+  font-family: 'Source Serif 4', 'Lora', serif !important;
+}
+
+/* B4: Korean readout in slider — Pretendard, not Playfair italic */
+.emotion-slider__readout-ko {
+  font-family: 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  opacity: 0.80 !important;
+  color: var(--ari-text, #311F5D) !important;
+}
+
+/* B5: Slider confirm button label (EN + KO inside it)          */
+.emotion-slider__confirm,
+#emotion-temp-confirm {
+  font-family: 'Source Serif 4', 'Lora', serif !important;
+}
+
+/* ── C. TEMPERATURE SLIDER ─────────────────────────────────── */
+
+/* C1: Gradient track — cool (purple) → neutral → warm (lavender) */
+.emotion-slider__gradient-track {
+  background: linear-gradient(
+    to right,
+    #8878A8,   /* deep cool-purple — Exhausted/Sad/Angry */
+    #B4A8CC,   /* mid lavender      — Anxious/Ambivalent */
+    #C8BAD8,   /* soft purple       — Nostalgic/Calm     */
+    #D4C4E1    /* light accent      — Relieved→Accomplished */
+  ) !important;
+  opacity: 0.70 !important;
+}
+
+/* C2: Thumb — #FAFAF8 fill, #655B8D border                    */
+.emotion-slider__range::-webkit-slider-thumb {
+  background: #FAFAF8 !important;
+  border: 2px solid #655B8D !important;
+  box-shadow: 0 2px 10px rgba(101, 91, 141, 0.20) !important;
+}
+
+.emotion-slider__range::-webkit-slider-thumb:active {
+  box-shadow: 0 4px 18px rgba(101, 91, 141, 0.30) !important;
+}
+
+.emotion-slider__range::-moz-range-thumb {
+  background: #FAFAF8 !important;
+  border: 2px solid #655B8D !important;
+  box-shadow: 0 2px 10px rgba(101, 91, 141, 0.20) !important;
+}
+
+/* C3: Readout tone tints — purple-based                        */
+.emotion-slider__readout {
+  background: rgba(212, 196, 225, 0.20) !important;
+  border: 1px solid rgba(101, 91, 141, 0.20) !important;
+}
+
+.emotion-slider__readout.tone-cool {
+  background: rgba(136, 120, 168, 0.12) !important;
+  border-color: rgba(136, 120, 168, 0.35) !important;
+}
+
+.emotion-slider__readout.tone-neutral {
+  background: rgba(180, 168, 204, 0.14) !important;
+  border-color: rgba(180, 168, 204, 0.35) !important;
+}
+
+.emotion-slider__readout.tone-warm {
+  background: rgba(212, 196, 225, 0.16) !important;
+  border-color: rgba(212, 196, 225, 0.40) !important;
+}
+
+/* C4: Readout EN label — Playfair italic, Ari text color       */
+.emotion-slider__readout-label {
+  color: var(--ari-text, #311F5D) !important;
+}
+
+/* C5: Confirm button — interactive purple                      */
+.emotion-slider__confirm,
+#emotion-temp-confirm {
+  background-color: #655B8D !important;
+  background: #655B8D !important;
+  color: #FAFAF8 !important;
+  border: none !important;
+  border-radius: 32px !important;
+  transition: background-color 200ms ease, box-shadow 200ms ease !important;
+}
+
+.emotion-slider__confirm:hover,
+#emotion-temp-confirm:hover {
+  background-color: #3B3171 !important;
+  background: #3B3171 !important;
+  box-shadow: 0 4px 16px rgba(59, 49, 113, 0.25) !important;
+}
+
+/* C6: Toggle strip — lavender ghost background                 */
+.emotion-input-toggle {
+  background: rgba(212, 196, 225, 0.30) !important;
+}
+
+.emotion-toggle-btn--active {
+  background: #FAFAF8 !important;
+  color: #311F5D !important;
+  box-shadow: 0 1px 6px rgba(101, 91, 141, 0.12) !important;
+}
+
+/* ── D. HEATMAP CELLS — purple palette ─────────────────────── */
+
+.heatmap-cell--positive {
+  background-color: rgba(101, 91, 141, 0.55) !important;  /* medium purple — positive */
+}
+
+.heatmap-cell--neutral {
+  background-color: rgba(180, 168, 204, 0.45) !important; /* mid lavender — neutral */
+}
+
+.heatmap-cell--negative {
+  background-color: rgba(59, 49, 113, 0.50) !important;   /* deep purple — negative */
+}
+
+.heatmap-cell--none {
+  background-color: rgba(212, 196, 225, 0.18) !important; /* ghost soft accent — no entry */
+}
+
+/* Legend dots to match */
+.legend-dot--positive { background-color: rgba(101, 91, 141, 0.55) !important; }
+.legend-dot--neutral  { background-color: rgba(180, 168, 204, 0.45) !important; }
+.legend-dot--negative { background-color: rgba(59, 49, 113, 0.50) !important; }
+.legend-dot--none     { background-color: rgba(212, 196, 225, 0.18) !important; border-color: rgba(212, 196, 225, 0.40) !important; }
+
+/* ── E. COUNSELING / WELLBEING CARD ───────────────────────── */
+
+.counseling-resources-card {
+  background-color: #FAFAF8 !important;
+  border: 1.5px solid #D4C4E1 !important;
+  box-shadow: 0 4px 20px rgba(101, 91, 141, 0.08) !important;
+}
+
+.counseling-link {
+  background-color: #655B8D !important;
+  color: #FAFAF8 !important;
+  border: none !important;
+  border-radius: 24px !important;
+}
+
+.counseling-link:hover {
+  background-color: #3B3171 !important;
+}
+
+/* ── F. MODAL & OVERLAYS ───────────────────────────────────── */
+
+.sori-modal {
+  background-color: #FAFAF8 !important;
+  border: 1px solid #D4C4E1 !important;
+}
+
+/* ── G. PIN INPUT ──────────────────────────────────────────── */
+
+.pin-hidden-input {
+  border-color: rgba(101, 91, 141, 0.25) !important;
+}
+
+.pin-hidden-input:focus {
+  border-color: #655B8D !important;
+  box-shadow: 0 4px 16px rgba(101, 91, 141, 0.12) !important;
+}
+
+/* Calendar hover — soft purple tint                           */
+.pin-cal-day:not(:disabled):hover {
+  background-color: rgba(101, 91, 141, 0.12) !important;
+}
+
+/* ── H. HERO EMOTION OVERLAY COLORS ───────────────────────── */
+
+.sori-hero-emotion__keyword,
+.sori-hero-emotion__ko {
+  color: var(--ari-text, #311F5D) !important;
+}
+
+/* ── I. RECORDING TOAST ────────────────────────────────────── */
+
+#sori-recording-toast {
+  background: #655B8D !important;
+  color: #FAFAF8 !important;
+}
+
+/* ── J. THREE.JS CANVAS — ZERO CHANGE (preserved below) ─────
+   #resonance-field keeps position:fixed, z-index from §3 of
+   this file and §3 of the V9 block. No color overrides here.
+   The white (#FAFAF8) background provides correct contrast
+   for the purple sphere material.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── K. JOURNAL CARD BADGE (emotion emoji row) ─────────────── */
+
+.sori-journal-card__emotion-badge,
+.journal-card__emotion-badge {
+  background-color: rgba(212, 196, 225, 0.30) !important;
+  border: 1px solid rgba(101, 91, 141, 0.18) !important;
+  border-radius: 12px !important;
+}
+
+/* ── L. SORI-EMOJI STYLE PATCH (override any remaining green) */
+
+/* Any remaining #A9B4AA sage → Ari interactive purple         */
+.emotion-card--active .emotion-card__icon {
+  color: #655B8D !important;
+}
+
