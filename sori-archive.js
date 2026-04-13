@@ -7,8 +7,8 @@
 (function () {
   'use strict';
 
-  // ─── API Base URL (Express 서버는 포트 3000에서 실행) ─────────────────────
-  const API_BASE = 'http://localhost:3000';
+  // ─── API Base URL — relative path works on both localhost and Render ────
+  const API_BASE = '';
 
   // --- State (전역 유지) ---
   let entries = [];
