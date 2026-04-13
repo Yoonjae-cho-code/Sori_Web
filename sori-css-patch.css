@@ -1430,3 +1430,37 @@ button#pin-success-archive-cta:hover span {
 }
 /* ── END N · SURGICAL COLOR HIERARCHY ──────────────────────── */
 
+
+/* ══════════════════════════════════════════════════════════════
+   ── O. RECORDING TOAST · KOREAN CONTRAST HOTFIX ───────────────
+   ──────────────────────────────────────────────────────────────
+   Issue
+     #sori-recording-toast uses the interactive purple (#655B8D)
+     as its background. The toast element itself already carries
+     color:#FAFAF8 (§I), but the nested <span lang="ko">녹음 완료
+     </span> inherits the §1 global `span { color:#311F5D }` +
+     the §N1 `:lang(ko) { color:#311F5D }` rule — leaving the
+     Korean Pretendard glyphs near-invisible on the purple fill.
+   Fix
+     Re-assert #FAFAF8 on the toast root AND every descendant,
+     specifically including :lang(ko) and [lang="ko"] nodes, with
+     id-scoped selectors (specificity ≥ 0,1,0,1) so no other rule
+     leaks into body copy, cards, or narrative text.
+   Constraint respect
+     • Scope is strictly #sori-recording-toast — no bleed.
+     • No Three.js / #resonance-field selectors are touched.
+     • opacity:1 neutralizes any inherited micro-opacity on spans.
+   ════════════════════════════════════════════════════════════ */
+
+#sori-recording-toast,
+#sori-recording-toast *,
+#sori-recording-toast span,
+#sori-recording-toast :lang(ko),
+#sori-recording-toast [lang="ko"],
+#sori-recording-toast .sori-toast__check {
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important;
+  opacity: 1 !important;
+}
+/* ── END O · RECORDING TOAST HOTFIX ────────────────────────── */
+
