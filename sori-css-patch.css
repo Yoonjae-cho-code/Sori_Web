@@ -1533,3 +1533,47 @@ button#pin-success-archive-cta:hover span {
 }
 /* ── END P · SECONDARY BUTTON HOTFIX ───────────────────────── */
 
+
+/* ══════════════════════════════════════════════════════════════
+   ── Q. JOURNAL SECONDARY BUTTONS · DYNAMIC CONTRAST SYNC ──────
+   ──────────────────────────────────────────────────────────────
+   Purpose
+     Final precision layer on top of §P. Explicitly pins the
+     default state of the two journal-card secondaries
+       • #journal-save-record-cta       (Archive Record · 기록 보관하기)
+       • .sori-journal-card__new-entry  (New Entry · 새 기록)
+     to Deep Purple text / icons / border, and synchronizes the
+     hover state so BOTH the background and the text/icon flip
+     in lockstep (no mid-transition color mismatch).
+   Why this block is safe
+     • Only two named hooks are referenced — no bleed to
+       #nav-enter-cta, #voice-record-trigger, #analyze-trigger,
+       #view-journal-btn, #pin-protect-btn, or any other primary
+       solid-purple CTA.
+     • Uses `*` only as a descendant of a specific id/class,
+       never as a standalone universal selector.
+     • Three.js / #resonance-field positioning untouched.
+   ════════════════════════════════════════════════════════════ */
+
+/* Q1 · Default state — Deep Dark Purple text, icons, border */
+#journal-save-record-cta,
+#journal-save-record-cta *,
+.sori-journal-card__new-entry,
+.sori-journal-card__new-entry * {
+  color: #311F5D !important;
+  -webkit-text-fill-color: #311F5D !important;
+  border-color: #311F5D !important;
+  opacity: 1 !important;
+}
+
+/* Q2 · Hover state — background darkens, text/icons flip white */
+#journal-save-record-cta:hover,
+#journal-save-record-cta:hover *,
+.sori-journal-card__new-entry:hover,
+.sori-journal-card__new-entry:hover * {
+  background-color: #3B3171 !important;
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important;
+}
+/* ── END Q · DYNAMIC CONTRAST SYNC ─────────────────────────── */
+
