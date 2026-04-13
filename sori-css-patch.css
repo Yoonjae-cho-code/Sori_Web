@@ -155,6 +155,29 @@ cite,
   transition: background-color 220ms ease, box-shadow 220ms ease !important;
 }
 
+/* ── 4a. BUTTON CHILD TEXT — force all inline content to #FAFAF8 ──
+   Problem: the global "span { color: #311F5D !important }" rule re-asserts
+   dark text on every <span> inside buttons, including <span lang="ko">.
+   Fix: use compound selectors with higher specificity + !important so
+   ALL descendant text nodes (EN and KO alike) inherit the button's white.  */
+.gateway__begin-cta span,
+.gateway__begin-cta :lang(ko),
+.gateway__begin-cta [lang="ko"],
+#nav-enter-cta.gateway__begin-cta span,
+#nav-enter-cta.gateway__begin-cta :lang(ko),
+.voice-record-btn span,
+.voice-record-btn :lang(ko),
+.voice-record-btn [lang="ko"],
+#step-voice-record .voice-record-btn span,
+#step-voice-record .voice-record-btn :lang(ko),
+#step-analysis .voice-record-btn span,
+#step-analysis .voice-record-btn :lang(ko),
+/* Generic safety net — any button whose background is the Ari purple */
+button.gateway__begin-cta *,
+button.voice-record-btn * {
+  color: #FAFAF8 !important;
+}
+
 /* Hover: deepen to #3B3171 */
 .gateway__begin-cta:hover,
 #nav-enter-cta.gateway__begin-cta:hover,
@@ -1135,4 +1158,204 @@ p, li,
 .emotion-card--active .emotion-card__icon {
   color: #655B8D !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ── M. HOTFIX · KOREAN TEXT CONTRAST IN PRIMARY BUTTONS ──────
+   ──────────────────────────────────────────────────────────────
+   Issue
+     The global text rule (§1 of this file) asserts
+       span, div, p, … { color: #311F5D !important; }
+     which re-colors every Korean <span lang="ko"> nested inside
+     our primary purple buttons (#655B8D bg). On the medium-purple
+     CTA this yields near-zero contrast for Pretendard KO glyphs
+     while the EN sibling (Playfair / Source Serif 4) stays white.
+   Fix
+     Enforce color: #FAFAF8 on EVERY descendant of each primary
+     action button — matched by BOTH class and id — with selectors
+     specific enough (≥ 0,1,0,2) to beat the §1 global rule without
+     leaking color into surrounding narrative copy.
+   Scope  (Affected CTAs)
+     • #nav-enter-cta           "Begin · 시작하기"
+     • #emotion-temp-confirm    "This feels right · 이게 맞아요"
+     • #voice-record-trigger    "Speak · 말하기" / "Recorded · 녹음 완료"
+     • #analyze-trigger         "Analyze my record · 내 기록 분석해보기"
+     • #view-journal-btn        "View Journal · 방금 기록된 저널 확인하기"
+     • #journal-save-record-cta "Archive Record · 기록 보관하기"
+     • #journal-archive-cta     "See your archive · 지난 기록 보기"
+     • #reflection-archive-cta  "See your archive · 지난 기록 보기"
+     • #pin-protect-btn         "Protect Record · 기록 보호하기"
+     • #pin-success-archive-cta PIN success archive CTA
+     • Generic hooks: .cta-button, .action-btn
+   Non-negotiables honored
+     • Global body copy on #FAFAF8 surfaces stays #311F5D (untouched).
+     • No Three.js canvas / grid selector is referenced.
+     • High-specificity (id + descendant / class + child) — no `*` hacks.
+   ════════════════════════════════════════════════════════════ */
+
+/* M1 · Button chrome — unified interactive purple + white label
+   (Re-asserts base color on the button element itself for any CTA
+    added via JS after §4 was authored; harmless on existing ones.) */
+button.cta-button,
+button.action-btn,
+button#nav-enter-cta,
+button#emotion-temp-confirm,
+button#voice-record-trigger,
+button#analyze-trigger,
+button#view-journal-btn,
+button#journal-save-record-cta,
+button#journal-archive-cta,
+button#reflection-archive-cta,
+button#pin-protect-btn,
+button#pin-success-archive-cta {
+  color: #FAFAF8 !important;
+  background-color: #655B8D !important;
+}
+
+/* M2 · Korean descendant text — forced #FAFAF8
+   Matches three orthogonal ways the KO glyphs surface:
+     (a) any <span> child           — legacy bilingual markup
+     (b) :lang(ko) descendants      — semantically tagged KO nodes
+     (c) [lang="ko"] descendants    — explicit attribute selector
+   Selector specificity ≥ (0,1,0,2) easily outranks §1's (0,0,0,1).  */
+button.cta-button :lang(ko),
+button.cta-button [lang="ko"],
+button.cta-button span,
+button.action-btn :lang(ko),
+button.action-btn [lang="ko"],
+button.action-btn span,
+button#nav-enter-cta :lang(ko),
+button#nav-enter-cta [lang="ko"],
+button#nav-enter-cta span,
+button#emotion-temp-confirm :lang(ko),
+button#emotion-temp-confirm [lang="ko"],
+button#emotion-temp-confirm span,
+button#voice-record-trigger :lang(ko),
+button#voice-record-trigger [lang="ko"],
+button#voice-record-trigger span,
+button#analyze-trigger :lang(ko),
+button#analyze-trigger [lang="ko"],
+button#analyze-trigger span,
+button#view-journal-btn :lang(ko),
+button#view-journal-btn [lang="ko"],
+button#view-journal-btn span,
+button#journal-save-record-cta :lang(ko),
+button#journal-save-record-cta [lang="ko"],
+button#journal-save-record-cta span,
+button#journal-archive-cta :lang(ko),
+button#journal-archive-cta [lang="ko"],
+button#journal-archive-cta span,
+button#reflection-archive-cta :lang(ko),
+button#reflection-archive-cta [lang="ko"],
+button#reflection-archive-cta span,
+button#pin-protect-btn :lang(ko),
+button#pin-protect-btn [lang="ko"],
+button#pin-protect-btn span,
+button#pin-success-archive-cta :lang(ko),
+button#pin-success-archive-cta [lang="ko"],
+button#pin-success-archive-cta span {
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important; /* Safari gradient-text safety */
+}
+
+/* M3 · EN sibling safety — keep Playfair / Source Serif 4 white
+   Some markup wraps the EN label in a plain text node (no span),
+   so re-assert on the button content itself via direct selectors. */
+button#nav-enter-cta,
+button#emotion-temp-confirm,
+button#voice-record-trigger,
+button#analyze-trigger,
+button#view-journal-btn,
+button#journal-save-record-cta,
+button#journal-archive-cta,
+button#reflection-archive-cta,
+button#pin-protect-btn,
+button#pin-success-archive-cta,
+button.cta-button,
+button.action-btn {
+  color: #FAFAF8 !important;
+}
+
+/* M4 · Hover / active sync — deep accent bg, text stays #FAFAF8
+   Covers both the button chrome AND its Korean descendants so that
+   a hover repaint never flashes the inherited dark purple.          */
+button.cta-button:hover,
+button.cta-button:active,
+button.cta-button:focus-visible,
+button.action-btn:hover,
+button.action-btn:active,
+button.action-btn:focus-visible,
+button#nav-enter-cta:hover,
+button#nav-enter-cta:active,
+button#nav-enter-cta:focus-visible,
+button#emotion-temp-confirm:hover,
+button#emotion-temp-confirm:active,
+button#emotion-temp-confirm:focus-visible,
+button#voice-record-trigger:hover,
+button#voice-record-trigger:active,
+button#voice-record-trigger:focus-visible,
+button#analyze-trigger:hover,
+button#analyze-trigger:active,
+button#analyze-trigger:focus-visible,
+button#view-journal-btn:hover,
+button#view-journal-btn:active,
+button#view-journal-btn:focus-visible,
+button#journal-save-record-cta:hover,
+button#journal-save-record-cta:active,
+button#journal-save-record-cta:focus-visible,
+button#journal-archive-cta:hover,
+button#journal-archive-cta:active,
+button#journal-archive-cta:focus-visible,
+button#reflection-archive-cta:hover,
+button#reflection-archive-cta:active,
+button#reflection-archive-cta:focus-visible,
+button#pin-protect-btn:hover,
+button#pin-protect-btn:active,
+button#pin-protect-btn:focus-visible,
+button#pin-success-archive-cta:hover,
+button#pin-success-archive-cta:active,
+button#pin-success-archive-cta:focus-visible {
+  background-color: #3B3171 !important;
+  color: #FAFAF8 !important;
+}
+
+button.cta-button:hover :lang(ko),
+button.cta-button:hover [lang="ko"],
+button.cta-button:hover span,
+button.action-btn:hover :lang(ko),
+button.action-btn:hover [lang="ko"],
+button.action-btn:hover span,
+button#nav-enter-cta:hover :lang(ko),
+button#nav-enter-cta:hover [lang="ko"],
+button#nav-enter-cta:hover span,
+button#emotion-temp-confirm:hover :lang(ko),
+button#emotion-temp-confirm:hover [lang="ko"],
+button#emotion-temp-confirm:hover span,
+button#voice-record-trigger:hover :lang(ko),
+button#voice-record-trigger:hover [lang="ko"],
+button#voice-record-trigger:hover span,
+button#analyze-trigger:hover :lang(ko),
+button#analyze-trigger:hover [lang="ko"],
+button#analyze-trigger:hover span,
+button#view-journal-btn:hover :lang(ko),
+button#view-journal-btn:hover [lang="ko"],
+button#view-journal-btn:hover span,
+button#journal-save-record-cta:hover :lang(ko),
+button#journal-save-record-cta:hover [lang="ko"],
+button#journal-save-record-cta:hover span,
+button#journal-archive-cta:hover :lang(ko),
+button#journal-archive-cta:hover [lang="ko"],
+button#journal-archive-cta:hover span,
+button#reflection-archive-cta:hover :lang(ko),
+button#reflection-archive-cta:hover [lang="ko"],
+button#reflection-archive-cta:hover span,
+button#pin-protect-btn:hover :lang(ko),
+button#pin-protect-btn:hover [lang="ko"],
+button#pin-protect-btn:hover span,
+button#pin-success-archive-cta:hover :lang(ko),
+button#pin-success-archive-cta:hover [lang="ko"],
+button#pin-success-archive-cta:hover span {
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important;
+}
+/* ── END M · HOTFIX ─────────────────────────────────────────── */
 
