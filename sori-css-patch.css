@@ -1464,3 +1464,72 @@ button#pin-success-archive-cta:hover span {
 }
 /* ── END O · RECORDING TOAST HOTFIX ────────────────────────── */
 
+
+/* ══════════════════════════════════════════════════════════════
+   ── P. SECONDARY / OUTLINED BUTTON LEGIBILITY HOTFIX ──────────
+   ──────────────────────────────────────────────────────────────
+   Issue
+     #journal-save-record-cta (class `voice-record-btn
+     journal-save-record-btn`) and .sori-journal-card__new-entry
+     are OUTLINED secondaries — transparent background + 1.5px
+     #311F5D border (see the earlier .journal-save-record-btn
+     declaration). Section N2 still matches them via
+       #journal-save-record-cta * { color:#FAFAF8 }
+       .voice-record-btn *        { color:#FAFAF8 }
+     forcing their Korean/English labels to white-on-cream →
+     effectively invisible in the default (non-hover) state.
+   Fix
+     Re-assert #311F5D on default-state descendants of the
+     outlined classes/id using compound selectors whose
+     specificity beats Section N2, then re-assert #FAFAF8 on
+     :hover/:active/:focus-visible so the label stays white as
+     the background darkens to #3B3171 (matches §'s hover block).
+   Scope discipline
+     • Only .journal-save-record-btn, .sori-journal-card__new-entry,
+       and #journal-save-record-cta are targeted.
+     • Primary solid-purple CTAs (#nav-enter-cta, #voice-record-trigger,
+       .gateway__begin-cta, etc.) are untouched.
+     • No Three.js / #resonance-field selectors referenced.
+   ════════════════════════════════════════════════════════════ */
+
+/* P1 · Default state — Deep Purple text on transparent outline */
+.journal-save-record-btn span,
+.journal-save-record-btn :lang(ko),
+.journal-save-record-btn [lang="ko"],
+.sori-journal-card__new-entry span,
+.sori-journal-card__new-entry :lang(ko),
+.sori-journal-card__new-entry [lang="ko"],
+#journal-save-record-cta span,
+#journal-save-record-cta :lang(ko),
+#journal-save-record-cta [lang="ko"],
+#journal-save-record-cta.journal-save-record-btn,
+#journal-save-record-cta.journal-save-record-btn * {
+  color: #311F5D !important;
+  -webkit-text-fill-color: #311F5D !important;
+}
+
+/* P2 · Hover / active / focus — flip to white as bg darkens
+   (#3B3171 background is already applied by the existing
+    html body .journal-save-record-btn:hover rule.) */
+.journal-save-record-btn:hover span,
+.journal-save-record-btn:hover :lang(ko),
+.journal-save-record-btn:hover [lang="ko"],
+.journal-save-record-btn:active span,
+.journal-save-record-btn:focus-visible span,
+.sori-journal-card__new-entry:hover span,
+.sori-journal-card__new-entry:hover :lang(ko),
+.sori-journal-card__new-entry:hover [lang="ko"],
+.sori-journal-card__new-entry:active span,
+.sori-journal-card__new-entry:focus-visible span,
+#journal-save-record-cta:hover span,
+#journal-save-record-cta:hover :lang(ko),
+#journal-save-record-cta:hover [lang="ko"],
+#journal-save-record-cta:active span,
+#journal-save-record-cta:focus-visible span,
+#journal-save-record-cta.journal-save-record-btn:hover,
+#journal-save-record-cta.journal-save-record-btn:hover * {
+  color: #FAFAF8 !important;
+  -webkit-text-fill-color: #FAFAF8 !important;
+}
+/* ── END P · SECONDARY BUTTON HOTFIX ───────────────────────── */
+
