@@ -1342,6 +1342,66 @@
 
   console.log('[sori-flow] ✅ window.soriFlow v8 API registered: { selectedEmotion, goToStep, populateInsight, getEmotionMeta, patchDateEl, patchEmotionKo, setScrollLock, resetToGateway, buildPinCalendar, showPinPanel }');
 
+  // ─────────────────────────────────────────────────────────────────────────
+  //  RISK MODAL RESUME BRIDGE  ·  fixes the "State Limbo" bug
+  // ─────────────────────────────────────────────────────────────────────────
+  //
+  //  When the EmergencyModal in sori-risk-detector.js intercepts a CRITICAL
+  //  transcript, sori-voice.js short-circuits onTranscriptReceived and the
+  //  app is parked on step-analysis. The modal's "I'm safe for now" button
+  //  dispatches `modalDismissedResumingFlow` on window. We listen here —
+  //  inside the closure that owns `goToStep` and `_currentStep` — and
+  //  forcibly transition the flow out of step-analysis.
+  //
+  //  This bypass is intentional: we call the private `goToStep()` directly
+  //  (not via the frozen public `window.soriFlow.goToStep`) so nothing can
+  //  mask failures behind a try/catch wrapper.
+  //
+  //  Target step is `step-voice-record` because re-rendering the flagged
+  //  transcript into the journal card would be retraumatising for a user
+  //  who just surfaced self-harm language.
+  // ─────────────────────────────────────────────────────────────────────────
+  (function installRiskResumeBridge() {
+    var RESUME_STEP = 'step-voice-record';
+
+    function onRiskModalDismissed(e) {
+      console.log('[sori-flow] 🩺 modalDismissedResumingFlow received — current step:', _currentStep);
+      // Only act if we actually got stuck on step-analysis. If the user is
+      // already somewhere else (e.g. already on journal), do nothing.
+      if (_currentStep !== 'step-analysis' &&
+          _currentStep !== 'step-reflection' &&
+          _currentStep !== 'step-journal') {
+        // If for any reason _currentStep is stale, still force the target.
+        if (document.getElementById('step-analysis') &&
+            document.getElementById('step-analysis').style.display !== 'none' &&
+            getComputedStyle(document.getElementById('step-analysis')).display !== 'none') {
+          // fall through — force route
+        } else {
+          console.log('[sori-flow] 🩺 not on step-analysis; bridge is a no-op');
+          return;
+        }
+      }
+      try {
+        goToStep(RESUME_STEP);
+        console.log('[sori-flow] 🩺 forced transition to', RESUME_STEP);
+      } catch (err) {
+        console.error('[sori-flow] 🩺 goToStep failed inside bridge:', err);
+        // Last-ditch: stamp _currentStep so subsequent calls don't bail
+        _currentStep = 'step-analysis';
+        try { goToStep(RESUME_STEP); } catch (err2) {
+          console.error('[sori-flow] 🩺 retry also failed:', err2);
+        }
+      }
+    }
+
+    // Plain Event name as requested by the spec.
+    window.addEventListener('modalDismissedResumingFlow', onRiskModalDismissed);
+    // Namespaced CustomEvent with detail, for analytics / future routers.
+    window.addEventListener('sori:risk:critical:dismissed', onRiskModalDismissed);
+
+    console.log('[sori-flow] 🩺 Risk-modal resume bridge armed (modalDismissedResumingFlow → ' + RESUME_STEP + ')');
+  })();
+
 
   // ─────────────────────────────────────────────────────────────────────────
   //  INIT — reveal gateway step's .fade-in-up nodes immediately

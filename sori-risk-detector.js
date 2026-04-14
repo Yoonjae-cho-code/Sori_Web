@@ -439,44 +439,69 @@
     if (backdrop.dataset.soriDismissed === '1') return;
     backdrop.dataset.soriDismissed = '1';
 
+    const RESUME_STEP = 'step-voice-record';
+
     // 1. Begin scrim fade-out FIRST so the step swap happens beneath it.
     backdrop.classList.remove('is-open');
 
-    // 2. Resume the main app flow. Prefer soriVoice (it owns the voice
-    //    state machine); fall back to soriFlow; final fallback mirrors
-    //    its internal step-swap logic directly on the DOM.
-    const RESUME_STEP = 'step-voice-record';
-    let routed = false;
+    // 2. CROSS-SCRIPT BRIDGE — fire the event sori-flow.js listens for.
+    //    This is the authoritative signal: sori-flow.js owns the router
+    //    and will invoke goToStep() directly, bypassing any indirection
+    //    through sori-voice.js (whose wrapper silently try/catches and
+    //    was leaving the app in State Limbo).
+    //
+    //    Both names are dispatched for forward compatibility — the
+    //    plain-Event form is what the spec requested; the namespaced
+    //    CustomEvent carries structured detail for analytics.
     try {
-      if (window.soriVoice && typeof window.soriVoice.goToStep === 'function') {
-        window.soriVoice.goToStep(RESUME_STEP); routed = true;
-      } else if (window.soriFlow && typeof window.soriFlow.goToStep === 'function') {
-        window.soriFlow.goToStep(RESUME_STEP); routed = true;
-      }
-    } catch (e) {
-      console.warn('[sori-risk-detector] step router threw:', e);
-    }
-    if (!routed) {
-      // Minimal DOM-level fallback — matches the logic inside sori-voice.js
-      const steps = document.querySelectorAll('[data-step], .step, [id^="step-"]');
-      steps.forEach(function (el) {
-        if (el.id === RESUME_STEP) {
-          el.style.display = ''; el.removeAttribute('hidden');
-          el.classList.remove('is-hidden'); el.classList.add('is-active');
-        } else {
-          el.style.display = 'none';
-          el.classList.remove('is-active'); el.classList.add('is-hidden');
-        }
-      });
-    }
+      window.dispatchEvent(new Event('modalDismissedResumingFlow'));
+    } catch (e) { /* IE fallback not needed — Sori targets evergreen */ }
+    try {
+      window.dispatchEvent(new CustomEvent('sori:risk:critical:dismissed', {
+        detail: { at: Date.now(), resumedTo: RESUME_STEP, source: 'EmergencyModal' }
+      }));
+    } catch (e) {}
 
-    // 3. Reset the voice layer so the record button is fresh and armed.
+    // 3. Belt-and-suspenders — if for any reason sori-flow.js did not
+    //    register the listener (e.g. it failed to load), call its router
+    //    directly, then fall through to soriVoice, then a raw DOM swap.
+    //    Wrapped in a microtask so the event-driven path runs first and
+    //    we don't double-fade on it.
+    Promise.resolve().then(function () {
+      if (document.getElementById(RESUME_STEP) &&
+          document.getElementById(RESUME_STEP).style.display !== 'block' &&
+          !document.getElementById(RESUME_STEP).classList.contains('sori-step--active')) {
+        // Only force if the event listener didn't already route us.
+        try {
+          if (window.soriFlow && typeof window.soriFlow.goToStep === 'function') {
+            window.soriFlow.goToStep(RESUME_STEP); return;
+          }
+          if (window.soriVoice && typeof window.soriVoice.goToStep === 'function') {
+            window.soriVoice.goToStep(RESUME_STEP); return;
+          }
+        } catch (err) { console.warn('[sori-risk-detector] direct router threw:', err); }
+        // Final fallback — raw DOM swap.
+        document.querySelectorAll('[data-step], .step, .sori-step, [id^="step-"]').forEach(function (el) {
+          if (el.id === RESUME_STEP) {
+            el.style.display = 'block'; el.style.opacity = '1';
+            el.removeAttribute('hidden');
+            el.classList.remove('is-hidden'); el.classList.add('is-active', 'sori-step--active');
+          } else {
+            el.style.display = 'none';
+            el.classList.remove('is-active', 'sori-step--active');
+            el.classList.add('is-hidden');
+          }
+        });
+      }
+    });
+
+    // 4. Reset the voice layer so the record button is fresh and armed.
+    //    Runs AFTER the router signal so cleanup's setBtnIdle doesn't
+    //    race the step swap.
     try {
       if (window.soriVoice && typeof window.soriVoice.cleanup === 'function') {
         window.soriVoice.cleanup();
       }
-      // Belt-and-suspenders — ensure the analysing cycle text isn't
-      // lingering on the faded screen behind us.
       if (window.soriUpdates && typeof window.soriUpdates.stopAnalyzingCycle === 'function') {
         window.soriUpdates.stopAnalyzingCycle();
       }
@@ -484,14 +509,7 @@
       console.warn('[sori-risk-detector] voice cleanup threw:', e);
     }
 
-    // 4. Let listeners (analytics, alt-flows) know. Non-blocking.
-    try {
-      window.dispatchEvent(new CustomEvent('sori:risk:critical:dismissed', {
-        detail: { at: Date.now(), resumedTo: RESUME_STEP }
-      }));
-    } catch (e) {}
-
-    // 5. Tear down the node once the fade completes.
+    // 5. Tear down the modal node once the fade completes.
     setTimeout(function () {
       if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
     }, 400);
