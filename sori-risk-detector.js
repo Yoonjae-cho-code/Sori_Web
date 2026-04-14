@@ -161,9 +161,13 @@
                   box-shadow 200ms ease;
     }
     .sori-risk-btn--primary {
-      background: ${TOKENS.DEEP_PURPLE}; color: #FFFFFF;
+      background: ${TOKENS.DEEP_PURPLE};
+      color: #FFFFFF !important;
+      text-decoration: none;
+      text-align: center;
       box-shadow: 0 6px 18px rgba(49,31,93,0.24);
     }
+    .sori-risk-btn--primary, .sori-risk-btn--primary * { color: #FFFFFF !important; }
     .sori-risk-btn--primary:hover { transform: translateY(-1px);
       box-shadow: 0 10px 24px rgba(49,31,93,0.32); }
     .sori-risk-btn--ghost {
@@ -291,8 +295,10 @@
         <div class="sori-risk-actions">
           <a class="sori-risk-btn sori-risk-btn--primary"
              href="tel:18002837019"
-             id="sori-emergency-call">
-            ☎&nbsp;&nbsp;Call SAMH now &middot; <span lang="ko">지금 상담 연결</span>
+             id="sori-emergency-call"
+             style="color:#FFFFFF; text-decoration:none;"
+             lang="ko">
+            무료 헬프라인 연결 (1800-283-7019)
           </a>
           <button type="button" class="sori-risk-btn sori-risk-btn--ghost"
                   id="sori-emergency-close">
