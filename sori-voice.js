@@ -374,6 +374,25 @@
     if (window.soriUpdates && typeof window.soriUpdates.stopAnalyzingCycle === 'function') {
       window.soriUpdates.stopAnalyzingCycle();
     }
+
+    // ── Risk-screening hook (non-destructive) ──────────────────────────────
+    // If a CRITICAL trigger is matched, the detector mounts the Emergency
+    // Modal and returns { level: 'critical' }. We halt the standard archive
+    // render in that case. FREQUENCY hits quietly bump the weekly counter
+    // and may surface the Counseling Bridge overlay on top of the journal.
+    try {
+      if (window.soriRiskDetector && typeof window.soriRiskDetector.evaluate === 'function') {
+        const _risk = window.soriRiskDetector.evaluate(data && data.transcript);
+        if (_risk && _risk.level === 'critical') {
+          setBtnIdle();
+          setStatus('');
+          return; // halt archive / journal render
+        }
+      }
+    } catch (_riskErr) {
+      console.warn('[sori-voice] risk screen failed:', _riskErr);
+    }
+
     try { buildJournalCard(data); } catch (buildErr) { buildErrorCard('The journal card could not be rendered. ' + buildErr.message); }
     window.soriFlow?.populateInsight?.(data);
 

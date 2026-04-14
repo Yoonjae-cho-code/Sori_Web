@@ -1744,6 +1744,11 @@
   <!-- sori-updates.js must load before sori-voice.js so that
        window.soriUpdates is available when onAnalyzeClick fires -->
   <script src="sori-updates.js"></script>
+  <!-- Risk-screening: keyword dictionary must load before the detector,
+       and both must precede sori-voice.js so onTranscriptReceived can
+       reach window.soriRiskDetector.evaluate(). -->
+  <script src="utils/riskKeywords.js"></script>
+  <script src="sori-risk-detector.js"></script>
   <script src="sori-voice.js"></script>
   <script src="sori-archive.js"></script>
   <script src="sori-flow.js"></script>
