@@ -313,11 +313,13 @@
 
     // Focus trap (soft) — primary call button was removed for exhibition
     // safety (no accidental tel: taps). The close button is now the sole
-    // focus target.
+    // focus target and must ALSO resume the main app flow (it's the only
+    // way out of step-analysis once we short-circuited onTranscriptReceived
+    // — otherwise the app sits in "State Limbo").
     const closeBtn = backdrop.querySelector('#sori-emergency-close');
-    closeBtn.addEventListener('click', function () { dismiss(backdrop); });
+    closeBtn.addEventListener('click', function () { dismissEmergency(backdrop); });
     backdrop.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') dismiss(backdrop);
+      if (e.key === 'Escape') dismissEmergency(backdrop);
     });
     setTimeout(function () { try { closeBtn.focus(); } catch (e) {} }, 120);
 
@@ -414,6 +416,85 @@
     setTimeout(function () {
       if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
     }, 380);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   *  dismissEmergency — Emergency-modal-specific close handler.
+   *  Fixes the "State Limbo" bug: onTranscriptReceived short-
+   *  circuits the archive render on a CRITICAL match, which
+   *  leaves the app parked on step-analysis. When the user taps
+   *  "I'm safe for now", we must ALSO resume the flow.
+   *
+   *  Sequence (engineered so the transition lives UNDER the
+   *  fading scrim — user never sees a blank frame):
+   *    t=0     remove .is-open  → backdrop begins 360ms fade
+   *    t=0+    route to step-voice-record + soriVoice.cleanup()
+   *    t=0+    dispatch 'sori:risk:critical:dismissed' so any
+   *            host app / analytics / alt-router can override.
+   *    t=400   remove the backdrop node from the DOM.
+   * ──────────────────────────────────────────────────────────── */
+  function dismissEmergency(backdrop) {
+    if (!backdrop) return;
+    // Idempotency guard — clicking close + Escape in quick succession.
+    if (backdrop.dataset.soriDismissed === '1') return;
+    backdrop.dataset.soriDismissed = '1';
+
+    // 1. Begin scrim fade-out FIRST so the step swap happens beneath it.
+    backdrop.classList.remove('is-open');
+
+    // 2. Resume the main app flow. Prefer soriVoice (it owns the voice
+    //    state machine); fall back to soriFlow; final fallback mirrors
+    //    its internal step-swap logic directly on the DOM.
+    const RESUME_STEP = 'step-voice-record';
+    let routed = false;
+    try {
+      if (window.soriVoice && typeof window.soriVoice.goToStep === 'function') {
+        window.soriVoice.goToStep(RESUME_STEP); routed = true;
+      } else if (window.soriFlow && typeof window.soriFlow.goToStep === 'function') {
+        window.soriFlow.goToStep(RESUME_STEP); routed = true;
+      }
+    } catch (e) {
+      console.warn('[sori-risk-detector] step router threw:', e);
+    }
+    if (!routed) {
+      // Minimal DOM-level fallback — matches the logic inside sori-voice.js
+      const steps = document.querySelectorAll('[data-step], .step, [id^="step-"]');
+      steps.forEach(function (el) {
+        if (el.id === RESUME_STEP) {
+          el.style.display = ''; el.removeAttribute('hidden');
+          el.classList.remove('is-hidden'); el.classList.add('is-active');
+        } else {
+          el.style.display = 'none';
+          el.classList.remove('is-active'); el.classList.add('is-hidden');
+        }
+      });
+    }
+
+    // 3. Reset the voice layer so the record button is fresh and armed.
+    try {
+      if (window.soriVoice && typeof window.soriVoice.cleanup === 'function') {
+        window.soriVoice.cleanup();
+      }
+      // Belt-and-suspenders — ensure the analysing cycle text isn't
+      // lingering on the faded screen behind us.
+      if (window.soriUpdates && typeof window.soriUpdates.stopAnalyzingCycle === 'function') {
+        window.soriUpdates.stopAnalyzingCycle();
+      }
+    } catch (e) {
+      console.warn('[sori-risk-detector] voice cleanup threw:', e);
+    }
+
+    // 4. Let listeners (analytics, alt-flows) know. Non-blocking.
+    try {
+      window.dispatchEvent(new CustomEvent('sori:risk:critical:dismissed', {
+        detail: { at: Date.now(), resumedTo: RESUME_STEP }
+      }));
+    } catch (e) {}
+
+    // 5. Tear down the node once the fade completes.
+    setTimeout(function () {
+      if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+    }, 400);
   }
 
   function closeAll() {
