@@ -153,6 +153,11 @@
     .sori-risk-actions {
       display: flex; flex-direction: column; gap: 10px;
     }
+    /* Single-button variant (e.g. Emergency modal after the primary
+       call button was removed for exhibition safety). No stacking gap
+       needed; pull up slightly so the ghost button hugs the contact
+       block cleanly. */
+    .sori-risk-actions--single { gap: 0; margin-top: 4px; }
     .sori-risk-btn {
       appearance: none; border: 0; cursor: pointer;
       font-family: inherit; font-size: 14.5px; font-weight: 600;
@@ -292,14 +297,7 @@
           </div>
         </div>
 
-        <div class="sori-risk-actions">
-          <a class="sori-risk-btn sori-risk-btn--primary"
-             href="tel:18002837019"
-             id="sori-emergency-call"
-             style="color:#FFFFFF; text-decoration:none;"
-             lang="ko">
-            무료 헬프라인 연결 (1800-283-7019)
-          </a>
+        <div class="sori-risk-actions sori-risk-actions--single">
           <button type="button" class="sori-risk-btn sori-risk-btn--ghost"
                   id="sori-emergency-close">
             I'm safe for now &middot; <span lang="ko">지금은 괜찮아요</span>
@@ -313,14 +311,15 @@
       requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
     });
 
-    // Focus trap (soft)
+    // Focus trap (soft) — primary call button was removed for exhibition
+    // safety (no accidental tel: taps). The close button is now the sole
+    // focus target.
     const closeBtn = backdrop.querySelector('#sori-emergency-close');
-    const callBtn  = backdrop.querySelector('#sori-emergency-call');
     closeBtn.addEventListener('click', function () { dismiss(backdrop); });
     backdrop.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') dismiss(backdrop);
     });
-    setTimeout(function () { try { callBtn.focus(); } catch (e) {} }, 120);
+    setTimeout(function () { try { closeBtn.focus(); } catch (e) {} }, 120);
 
     // Telemetry hook (non-blocking)
     try {
