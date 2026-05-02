@@ -1577,3 +1577,54 @@ button#pin-success-archive-cta:hover span {
 }
 /* ── END Q · DYNAMIC CONTRAST SYNC ─────────────────────────── */
 
+
+/* ════════════════════════════════════════════════════════════
+   📱 R · MOBILE PIN CALENDAR FIX
+   ─────────────────────────────────────────────────────────────
+   Problem
+     On narrow mobile viewports the 7-column ".pin-calendar-grid"
+     overflows because each "1fr" column is forced to its
+     min-content width by the uppercase day-of-week labels
+     (MON, WED, THU — at 13px with letter-spacing: 0.14em).
+     The total min-width (7 labels + 6 × 12px gaps) exceeds the
+     available container width, so the SUN column gets pushed
+     off-screen and clipped.
+   Fix (mobile only — ≤ 480px)
+     • Force the grid to fill the available width
+       (max-width: 100%) so it never relies on a fixed cap.
+     • Allow grid items to shrink below their content width
+       (min-width: 0) so columns can be sized purely by 1fr.
+     • Slightly tighten the column gap and label letter-spacing
+       so all 7 columns fit comfortably.
+   Why this is safe
+     • Scoped strictly to (max-width: 480px) — desktop layout
+       and tablet layout (≥481px) are completely unchanged.
+     • Only touches .pin-calendar-grid / .pin-cal-label /
+       .pin-cal-day; no other component is selected.
+     • Day-cell aspect-ratio, click handlers, entry-highlight
+       (.pin-cal-day--entry), empty-cell hiding
+       (.pin-cal-day--empty), and PIN flow logic are untouched.
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .pin-calendar-grid {
+    max-width: 100% !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+
+  .pin-calendar-grid > * {
+    min-width: 0 !important;
+  }
+
+  .pin-cal-label {
+    font-size: 11px !important;
+    letter-spacing: 0.04em !important;
+    padding-bottom: 8px !important;
+  }
+
+  .pin-cal-day {
+    font-size: 12px !important;
+  }
+}
+/* ── END R · MOBILE PIN CALENDAR FIX ───────────────────────── */
+
